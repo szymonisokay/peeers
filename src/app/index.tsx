@@ -1,98 +1,85 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { avatarColors, useTheme } from '@/theme';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+/** Temporary token preview — to be replaced by the Przestrzeń feed. */
+export default function Index() {
+  const { colors, typography, spacing, radius, scheme } = useTheme();
+
+  const swatches = [
+    ['background', colors.background],
+    ['surface', colors.surface],
+    ['border', colors.border],
+    ['accent', colors.accent],
+    ['text', colors.text],
+    ['textMuted', colors.textMuted],
+    ['danger', colors.danger],
+    ['success', colors.success],
+    ['warning', colors.warning],
+  ] as const;
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <SafeAreaView style={[styles.fill, { backgroundColor: colors.background }]}>
+      <ScrollView contentContainerStyle={{ padding: spacing.lg, gap: spacing.xl }}>
+        <View style={{ gap: spacing.sm }}>
+          <Text style={[typography.label, { color: colors.textMuted }]}>
+            Motyw · {scheme}
+          </Text>
+          <Text style={[typography.titleLarge, { color: colors.text }]}>Peeers</Text>
+          <Text style={[typography.title, { color: colors.text }]}>Mieszkanie 14</Text>
+          <Text style={[typography.body, { color: colors.text }]}>
+            Wspólne listy zakupów i notatki dla osób, które mieszkają razem.
+          </Text>
+          <Text style={[typography.bodySmall, { color: colors.textMuted }]}>
+            12:41 · Biedronka, sobota
+          </Text>
+        </View>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+        <View style={{ gap: spacing.sm }}>
+          <Text style={[typography.label, { color: colors.textMuted }]}>Kolory</Text>
+          {swatches.map(([name, value]) => (
+            <View
+              key={name}
+              style={[
+                styles.row,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  borderRadius: radius.md,
+                  padding: spacing.md,
+                  gap: spacing.md,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.chip,
+                  { backgroundColor: value, borderColor: colors.border, borderRadius: radius.sm },
+                ]}
+              />
+              <Text style={[typography.bodyMedium, { color: colors.text, flex: 1 }]}>{name}</Text>
+              <Text style={[typography.bodySmall, { color: colors.textMuted }]}>{value}</Text>
+            </View>
+          ))}
+        </View>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        <View style={{ gap: spacing.sm }}>
+          <Text style={[typography.label, { color: colors.textMuted }]}>Kolory awatarów</Text>
+          <View style={[styles.row, { gap: spacing.sm, flexWrap: 'wrap' }]}>
+            {avatarColors.map((c) => (
+              <View key={c} style={[styles.avatar, { backgroundColor: c }]} />
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  fill: { flex: 1 },
+  row: { flexDirection: 'row', alignItems: 'center', borderWidth: StyleSheet.hairlineWidth },
+  chip: { width: 32, height: 32, borderWidth: StyleSheet.hairlineWidth },
+  avatar: { width: 40, height: 40, borderRadius: 20 },
 });
