@@ -1,74 +1,78 @@
-# Design — źródła prawdy
+# Design — sources of truth
 
-## Makiety
+## Mockups
 
-`assets/design/*.png` — 42 ekrany, numeracja `01`–`42`. Brak `30` i `31` jest
-celowy (były to warianty logotypu). Makiety są specyfikacją UI: jeśli kod
-rozjeżdża się z makietą, domyślnie błąd jest w kodzie — z wyjątkiem usterek
-wypisanych niżej.
+`assets/design/*.png` — 42 screens numbered `01`–`42`. The gap at `30` and `31`
+is intentional (they were logo variants). The mockups are the UI spec: when the
+code disagrees with a mockup, assume the code is wrong — except for the defects
+listed at the bottom of this file.
 
-Warianty ciemne: `38` (feed), `39` (lista), `40` (notatka).
+Dark variants: `38` (feed), `39` (list), `40` (note).
 
-## Tokeny
+## Tokens
 
-**`src/theme/tokens.ts` jest kanoniczne.** Nie wpisuj kolorów, odstępów ani
-rozmiarów tekstu bezpośrednio w komponentach — bierz je z `useTheme()`.
+**`src/theme/tokens.ts` is canonical.** Do not write colors, spacing or text
+sizes directly into components — take them from `useTheme()`.
 
-Pochodzenie wartości:
+Where the values come from:
 
-- kolory jasnego motywu (`background`, `border`, `accent`, `text`) pochodzą ze
-  specyfikacji podanej w oklch; hexy w pliku to jej dokładny odpowiednik sRGB,
-- reszta (`textMuted`, `danger`, `success`, `warning*`, cały motyw ciemny)
-  została **zmierzona z pikseli makiet**; przy każdym tokenie jest komentarz
-  z numerem ekranu,
-- semantyczne kolory motywu ciemnego (`danger`, `success`, `warning*`) to
-  jedyne wartości wyprowadzone ręcznie — makiety ich nie pokazują.
+- the light-theme colors (`background`, `border`, `accent`, `text`) come from
+  the design spec given in oklch; the hex codes in the file are its exact sRGB
+  equivalent,
+- everything else (`textMuted`, `danger`, `success`, `warning*`, and the whole
+  dark theme) was **measured from mockup pixels**; each token carries a comment
+  naming the screen it came from,
+- the dark-theme semantic colors (`danger`, `success`, `warning*`) are the only
+  hand-derived values — the mockups do not show them.
 
-Jeśli potrzebujesz koloru, którego nie ma w tokenach: zmierz go z makiety,
-zamiast dobierać na oko, i dopisz do `tokens.ts` z adnotacją źródła.
+If you need a color that is not in the tokens: measure it from the mockup
+rather than picking by eye, and add it to `tokens.ts` with a source annotation.
 
-Akcent różni się między motywami — `#505AC8` w jasnym, `#7787F3` w ciemnym.
+The accent differs between themes — `#505AC8` in light, `#7787F3` in dark.
 
-## Typografia
+## Typography
 
-Public Sans z `@expo-google-fonts/public-sans`, wagi 400/500/600/700, ładowane
-w `src/app/_layout.tsx`. Skala w `typography` w `tokens.ts`.
+Public Sans from `@expo-google-fonts/public-sans`, weights 400/500/600/700,
+loaded in `src/app/_layout.tsx`. The scale lives in `typography` in
+`tokens.ts`.
 
-Etykiety mają `letterSpacing: 0.88` — to `.08em` przeliczone na 11 px, bo
-React Native nie przyjmuje jednostek względnych.
+Labels use `letterSpacing: 0.88` — that is `.08em` resolved against 11 px,
+because React Native does not accept relative units.
 
-## Assety
+## Assets
 
-| Katalog | Zawartość |
+| Directory | Contents |
 |---|---|
-| `assets/icons/` | 16 ikon, 24×24, `stroke-width="1.9"`, `currentColor` |
-| `assets/logo/` | znak w 3 wariantach |
-| `assets/illustrations/` | ilustracje stanów pustych |
+| `assets/icons/` | 16 icons, 24×24, `stroke-width="1.9"`, `currentColor` |
+| `assets/logo/` | the mark in 3 variants |
+| `assets/illustrations/` | empty-state illustrations |
 
-Nowe ikony trzymaj w tej samej konwencji: 24×24, `currentColor`, obrys 1.9,
-zaokrąglone końce.
+Keep new icons to the same convention: 24×24, `currentColor`, 1.9 stroke,
+round caps.
 
-### Czego brakuje
+### What is missing
 
-Ikony używane na makietach, których nie ma w zestawie: `chevron-prawo`,
+Icons used in the mockups but absent from the set: `chevron-prawo`,
 `chevron-lewo`, `plus`, `strzalka-w-gore`, `wiecej` (⋯), `strzalka-dol`.
 
-Ilustracje: jest tylko `pusta-lista`. Bez grafik zostają: pusty feed świeżej
-Przestrzeni, pusta lista notatek, brak wyników szukania, puste archiwum.
+Illustrations: only `pusta-lista` exists. Still unillustrated: the empty feed of
+a fresh Przestrzeń, an empty note list, no search results, an empty archive.
 
-Ikona aplikacji i splash to nadal domyślne assety Expo — do podmiany na końcu.
+The app icon and splash screen are still the default Expo assets — to be
+replaced at the end.
 
-Import `.svg` jako komponentów wymaga `react-native-svg-transformer` i wpisu
-w `metro.config.js`. `react-native-svg` jest zainstalowane, transformer nie.
+Importing `.svg` as components requires `react-native-svg-transformer` and an
+entry in `metro.config.js`. `react-native-svg` is installed; the transformer is
+not.
 
-## Znane usterki makiet
+## Known mockup defects
 
-Nie „naprawiaj" kodu, żeby się z nimi zgodzić.
+Do not "fix" the code to match these.
 
-| Ekrany | Rozbieżność |
+| Screens | Discrepancy |
 |---|---|
-| `03`, `07`, `20`, `27` vs `35`, `38` | „Biedronka, sobota" ma `2 z 8` albo `2 z 6` |
-| `09` vs `10`, `40` | notatka „Kod do bramy i wifi": „widzą 3 osoby" vs „widoczne dla 2 osób" |
-| `03` vs `35`, `38` | dopisanie 3 pozycji: raz Nina o 11:07, raz Kuba o 17:05 |
-| `09` vs `14` | `09` pokazuje notatkę ukrytą przed Alą na liście widzianej jako Ala, a `14` mówi, że ukryta notatka nie pojawia się u tej osoby |
-| `34` | wygasza zajęte kolory awatara — sprzeczne z decyzją o kolorach globalnych |
+| `03`, `07`, `20`, `27` vs `35`, `38` | "Biedronka, sobota" shows either `2 z 8` or `2 z 6` |
+| `09` vs `10`, `40` | the note "Kod do bramy i wifi": "widzą 3 osoby" vs "widoczne dla 2 osób" |
+| `03` vs `35`, `38` | the same "3 items added" event is attributed to Nina at 11:07 and to Kuba at 17:05 |
+| `09` vs `14` | `09` shows a note hidden from Ala in a list viewed as Ala, while `14` states a hidden note does not appear for that person |
+| `34` | greys out taken avatar colors — contradicts the decision to keep colors global and unblocked |

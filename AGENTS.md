@@ -1,74 +1,82 @@
 # AGENTS.md
 
-Peeers — wspólne listy zakupów i notatki dla osób mieszkających razem.
-Expo SDK 57 + expo-router, TypeScript, iOS/Android.
+Peeers — shared shopping lists and notes for people who live together.
+Expo SDK 57 with expo-router, TypeScript, iOS/Android.
 
-Ten plik jest mapą. Wiedza szczegółowa siedzi w `docs/`.
+This file is a map. The detail lives in `docs/`.
 
-## Od czego zacząć
+## Where to start
 
-| Zadanie | Czytaj najpierw |
+| Task | Read first |
 |---|---|
-| nowy ekran / zmiana UI | [docs/DESIGN.md](docs/DESIGN.md), makieta w `assets/design/` |
-| pytanie „czy to jest w MVP" | [docs/PROJECT.md](docs/PROJECT.md) |
-| nazewnictwo, role, uprawnienia | [docs/PROJECT.md](docs/PROJECT.md#pojęcia) |
-| kolory, typografia, ikony | [docs/DESIGN.md](docs/DESIGN.md), `src/theme/tokens.ts` |
-| planowanie większej zmiany | [docs/exec-plans/create-plan-file.md](docs/exec-plans/create-plan-file.md) |
+| new screen or UI change | [docs/DESIGN.md](docs/DESIGN.md), the mockup in `assets/design/` |
+| "is this in the MVP?" | [docs/PROJECT.md](docs/PROJECT.md) |
+| naming, roles, permissions | [docs/PROJECT.md](docs/PROJECT.md#glossary) |
+| colors, typography, icons | [docs/DESIGN.md](docs/DESIGN.md), `src/theme/tokens.ts` |
+| planning a larger change | [docs/exec-plans/create-plan-file.md](docs/exec-plans/create-plan-file.md) |
 
-Kod: `src/app/` to trasy (file-based routing), `src/theme/` to tokeny i motyw.
+Code: `src/app/` holds the routes (file-based routing), `src/theme/` holds the
+tokens and the theme hook.
 
-## Twarde ograniczenia
+## Hard constraints
 
-0. **Najpierw plan, potem kod.** Przed pracą przygotuj exec plan wg
+0. **Plan first, then code. The repo owner commits.** Before starting work,
+   write an exec plan following
    [docs/exec-plans/create-plan-file.md](docs/exec-plans/create-plan-file.md)
-   i poczekaj na zatwierdzenie. Przy drobnej zmianie plan nie jest konieczny,
-   ale zgoda właściciela repo tak. Czytanie plików i `tsc` są bezpieczne.
-1. **Expo się zmieniło.** Przed pisaniem kodu sprawdź wersjonowaną
-   dokumentację: https://docs.expo.dev/versions/v57.0.0/ — nie polegaj na
-   pamięci ani na przykładach z wcześniejszych SDK.
-2. **Nie wymyślaj wartości designu.** Kolory, odstępy i typografia pochodzą
-   z `src/theme/tokens.ts`. Brakującą wartość zmierz z makiety i dopisz
-   do tokenów z adnotacją źródła — nie dobieraj na oko i nie wpisuj na sztywno
-   w komponencie.
-3. **Teksty UI po polsku.** Makiety zawierają docelowe brzmienie — używaj go
-   dosłownie zamiast tłumaczyć samodzielnie.
-4. **Nie rozszerzaj zakresu MVP.** Lista rzeczy świadomie odłożonych jest
-   w [docs/PROJECT.md](docs/PROJECT.md#świadomie-poza-mvp). Nie dokładaj ich
-   przy okazji innych zmian.
-5. **Makiety mają znane usterki.** Zanim dopasujesz kod do dziwnej makiety,
-   sprawdź [listę rozbieżności](docs/DESIGN.md#znane-usterki-makiet).
+   and wait for approval. A small change does not need a plan, but it still
+   needs the owner's approval. Leave changes in the working tree — never run
+   `git commit`, `git add` or `git push`, and do not create branches or PRs.
+   At the end of the work you may **propose** a commit message as text.
+   Reading files, `tsc`, and `git status`/`diff`/`log` are safe.
+1. **Expo has changed.** Check the versioned documentation before writing any
+   code: https://docs.expo.dev/versions/v57.0.0/ — do not rely on memory or on
+   examples from earlier SDKs.
+2. **Do not invent design values.** Colors, spacing and typography come from
+   `src/theme/tokens.ts`. Measure a missing value from the mockup and add it to
+   the tokens with a source annotation — never eyeball it, and never hard-code
+   it in a component.
+3. **Language split.** Documentation (`AGENTS.md`, `README.md`, everything in
+   `docs/`), code, and code comments are written in **English**. UI copy is
+   **Polish** and is taken verbatim from the mockups, never translated by hand.
+   Polish domain terms (Przestrzeń, Lista, Notatka, Członek, Admin) stay Polish
+   in prose too — they are the product's vocabulary, not text to localize.
+4. **Do not widen the MVP.** The list of deliberately deferred work is in
+   [docs/PROJECT.md](docs/PROJECT.md#deliberately-out-of-scope). Do not add any
+   of it while doing something else.
+5. **The mockups have known defects.** Before matching code to an odd mockup,
+   check the [list of discrepancies](docs/DESIGN.md#known-mockup-defects).
 
-## Weryfikacja
+## Verification
 
 ```bash
 npx tsc --noEmit
 ```
 
-Zmiany w UI sprawdzaj uruchomioną aplikacją na symulatorze, w obu motywach —
-tryb ciemny ma osobne wartości tokenów i łatwo go zepsuć niezauważenie.
+Check UI changes against the running app in **both themes** — the dark theme
+has its own token values and is easy to break unnoticed.
 
-**Nie uruchamiaj symulatora.** Ma już działać, odpalony przez właściciela repo.
-Jeśli żadne urządzenie nie jest zabootowane — powiedz o tym i nic nie startuj.
+**Do not start the iOS Simulator.** It is expected to be running already,
+launched by the repo owner. If no device is booted, say so and start nothing.
 
-Nie ma testów ani skonfigurowanego lintera. `npm run lint` odpali interaktywny
-kreator ESLint — nie uruchamiaj go mimochodem.
+There are no tests and no configured linter. `npm run lint` launches an
+interactive ESLint wizard — do not run it casually.
 
-Dev server uruchamia właściciel repo. Jeśli startujesz go do własnej
-weryfikacji, zatrzymaj go potem i zostaw wolny port 8081.
+The repo owner runs the dev server. If you start it for your own verification,
+stop it afterwards and leave port 8081 free.
 
-## Aktualizacja dokumentacji
+## Keeping docs current
 
-Dokumentacja jest częścią zmiany, nie zadaniem na później. W tym samym commicie:
+Documentation is part of the change, not a follow-up. In the same commit:
 
-- zmieniasz zakres MVP, nazewnictwo, role albo model tożsamości
-  → zaktualizuj [docs/PROJECT.md](docs/PROJECT.md),
-- zmieniasz tokeny, typografię, zestaw ikon, albo znajdujesz kolejną
-  rozbieżność w makietach → zaktualizuj [docs/DESIGN.md](docs/DESIGN.md),
-- dodajesz lub zmieniasz skrypt npm albo sposób uruchamiania i weryfikacji
-  → zaktualizuj `README.md`, sekcję „Weryfikacja" powyżej **oraz** sekcję
-  „Project-Specific Conventions" w
+- changing MVP scope, naming, roles or the identity model
+  → update [docs/PROJECT.md](docs/PROJECT.md),
+- changing tokens, typography, the icon set, or finding another mockup
+  discrepancy → update [docs/DESIGN.md](docs/DESIGN.md),
+- adding or changing an npm script or the way the app is run and verified
+  → update `README.md`, the "Verification" section above, **and** the
+  "Project-Specific Conventions" section in
   [docs/exec-plans/create-plan-file.md](docs/exec-plans/create-plan-file.md),
-  która powtarza listę komend.
+  which repeats the command list.
 
-Kanoniczne dokumenty nie odwołują się do konkretnych planów — plany linkują
-do dokumentów, nie odwrotnie.
+Canonical docs never reference individual exec plans — plans link to docs, not
+the other way around.

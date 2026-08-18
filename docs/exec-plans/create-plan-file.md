@@ -105,17 +105,24 @@ from earlier SDKs.
 
 ### Code Patterns
 
-- **Comments in code are English.** UI copy is Polish and is taken verbatim from
-  the mockups, not translated by hand.
+- **English everywhere except UI copy.** Docs, code and comments are English.
+  UI strings are Polish, taken verbatim from the mockups. Polish domain terms
+  (Przestrzeń, Lista, Notatka, Członek, Admin) stay Polish in prose as well.
 - **No hard-coded design values.** Colors, spacing and type come from
   `useTheme()`. A value that is missing gets measured from the mockup and added
   to `src/theme/tokens.ts` with a source annotation -- never eyeballed.
 - **Mockups are the spec.** When code and mockup disagree, the code is wrong,
-  unless the mockup is listed in `docs/DESIGN.md` -> "Znane usterki makiet".
+  unless the mockup is listed in `docs/DESIGN.md` -> "Known mockup defects".
 - **Scope is fixed.** Do not implement anything listed under
-  `docs/PROJECT.md` -> "Świadomie poza MVP", even if a mockup shows it.
+  `docs/PROJECT.md` -> "Deliberately out of scope", even if a mockup shows it.
 - **Approval gate.** Both the plan and the code changes need explicit approval
   from the repo owner before implementation starts.
+- **These local rules override the portable sections above.** In particular,
+  `How to Use ExecPlans` says to "resolve ambiguities autonomously, and commit
+  frequently" -- neither applies here. Never run `git commit`, `git add` or
+  `git push`; leave changes in the working tree and offer a commit message as
+  text at the end. Surface ambiguities to the repo owner instead of deciding
+  them yourself, especially anything touching MVP scope.
 
 ## Formatting
 
@@ -372,9 +379,9 @@ Include at minimum:
 - Which theme tokens are used, and whether any new token must be measured
   from a mockup and added to `src/theme/tokens.ts`
 - Whether the change touches anything listed under
-  `docs/PROJECT.md` -> "Świadomie poza MVP"; if so, stop and ask
+  `docs/PROJECT.md` -> "Deliberately out of scope"; if so, stop and ask
 - Whether any mockup you rely on appears under
-  `docs/DESIGN.md` -> "Znane usterki makiet"
+  `docs/DESIGN.md` -> "Known mockup defects"
 
 ## Plan of Work
 

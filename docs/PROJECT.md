@@ -1,62 +1,62 @@
-# Peeers — zakres i pojęcia
+# Peeers — scope and vocabulary
 
-## Czym to jest
+## What this is
 
-Aplikacja dla osób mieszkających razem: wspólne listy zakupów i notatki
-w ramach Przestrzeni. Nacisk na to, żeby dopisanie rzeczy do listy zajmowało
-sekundy i żeby było widać, kto co zrobił.
+An app for people who share a flat: shopping lists and notes inside a shared
+Przestrzeń. The priority is that adding something to a list takes seconds, and
+that it stays visible who did what.
 
-## Pojęcia
+## Glossary
 
-Nazewnictwo w kodzie i w UI trzymamy zgodne z tą listą — makiety używają
-dokładnie tych słów.
+Polish domain terms are the product's vocabulary — the mockups and the UI use
+exactly these words, so keep them in code and prose rather than translating.
 
-| Pojęcie | Znaczenie |
+| Term | Meaning |
 |---|---|
-| **Przestrzeń** | kontener na listy, notatki i osoby. Typ: Dom / Praca / Wyjazd. Osoba może należeć do kilku. |
-| **Lista** | lista zakupów. Pozycje mają nazwę, ilość i dopisek. Po odhaczeniu wszystkiego schodzi do archiwum. |
-| **Notatka** | tekst w Przestrzeni. Może być ukryta przed wybranymi osobami. |
-| **Feed** | strumień zdarzeń w Przestrzeni („Kuba odhaczył chleb i masło"). |
-| **Rola** | `Członek` (dodaje, odhacza, tworzy, zaprasza) albo `Admin` (to co członek + zasady Przestrzeni, usuwanie list, zmiana ról). W Przestrzeni musi zostać co najmniej jeden admin. |
-| **Kod zaproszenia** | 6-znakowy kod do dołączenia do Przestrzeni, wygasa po 24 h. |
+| **Przestrzeń** | container for lists, notes and people. Type: Dom / Praca / Wyjazd. A person can belong to several. |
+| **Lista** | a shopping list. Items have a name, a quantity and a note. Once everything is checked off, the list moves to the archive. |
+| **Notatka** | free text inside a Przestrzeń. Can be hidden from selected people. |
+| **Feed** | stream of events in a Przestrzeń ("Kuba odhaczył chleb i masło"). |
+| **Rola** | `Członek` (adds, checks off, creates, invites) or `Admin` (everything a member does, plus Przestrzeń rules, deleting lists and changing roles). At least one admin must remain in a Przestrzeń. |
+| **Kod zaproszenia** | 6-character code for joining a Przestrzeń, expires after 24 h. |
 
-## Tożsamość
+## Identity
 
-Bez kont, bez haseł, bez maila. Osoba to imię + kolor awatara trzymane na
-urządzeniu. Konsekwencje, o których trzeba pamiętać przy projektowaniu:
+No accounts, no passwords, no email. A person is a name plus an avatar color
+stored on the device. Consequences worth keeping in mind while designing:
 
-- brak odzyskiwania dostępu — zgubiony telefon oznacza utratę Przestrzeni,
-- brak drugiego urządzenia dla tej samej osoby,
-- imię i kolor są **globalne** dla osoby, nie per Przestrzeń.
+- no account recovery — a lost phone means losing access to the Przestrzeń,
+- no second device for the same person,
+- the name and color are **global** per person, not per Przestrzeń.
 
-## Zakres MVP
+## MVP scope
 
-W MVP wchodzi: onboarding (utworzenie Przestrzeni / dołączenie kodem), feed,
-listy zakupów z archiwum, notatki, osoby i role, szukanie, powiadomienia push,
-ustawienia (wygląd, prywatność, profil), tryb offline.
+In scope: onboarding (create a Przestrzeń or join with a code), the feed,
+shopping lists with an archive, notes, people and roles, search, push
+notifications, settings (appearance, privacy, profile), offline mode.
 
-### Świadomie poza MVP
+### Deliberately out of scope
 
-Te rzeczy są na makietach, ale **nie budujemy ich teraz**. Nie dodawaj ich
-z własnej inicjatywy przy okazji innych zmian.
+These appear in the mockups but are **not being built now**. Do not add them on
+your own initiative while working on something else.
 
-| Element | Status |
+| Item | Status |
 |---|---|
-| Wpisy w feedzie z odpowiedziami (widoczne na `03`) | po MVP, jako wiadomości |
-| Udostępnianie listy linkiem `peeers.app/l/…` (`20`) | poza MVP w całości; ewentualnie natywny share później |
-| Przeniesienie na nowy telefon | poza MVP |
-| Obecność „Kuba jest w sklepie" (`23`) | poza MVP |
-| Ekran dostępu per osoba (`12` → „Dostęp do list i notatek") | poza MVP, widoki powstaną później |
+| Feed posts with replies (visible on `03`) | after MVP, as messaging |
+| Sharing a list via `peeers.app/l/…` link (`20`) | fully out; possibly a native share sheet later |
+| Moving to a new phone | out |
+| Presence — "Kuba jest w sklepie" (`23`) | out |
+| Per-person access screen (`12` → "Dostęp do list i notatek") | out; the screens will be designed later |
 
-Ponieważ udostępnianie odpada, akcja „Udostępnij" w nagłówkach `07`, `15`, `27`
-i `28` nie ma celu — nie implementuj jej.
+Because link sharing is dropped, the "Udostępnij" action in the headers of
+`07`, `15`, `27` and `28` has nothing to do — do not implement it.
 
-### Uproszczenia przyjęte na MVP
+### Simplifications accepted for the MVP
 
-| Obszar | Decyzja |
+| Area | Decision |
 |---|---|
-| Notatki | uproszczony markdown, **nie** pełny rich text — mimo że makiety `10`/`40` pokazują pogrubienia, cytat i chipy |
-| Synchronizacja | optymistyczna, bez rozwiązywania konfliktów |
-| Kolory awatarów | globalne i **nie blokujemy** zajętych — makieta `34` pokazuje inaczej i jest w tym miejscu nieaktualna |
+| Notes | simplified markdown, **not** full rich text — even though mockups `10` and `40` show bold, a blockquote and inline chips |
+| Sync | optimistic, with no conflict resolution |
+| Avatar colors | global, and taken colors are **not** blocked — mockup `34` shows otherwise and is out of date on this point |
 
-Znane błędy w makietach: [DESIGN.md](DESIGN.md#znane-usterki-makiet).
+Known mockup defects: [DESIGN.md](DESIGN.md#known-mockup-defects).

@@ -1,11 +1,11 @@
 # Peeers
 
-Wspólne listy zakupów i notatki dla osób, które mieszkają razem.
+Shared shopping lists and notes for people who live together.
 
-Aplikacja mobilna (iOS/Android) w Expo SDK 57 + expo-router. Bez kont i haseł —
-tożsamość to imię i kolor trzymane na urządzeniu.
+A mobile app (iOS/Android) built with Expo SDK 57 and expo-router. No accounts
+and no passwords — a person is a name and a color stored on the device.
 
-## Start
+## Getting started
 
 ```bash
 npm install
@@ -15,26 +15,27 @@ npm install
 npm start
 ```
 
-Potem `i` (iOS) lub `a` (Android). Aplikacja działa w Expo Go — nie wymaga
-development buildu.
+Then press `i` (iOS) or `a` (Android). The app runs in Expo Go — no development
+build required.
 
-## Weryfikacja
+## Verification
 
 ```bash
 npx tsc --noEmit
 ```
 
-Nie ma jeszcze testów ani skonfigurowanego lintera. `npm run lint` uruchomi
-interaktywny kreator ESLint przy pierwszym wywołaniu.
+There are no tests and no configured linter yet. `npm run lint` will launch an
+interactive ESLint wizard on first use.
 
-## Gdzie co jest
+## Layout
 
-| Ścieżka | Zawartość |
+| Path | Contents |
 |---|---|
-| `src/app/` | trasy expo-router (file-based routing) |
-| `src/theme/` | tokeny designu i hook `useTheme` |
-| `assets/design/` | 42 makiety PNG — specyfikacja UI |
-| `assets/icons/`, `assets/logo/`, `assets/illustrations/` | źródłowe SVG |
-| `docs/` | wiedza projektowa |
+| `src/app/` | expo-router routes (file-based routing) |
+| `src/theme/` | design tokens and the `useTheme` hook |
+| `assets/design/` | 42 PNG mockups — the UI spec |
+| `assets/icons/`, `assets/logo/`, `assets/illustrations/` | source SVGs |
+| `docs/` | project knowledge |
 
-Szczegóły: [AGENTS.md](AGENTS.md).
+UI copy is Polish; everything else in this repo is written in English.
+See [AGENTS.md](AGENTS.md).
