@@ -57,6 +57,14 @@ not edit them by hand, and expect anything written there to be discarded.
 npx tsc --noEmit
 ```
 
+After editing `src/db/schema.ts`, regenerate the migration. The app applies
+pending migrations on startup, so a schema change without this has no effect on
+the device:
+
+```bash
+npm run db:generate
+```
+
 There are no tests and no configured linter yet. `npm run lint` will launch an
 interactive ESLint wizard on first use.
 
@@ -68,6 +76,7 @@ interactive ESLint wizard on first use.
 | `src/theme/` | design tokens — values only |
 | `src/hooks/` | hooks, including `useTheme` |
 | `src/components/` | icons, illustrations and the UI primitives |
+| `src/db/` | SQLite schema, event log, actions and queries |
 | `assets/design/` | 41 PNG mockups — the UI spec |
 | `assets/icons/`, `assets/logo/`, `assets/illustrations/` | source SVGs |
 | `docs/` | project knowledge |

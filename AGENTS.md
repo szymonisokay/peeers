@@ -24,6 +24,7 @@ Code layout:
 | `src/theme/` | design tokens — values only, no React |
 | `src/hooks/` | every hook, including `useTheme` |
 | `src/components/` | `Icon`, `Illustration`, and the primitives under `ui/` |
+| `src/db/` | the data layer: schema, event log, actions and queries |
 
 ## Hard constraints
 
@@ -57,6 +58,13 @@ Code layout:
 
 ```bash
 npx tsc --noEmit
+```
+
+After changing `src/db/schema.ts`, regenerate the migration — the app applies it
+at startup, so a schema edit without this does nothing:
+
+```bash
+npm run db:generate
 ```
 
 **Both platforms run from a development build**, not Expo Go — `formSheet`

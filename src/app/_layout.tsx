@@ -9,7 +9,7 @@ import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { Platform } from 'react-native'
 
-import { useTheme } from '@/hooks'
+import { useDatabase, useTheme } from '@/hooks'
 
 export default function RootLayout() {
 	const { scheme, colors, radius } = useTheme()
@@ -20,7 +20,19 @@ export default function RootLayout() {
 		PublicSans_700Bold,
 	})
 
-	if (!fontsLoaded) return null
+	const { ready: dbReady, error: dbError } = useDatabase()
+
+	/*
+	 * Nothing renders until the database has migrated: a query against a table
+	 * that does not exist yet throws, and on a fresh install none of them do.
+	 * A failed migration shows nothing on purpose — there is no mockup for a
+	 * broken database, and a development build already reports the error.
+	 */
+	if (dbError) {
+		console.error('[db] migrations failed', dbError)
+		return null
+	}
+	if (!fontsLoaded || !dbReady) return null
 
 	return (
 		<>

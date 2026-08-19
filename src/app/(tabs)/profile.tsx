@@ -16,6 +16,10 @@ export default function Profile() {
       <Link href="/gallery" style={[typography.bodyMedium, { color: colors.accent }]}>
         Galeria komponentów →
       </Link>
+      {/* Development tool, like the gallery above. M3 checks the data layer here. */}
+      <Link href="/db" style={[typography.bodyMedium, { color: colors.accent }]}>
+        Database check →
+      </Link>
     </Screen>
   );
 }

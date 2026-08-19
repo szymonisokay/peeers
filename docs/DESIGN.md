@@ -177,6 +177,7 @@ Do not "fix" the code to match these.
 | `09` vs `14` | `09` shows a note hidden from Ala in a list viewed as Ala, while `14` states a hidden note does not appear for that person |
 | `34` | greys out taken avatar colors — contradicts the decision to keep colors global and unblocked |
 | `05` | draws the sheet flush with the screen edges — iOS 26 insets every sheet by 8 pt, see below |
+| `03` vs `07` | the feed card reads "Nina dopisał(-a) 3 rzeczy" and names *kawa ziarnista · ziemniaki 2 kg · worki 60 l*, but `07` holds the first two and no "worki 60 l", and counts eight rows |
 
 ### Sheet insets
 

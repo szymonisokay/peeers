@@ -8,6 +8,8 @@ config.transformer.babelTransformerPath = require.resolve(
   'react-native-svg-transformer/expo'
 );
 config.resolver.assetExts = config.resolver.assetExts.filter((ext) => ext !== 'svg');
-config.resolver.sourceExts = [...config.resolver.sourceExts, 'svg'];
+// `.sql` joins the source extensions so Metro hands Drizzle's generated
+// migrations to Babel, where `inline-import` turns them into strings.
+config.resolver.sourceExts = [...config.resolver.sourceExts, 'svg', 'sql'];
 
 module.exports = config;

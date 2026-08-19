@@ -65,6 +65,11 @@ another phone goes into SQLite.** Only what dies with the process — connection
 status, whether a sync is in flight — belongs in the small Zustand store. Domain
 data in that store is the failure this design exists to avoid.
 
+That store does not exist yet and arrives with M8. Both pieces of state it is
+meant to hold are created by the sync loop, so M3 shipped the database without
+it rather than adding an empty store — which also means there is currently
+nowhere to put domain data by mistake.
+
 Two operational consequences to plan for: anonymous users accumulate and need a
 cleanup policy, and an RLS policy of the form "I am a member of this Przestrzeń"
 recurses if `space_members` is guarded by the same rule — use a

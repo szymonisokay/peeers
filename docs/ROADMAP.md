@@ -19,10 +19,12 @@ document that individual exec plans refer back to.
 
 Done: Expo 57 project, theme tokens for both schemes, Public Sans, the repo
 harness, **M1** — the SVG pipeline, 22 icons and 13 primitives visible at
-`/gallery` — and **M2**, the navigation shell: four tabs, the raised `+` with
-its sheet, and pushed detail routes.
+`/gallery` — **M2**, the navigation shell: four tabs, the raised `+` with its
+sheet, and pushed detail routes — and **M3**, the data layer: SQLite through
+Drizzle, an append-only event log, and a seeded "Mieszkanie 14" visible at
+`/db`.
 
-Next: M3. Everything from M3 down is unstarted.
+Next: M4. Everything from M4 down is unstarted.
 
 ## How the order was chosen
 
@@ -50,7 +52,7 @@ belong with the people screens.
 |---|---|---|---|
 | M1 | UI foundation | icon pipeline, primitives matching the mockups | — |
 | M2 | Navigation shell | tab bar and routes, screens as stubs — **done** | M1 |
-| M3 | Data model and persistence | entities, local store, sync-ready event log | — |
+| M3 | Data model and persistence | entities, local store, sync-ready event log — **done** | — |
 | M4 | Shopping lists | the core loop, single device | M1–M3 |
 | M5 | Notes | markdown notes | M1–M3 |
 | M6 | Feed and Przestrzeń switching | activity stream, multi-Przestrzeń | M4, M5 |
@@ -123,12 +125,22 @@ Note that `reactCompiler` is enabled in `app.json`, so do not hand-write
 `useMemo`/`useCallback`/`memo`, and do not pick libraries for re-render
 performance.
 
-Two things to check while writing this plan: how `drizzle-kit` migration files
-are wired into Metro bundling (the likeliest source of friction in Expo Go), and
-how `useLiveQuery` behaves under writes from several places at once. If the
-Drizzle setup resists, the fallback is raw SQL over `expo-sqlite` plus a thin
-hook on `addDatabaseChangeListener` — losing types and migrations, gaining zero
-dependencies.
+Both of the questions this milestone opened are now answered, and the Drizzle
+path held — the raw-SQL fallback was not needed.
+
+Migration bundling works through two pieces of build configuration that did not
+exist before: `babel.config.js` with `babel-plugin-inline-import` turns each
+`.sql` file into a string at build time, and `metro.config.js` lists `sql` in
+`sourceExts` so Metro hands those files to Babel at all. `drizzle-kit generate`
+emits `src/db/migrations/migrations.js` only because `drizzle.config.ts` sets
+`driver: 'expo'`.
+
+`useLiveQuery` costs one render per *tick*, not per write: twenty writes in a
+synchronous loop produced a single re-render, because expo-sqlite delivers its
+change notifications asynchronously and React batches what follows. It also
+refreshes only on changes to the table a query selects from, which is why every
+function in `src/db/queries.ts` selects from exactly one table and screens join
+in JavaScript.
 
 ### M4 — Shopping lists
 
