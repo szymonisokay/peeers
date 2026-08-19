@@ -18,10 +18,10 @@ document that individual exec plans refer back to.
 ## Where the project stands
 
 Done: Expo 57 project, theme tokens for both schemes, Public Sans, the
-`useTheme` hook, and the repo harness. `src/app/index.tsx` is a throwaway token
-preview.
+`useTheme` hook, the repo harness, and **M1** — the SVG pipeline, 22 icons and
+13 primitives under `src/components/`, all visible at the `/gallery` route.
 
-Not started: everything below.
+Next: M2. Everything from M2 down is unstarted.
 
 ## How the order was chosen
 
@@ -79,6 +79,12 @@ primitives can be checked against the mockups in both themes.
 The five-slot tab bar — Przestrzeń, Zakupy, centre `+`, Notatki, Ty — with the
 raised accent button, plus a stack per tab. Every screen is a stub. The point is
 that navigation and the bar's visual match land before any content does.
+
+Bottom sheets are **routes**, not components: `presentation: 'formSheet'` with
+`sheetAllowedDetents: 'fitToContents'`, which the vendored native-stack in
+expo-router 57 supports on both platforms. This milestone establishes that
+pattern; later milestones only add sheet routes. Note `sheetGrabberVisible` is
+iOS-only, so Android will not show the grab handle drawn in the mockups.
 
 ### M3 — Data model and persistence
 

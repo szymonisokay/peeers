@@ -44,27 +44,51 @@ because React Native does not accept relative units.
 
 | Directory | Contents |
 |---|---|
-| `assets/icons/` | 16 icons, 24×24, `stroke-width="1.9"`, `currentColor` |
+| `assets/icons/` | 22 icons, 24×24, `stroke-width="1.9"`, `currentColor` |
 | `assets/logo/` | the mark in 3 variants |
-| `assets/illustrations/` | empty-state illustrations |
+| `assets/illustrations/` | empty-state illustrations, one light and one dark file per name |
 
 Keep new icons to the same convention: 24×24, `currentColor`, 1.9 stroke,
 round caps.
 
+Illustrations carry their own colours instead of `currentColor`, so each needs
+a light and a dark file and is used through `src/components/Illustration.tsx`,
+which picks by scheme. Derive a dark variant rather than eyeballing it: mirror
+each stroke's oklch lightness around the surface token. `pusta-lista` was built
+that way — a stroke sitting 0.10 below white sits 0.10 above `#1B1E25` in the
+dark file — and its card fill and accent map straight onto the `surface` and
+dark `accent` tokens.
+
+**Never use `oklch()` in an SVG asset.** `react-native-svg` cannot parse it and
+the shape renders blank with no error. Write colours as hex. The design spec is
+kept in oklch, so convert on the way into an asset —
+`assets/illustrations/pusta-lista.svg` had to be converted after the fact.
+
+Import them through `src/components/Icon.tsx`, which maps a name to a component
+and forwards `color`; every icon uses `currentColor`, so passing `color` is
+enough to recolour it. Imports there are static because Metro cannot bundle a
+path built at runtime.
+
+Editing `metro.config.js` requires a dev-server restart with `--clear`; Metro
+does not reload its own config, and `.svg` silently falls back to being a static
+asset, which surfaces as "Element type is invalid ... but got: number".
+
 ### What is missing
 
-Icons used in the mockups but absent from the set: `chevron-prawo`,
-`chevron-lewo`, `plus`, `strzalka-w-gore`, `wiecej` (⋯), `strzalka-dol`.
+Five of the six icons added in M1 (`chevron-prawo`, `chevron-lewo`,
+`strzalka-dol`, `plus`, `strzalka-w-gore`) are geometric reconstructions rather
+than traces from the mockups. They read correctly at 24 pt but were not
+pixel-matched.
 
-Illustrations: only `pusta-lista` exists. Still unillustrated: the empty feed of
-a fresh Przestrzeń, an empty note list, no search results, an empty archive.
+Illustrations: only `pusta-lista` exists, in both themes. Still unillustrated:
+the empty feed of a fresh Przestrzeń, an empty note list, no search results, an
+empty archive.
 
 The app icon and splash screen are still the default Expo assets — to be
 replaced at the end.
 
-Importing `.svg` as components requires `react-native-svg-transformer` and an
-entry in `metro.config.js`. `react-native-svg` is installed; the transformer is
-not.
+Importing `.svg` as components works through `react-native-svg-transformer`,
+configured in `metro.config.js`.
 
 ## Known mockup defects
 
