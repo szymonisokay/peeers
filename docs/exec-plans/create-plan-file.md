@@ -280,6 +280,7 @@ up to date as work proceeds.
 
 Reference: This plan follows conventions from AGENTS.md (root),
 docs/PROJECT.md, docs/DESIGN.md, and docs/exec-plans/create-plan-file.md.
+It implements milestone <M#> from docs/ROADMAP.md.
 
 ## Purpose / Big Picture
 

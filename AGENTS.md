@@ -11,9 +11,10 @@ This file is a map. The detail lives in `docs/`.
 |---|---|
 | new screen or UI change | [docs/DESIGN.md](docs/DESIGN.md), the mockup in `assets/design/` |
 | "is this in the MVP?" | [docs/PROJECT.md](docs/PROJECT.md) |
+| "what comes next?" | [docs/ROADMAP.md](docs/ROADMAP.md) |
 | naming, roles, permissions | [docs/PROJECT.md](docs/PROJECT.md#glossary) |
 | colors, typography, icons | [docs/DESIGN.md](docs/DESIGN.md), `src/theme/tokens.ts` |
-| planning a larger change | [docs/exec-plans/create-plan-file.md](docs/exec-plans/create-plan-file.md) |
+| planning a larger change | [docs/ROADMAP.md](docs/ROADMAP.md), then [docs/exec-plans/create-plan-file.md](docs/exec-plans/create-plan-file.md) |
 
 Code: `src/app/` holds the routes (file-based routing), `src/theme/` holds the
 tokens and the theme hook.
@@ -70,6 +71,8 @@ Documentation is part of the change, not a follow-up. In the same commit:
 
 - changing MVP scope, naming, roles or the identity model
   → update [docs/PROJECT.md](docs/PROJECT.md),
+- finishing a milestone, resequencing, or answering one of its open questions
+  → update [docs/ROADMAP.md](docs/ROADMAP.md),
 - changing tokens, typography, the icon set, or finding another mockup
   discrepancy → update [docs/DESIGN.md](docs/DESIGN.md),
 - adding or changing an npm script or the way the app is run and verified

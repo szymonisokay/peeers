@@ -29,6 +29,50 @@ stored on the device. Consequences worth keeping in mind while designing:
 - no second device for the same person,
 - the name and color are **global** per person, not per Przestrzeń.
 
+Technically a person is a Supabase **anonymous user**: the device holds a JWT
+and a stable user id, and nothing else is ever asked for. The name and color are
+profile data attached to that id.
+
+## Backend
+
+**Supabase.** Postgres, Realtime, row-level security and Edge Functions. Chosen
+because it matches this product's shape rather than the other way around:
+
+- anonymous auth maps directly onto device-bound identity with no accounts,
+- the client is plain JS over HTTP and WebSocket, so the app keeps running in
+  Expo Go with no development build,
+- the sync unit is an append-only event log, which is one Postgres table plus a
+  Realtime subscription,
+- RLS isolates each Przestrzeń in the database, which matters when there are no
+  accounts and a leaked identifier must not grant access.
+
+Only two things are genuinely server-side, and both are Edge Functions:
+generating and validating invite codes, and batching push notifications into one
+bundle per Przestrzeń.
+
+Migrations and functions live in `supabase/` in this repo.
+
+### State on the device
+
+SQLite **is** the application state — there is no separate store for domain
+data. Lists, items, notes and the event log live in the database and survive a
+restart. Screens subscribe to queries through Drizzle's `useLiveQuery`, so a
+local write and an incoming Realtime event both refresh the UI by the same path,
+with no manual invalidation.
+
+The boundary to hold: **anything that must survive a restart or appear on
+another phone goes into SQLite.** Only what dies with the process — connection
+status, whether a sync is in flight — belongs in the small Zustand store. Domain
+data in that store is the failure this design exists to avoid.
+
+Two operational consequences to plan for: anonymous users accumulate and need a
+cleanup policy, and an RLS policy of the form "I am a member of this Przestrzeń"
+recurses if `space_members` is guarded by the same rule — use a
+`security definer` function to check membership.
+
+If hand-written sync becomes painful, a sync engine such as PowerSync can be
+added on top of the same Postgres without changing the database.
+
 ## MVP scope
 
 In scope: onboarding (create a Przestrzeń or join with a code), the feed,

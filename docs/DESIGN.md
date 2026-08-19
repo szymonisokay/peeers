@@ -2,10 +2,11 @@
 
 ## Mockups
 
-`assets/design/*.png` — 42 screens numbered `01`–`42`. The gap at `30` and `31`
-is intentional (they were logo variants). The mockups are the UI spec: when the
-code disagrees with a mockup, assume the code is wrong — except for the defects
-listed at the bottom of this file.
+`assets/design/*.png` — 41 files numbered `01`–`42`, plus the extra variant
+`02b`. The gap at `30` and `31` is intentional (they were logo variants).
+
+The mockups are the UI spec: when the code disagrees with a mockup, assume the
+code is wrong — except for the defects listed at the bottom of this file.
 
 Dark variants: `38` (feed), `39` (list), `40` (note).
 
