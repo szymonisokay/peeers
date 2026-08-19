@@ -32,7 +32,9 @@ interactive ESLint wizard on first use.
 | Path | Contents |
 |---|---|
 | `src/app/` | expo-router routes (file-based routing) |
-| `src/theme/` | design tokens and the `useTheme` hook |
+| `src/theme/` | design tokens — values only |
+| `src/hooks/` | hooks, including `useTheme` |
+| `src/components/` | icons, illustrations and the UI primitives |
 | `assets/design/` | 42 PNG mockups — the UI spec |
 | `assets/icons/`, `assets/logo/`, `assets/illustrations/` | source SVGs |
 | `docs/` | project knowledge |

@@ -2,7 +2,7 @@ import type { SvgProps } from 'react-native-svg';
 
 import PustaListaDark from '@/assets/illustrations/pusta-lista-dark.svg';
 import PustaLista from '@/assets/illustrations/pusta-lista.svg';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/hooks';
 
 /**
  * Empty-state illustrations, one pair per name.

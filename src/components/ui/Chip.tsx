@@ -1,8 +1,9 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { useTheme } from '@/theme';
+import { usePressScale, useTheme } from '@/hooks';
 
 import { Text } from './Text';
+import { AnimatedPressable } from './AnimatedPressable';
 
 type ChipProps = {
   label: string;
@@ -13,13 +14,16 @@ type ChipProps = {
 /** Pill-shaped tag. Seen on 01 (Dom / Praca / Wyjazd) and 15 (frequent items). */
 export function Chip({ label, selected = false, onPress }: ChipProps) {
   const { colors, radius, spacing, scheme } = useTheme();
+  const press = usePressScale();
 
   return (
-    <Pressable
+    <AnimatedPressable
       accessibilityRole="button"
       accessibilityState={{ selected }}
       onPress={onPress}
-      style={({ pressed }) => [
+      onPressIn={press.onPressIn}
+      onPressOut={press.onPressOut}
+      style={[
         styles.chip,
         {
           backgroundColor: selected
@@ -31,14 +35,14 @@ export function Chip({ label, selected = false, onPress }: ChipProps) {
           borderRadius: radius.pill,
           paddingVertical: spacing.sm,
           paddingHorizontal: spacing.lg,
-          opacity: pressed ? 0.7 : 1,
         },
+        press.style,
       ]}
     >
       <Text variant="bodySmall" style={selected ? { color: '#FFFFFF' } : undefined}>
         {label}
       </Text>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 

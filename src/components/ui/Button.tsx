@@ -1,8 +1,9 @@
-import { Pressable, StyleSheet, type ViewStyle } from 'react-native';
+import { StyleSheet, type ViewStyle } from 'react-native';
 
-import { useTheme } from '@/theme';
+import { usePressScale, useTheme } from '@/hooks';
 
 import { Text } from './Text';
+import { AnimatedPressable } from './AnimatedPressable';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'plain';
 
@@ -28,6 +29,7 @@ export function Button({
   style,
 }: ButtonProps) {
   const { colors, radius, spacing } = useTheme();
+  const press = usePressScale();
 
   const surface: Record<ButtonVariant, ViewStyle> = {
     primary: { backgroundColor: colors.accent },
@@ -40,19 +42,24 @@ export function Button({
   };
 
   return (
-    <Pressable
+    <AnimatedPressable
       accessibilityRole="button"
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
+      // Scaling bare text reads as a wobble, so `plain` gets no press response.
+      onPressIn={variant === 'plain' ? undefined : press.onPressIn}
+      onPressOut={variant === 'plain' ? undefined : press.onPressOut}
+      android_ripple={null}
+      style={[
         styles.base,
         {
           borderRadius: radius.pill,
           paddingVertical: spacing.lg,
           paddingHorizontal: spacing.xl,
-          opacity: disabled ? 0.4 : pressed ? 0.7 : 1,
+          opacity: disabled ? 0.4 : 1,
         },
         surface[variant],
+        variant === 'plain' ? undefined : press.style,
         style,
       ]}
     >
@@ -63,7 +70,7 @@ export function Button({
       >
         {label}
       </Text>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 

@@ -1,7 +1,7 @@
 import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useTheme } from '@/theme';
+import { useTheme } from '@/hooks';
 
 /** Placeholder home screen. M2 replaces this with the Przestrzeń feed. */
 export default function Index() {

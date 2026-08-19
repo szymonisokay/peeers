@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '@/theme';
+import { usePressScale, useTheme } from '@/hooks';
 
+import { AnimatedPressable } from './AnimatedPressable';
 import { Text } from './Text';
 
 type ListRowProps = {
@@ -17,22 +18,28 @@ type ListRowProps = {
   last?: boolean;
 };
 
-/** The workhorse row behind most screens. See 07, 11 and 41. */
+/**
+ * The workhorse row behind most screens. See 07, 11 and 41.
+ *
+ * Press feedback appears only when `onPress` is given — a row that shrinks
+ * under the finger but does nothing promises an action it does not have.
+ */
 export function ListRow({ title, subtitle, right, left, onPress, last = false }: ListRowProps) {
   const { colors, spacing } = useTheme();
+  const press = usePressScale();
+
+  const rowStyle = [
+    styles.row,
+    {
+      paddingVertical: spacing.md,
+      gap: spacing.md,
+      borderBottomWidth: last ? 0 : StyleSheet.hairlineWidth,
+      borderBottomColor: colors.border,
+    },
+  ];
 
   const content = (
-    <View
-      style={[
-        styles.row,
-        {
-          paddingVertical: spacing.md,
-          gap: spacing.md,
-          borderBottomWidth: last ? 0 : StyleSheet.hairlineWidth,
-          borderBottomColor: colors.border,
-        },
-      ]}
-    >
+    <>
       {left}
       <View style={styles.grow}>
         <Text variant="bodyMedium">{title}</Text>
@@ -43,19 +50,21 @@ export function ListRow({ title, subtitle, right, left, onPress, last = false }:
         ) : null}
       </View>
       {right}
-    </View>
+    </>
   );
 
-  if (!onPress) return content;
+  if (!onPress) return <View style={rowStyle}>{content}</View>;
 
   return (
-    <Pressable
+    <AnimatedPressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+      onPressIn={press.onPressIn}
+      onPressOut={press.onPressOut}
+      style={[rowStyle, press.style]}
     >
       {content}
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 

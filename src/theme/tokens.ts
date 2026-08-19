@@ -88,7 +88,28 @@ export const typography = {
   },
 } as const;
 
+/** Named entries of the type scale, e.g. 'title' or 'bodySmall'. */
+export type TypographyVariant = keyof typeof typography;
+
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
+
+/**
+ * Motion vocabulary.
+ *
+ * Unlike colour and type, these are not measured from the mockups — the
+ * mockups are static and specify no timings. They are chosen conservatively:
+ * long enough to read as a connection between cause and effect, short enough
+ * not to make a list feel slow on the tenth use.
+ *
+ * Components must take timings from here rather than picking their own.
+ */
+export const motion = {
+  duration: { instant: 0, fast: 120, base: 200, slow: 320 },
+  /** Spring for direct manipulation — the checkbox, the press response. */
+  spring: { damping: 18, stiffness: 220, mass: 0.6 },
+  /** How far a pressable shrinks while held. */
+  pressScale: 0.97,
+} as const;
 
 export const radius = { sm: 8, md: 12, lg: 16, pill: 999 } as const;
 

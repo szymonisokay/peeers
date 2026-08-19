@@ -1,6 +1,6 @@
 import { Switch } from 'react-native';
 
-import { useTheme } from '@/theme';
+import { useTheme } from '@/hooks';
 
 type ToggleProps = {
   value: boolean;

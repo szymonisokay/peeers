@@ -19,7 +19,8 @@ import {
   Text,
   Toggle,
 } from '@/components/ui';
-import { avatarColors, useTheme } from '@/theme';
+import { avatarColors } from '@/theme';
+import { useReducedMotion, useTheme } from '@/hooks';
 
 const PEOPLE = [
   { name: 'Ala', color: avatarColors[0] },
@@ -29,6 +30,13 @@ const PEOPLE = [
 
 const RULES = ['Każdy', 'Admin'] as const;
 
+const INITIAL_ITEMS = [
+  { id: 'mleko', title: 'Mleko owsiane', subtitle: '×2 · Kuba' },
+  { id: 'serek', title: 'Serek wiejski', subtitle: 'Ty' },
+  { id: 'pomidory', title: 'Pomidory malinowe', subtitle: 'Ty' },
+  { id: 'ziemniaki', title: 'Ziemniaki 2 kg', subtitle: 'Nina' },
+];
+
 /**
  * Visual reference for every primitive in the design system.
  *
@@ -37,14 +45,24 @@ const RULES = ['Każdy', 'Admin'] as const;
  */
 export default function Gallery() {
   const { colors, spacing, radius, scheme } = useTheme();
+  const reducedMotion = useReducedMotion();
   const [rule, setRule] = useState<(typeof RULES)[number]>('Każdy');
   const [notify, setNotify] = useState(true);
-  const [checked, setChecked] = useState(false);
+  const [items, setItems] = useState(INITIAL_ITEMS);
+  const [done, setDone] = useState<string[]>([]);
+
+  const toggle = (id: string) =>
+    setDone((current) =>
+      current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id]
+    );
+
+  const open = items.filter((item) => !done.includes(item.id));
+  const closed = items.filter((item) => done.includes(item.id));
 
   return (
     <Screen scroll contentStyle={{ paddingVertical: spacing.lg, gap: spacing.xl }}>
       <View style={{ gap: spacing.xs }}>
-        <SectionLabel>{`Motyw · ${scheme}`}</SectionLabel>
+        <SectionLabel>{`Motyw · ${scheme} · ruch: ${reducedMotion ? 'ograniczony' : 'pełny'}`}</SectionLabel>
         <Text variant="title">Galeria</Text>
       </View>
 
@@ -118,29 +136,60 @@ export default function Gallery() {
       </View>
 
       <View style={{ gap: spacing.md }}>
-        <SectionLabel>Postęp listy</SectionLabel>
+        <SectionLabel>Lista — odhacz i zobacz, jak wiersz wędruje</SectionLabel>
         <Card>
           <View style={{ gap: spacing.sm }}>
             <Text variant="bodyMedium">Biedronka, sobota</Text>
-            <ProgressBar value={2 / 8} />
+            <ProgressBar value={items.length ? closed.length / items.length : 0} />
             <Text variant="bodySmall" tone="muted">
-              2 z 8 odhaczone
+              {`${closed.length} z ${items.length} odhaczone`}
             </Text>
           </View>
         </Card>
+        <Card flush>
+          <View style={{ paddingHorizontal: spacing.md }}>
+            {open.map((item, index) => (
+              <CheckboxRow
+                key={item.id}
+                title={item.title}
+                subtitle={item.subtitle}
+                onToggle={() => toggle(item.id)}
+                last={index === open.length - 1 && closed.length === 0}
+              />
+            ))}
+            {closed.map((item, index) => (
+              <CheckboxRow
+                key={item.id}
+                title={item.title}
+                subtitle={item.subtitle}
+                checked
+                onToggle={() => toggle(item.id)}
+                last={index === closed.length - 1}
+              />
+            ))}
+          </View>
+        </Card>
+        <View style={[styles.row, { gap: spacing.sm }]}>
+          <Chip
+            label="+ dodaj pozycję"
+            onPress={() =>
+              setItems((current) => [
+                ...current,
+                { id: `nowa-${current.length}`, title: 'Kawa ziarnista', subtitle: 'Ty' },
+              ])
+            }
+          />
+          <Chip
+            label="− usuń ostatnią"
+            onPress={() => setItems((current) => current.slice(0, -1))}
+          />
+        </View>
       </View>
 
       <View style={{ gap: spacing.md }}>
         <SectionLabel>Wiersze</SectionLabel>
         <Card flush>
           <View style={{ paddingHorizontal: spacing.md }}>
-            <CheckboxRow
-              title="Mleko owsiane"
-              subtitle="×2 · Kuba"
-              checked={checked}
-              onToggle={() => setChecked((value) => !value)}
-            />
-            <CheckboxRow title="Chleb" subtitle="Kuba" checked />
             <ListRow
               title="Kuba"
               subtitle="2 listy · bez 1 notatki"
@@ -149,7 +198,18 @@ export default function Gallery() {
             />
             <ListRow
               title="Powiadomienia"
+              subtitle="klikalny — reaguje na dotyk"
+              onPress={() => setNotify((value) => !value)}
               right={<Icon name="chevron-prawo" size={20} color={colors.textMuted} />}
+            />
+            <ListRow
+              title="Wersja aplikacji"
+              subtitle="bez onPress — nie reaguje"
+              right={
+                <Text variant="bodySmall" tone="muted">
+                  1.0.0
+                </Text>
+              }
               last
             />
           </View>

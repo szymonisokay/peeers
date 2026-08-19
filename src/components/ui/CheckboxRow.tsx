@@ -1,7 +1,16 @@
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+  useAnimatedStyle,
+  useDerivedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { Icon } from '@/components/Icon';
-import { useTheme } from '@/theme';
+import { usePressScale, useReducedMotion, useTheme } from '@/hooks';
 
 import { Text } from './Text';
 
@@ -15,8 +24,11 @@ type CheckboxRowProps = {
 };
 
 /**
- * Shopping-list item. Unchecked is an empty ring; checked fills with the accent
- * and strikes the title through. See 07 and its dark counterpart 39.
+ * Shopping-list item — the most repeated interaction in the app.
+ *
+ * The row itself carries the layout animation, so when checking an item moves
+ * it into the "odhaczone" group it travels there instead of teleporting.
+ * See 07 and its dark counterpart 39.
  */
 export function CheckboxRow({
   title,
@@ -26,57 +38,90 @@ export function CheckboxRow({
   onPress,
   last = false,
 }: CheckboxRowProps) {
-  const { colors, spacing } = useTheme();
+  const { colors, motion, spacing } = useTheme();
+  const reduced = useReducedMotion();
+  const press = usePressScale();
   const box = 26;
 
+  const progress = useDerivedValue(() =>
+    reduced
+      ? Number(checked)
+      : withSpring(Number(checked), motion.spring)
+  );
+
+  const boxStyle = useAnimatedStyle(() => ({
+    backgroundColor: progress.value > 0.5 ? colors.accent : 'transparent',
+    borderColor: progress.value > 0.5 ? colors.accent : colors.border,
+    transform: [{ scale: 0.9 + progress.value * 0.1 }],
+  }));
+
+  const tickStyle = useAnimatedStyle(() => ({
+    opacity: progress.value,
+    transform: [{ scale: 0.6 + progress.value * 0.4 }],
+  }));
+
+  const titleStyle = useAnimatedStyle(() => ({
+    opacity: reduced ? 1 : withTiming(checked ? 0.55 : 1, { duration: motion.duration.fast }),
+  }));
+
   return (
-    <Pressable
-      accessibilityRole="checkbox"
-      accessibilityState={{ checked }}
-      onPress={onPress ?? onToggle}
-      style={({ pressed }) => [
-        styles.row,
-        {
-          paddingVertical: spacing.md,
-          gap: spacing.md,
-          borderBottomWidth: last ? 0 : StyleSheet.hairlineWidth,
-          borderBottomColor: colors.border,
-          opacity: pressed ? 0.6 : 1,
-        },
-      ]}
+    <Animated.View
+      layout={reduced ? undefined : LinearTransition.duration(motion.duration.base)}
+      entering={reduced ? undefined : FadeIn.duration(motion.duration.base)}
+      exiting={reduced ? undefined : FadeOut.duration(motion.duration.fast)}
     >
-      <Pressable onPress={onToggle} hitSlop={spacing.sm}>
-        <View
+      <Pressable
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked }}
+        onPress={onPress ?? onToggle}
+        onPressIn={press.onPressIn}
+        onPressOut={press.onPressOut}
+      >
+        <Animated.View
           style={[
-            styles.box,
+            styles.row,
+            press.style,
             {
-              width: box,
-              height: box,
-              borderRadius: box / 2,
-              backgroundColor: checked ? colors.accent : 'transparent',
-              borderColor: checked ? colors.accent : colors.border,
+              paddingVertical: spacing.md,
+              gap: spacing.md,
+              borderBottomWidth: last ? 0 : StyleSheet.hairlineWidth,
+              borderBottomColor: colors.border,
             },
           ]}
         >
-          {checked ? <Icon name="odhaczone-grube" size={16} color="#FFFFFF" /> : null}
-        </View>
-      </Pressable>
+          <Pressable onPress={onToggle} hitSlop={spacing.sm}>
+            <Animated.View
+              style={[
+                styles.box,
+                boxStyle,
+                { width: box, height: box, borderRadius: box / 2 },
+              ]}
+            >
+              <Animated.View style={tickStyle}>
+                <Icon name="odhaczone-grube" size={16} color="#FFFFFF" />
+              </Animated.View>
+            </Animated.View>
+          </Pressable>
 
-      <View style={styles.grow}>
-        <Text
-          variant="bodyMedium"
-          tone={checked ? 'muted' : 'default'}
-          style={checked ? styles.struck : undefined}
-        >
-          {title}
-        </Text>
-        {subtitle ? (
-          <Text variant="bodySmall" tone="muted">
-            {subtitle}
-          </Text>
-        ) : null}
-      </View>
-    </Pressable>
+          <View style={styles.grow}>
+            <Animated.View style={titleStyle}>
+              <Text
+                variant="bodyMedium"
+                tone={checked ? 'muted' : 'default'}
+                style={checked ? styles.struck : undefined}
+              >
+                {title}
+              </Text>
+            </Animated.View>
+            {subtitle ? (
+              <Text variant="bodySmall" tone="muted">
+                {subtitle}
+              </Text>
+            ) : null}
+          </View>
+        </Animated.View>
+      </Pressable>
+    </Animated.View>
   );
 }
 

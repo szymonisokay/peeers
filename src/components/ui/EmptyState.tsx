@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
-import { useTheme } from '@/theme';
+import { useReducedMotion, useTheme } from '@/hooks';
 
 import { Text } from './Text';
 
@@ -19,10 +20,16 @@ type EmptyStateProps = {
 
 /** Centred empty placeholder. Matches 15. */
 export function EmptyState({ illustration, title, body, footer }: EmptyStateProps) {
-  const { spacing } = useTheme();
+  const { motion, spacing } = useTheme();
+  const reduced = useReducedMotion();
 
   return (
-    <View style={[styles.wrap, { gap: spacing.md, padding: spacing.xl }]}>
+    // The one decorative animation in the set: an empty screen appearing
+    // instantly reads as a loading failure rather than as "there is nothing".
+    <Animated.View
+      entering={reduced ? undefined : FadeIn.duration(motion.duration.slow)}
+      style={[styles.wrap, { gap: spacing.md, padding: spacing.xl }]}
+    >
       {illustration}
       <Text variant="bodyMedium" style={styles.center}>
         {title}
@@ -33,7 +40,7 @@ export function EmptyState({ illustration, title, body, footer }: EmptyStateProp
         </Text>
       ) : null}
       {footer}
-    </View>
+    </Animated.View>
   );
 }
 

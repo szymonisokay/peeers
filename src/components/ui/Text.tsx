@@ -1,8 +1,9 @@
 import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
 
-import { useTheme, type typography } from '@/theme';
+import { type TypographyVariant } from '@/theme';
+import { useTheme } from '@/hooks';
 
-export type TextVariant = keyof typeof typography;
+export type TextVariant = TypographyVariant;
 export type TextTone = 'default' | 'muted' | 'accent' | 'danger';
 
 type TextProps = RNTextProps & {

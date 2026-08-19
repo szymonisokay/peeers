@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 
-import { useTheme } from '@/theme';
+import { useTheme } from '@/hooks';
 
 type CardProps = {
   children: ReactNode;

@@ -16,8 +16,14 @@ This file is a map. The detail lives in `docs/`.
 | colors, typography, icons | [docs/DESIGN.md](docs/DESIGN.md), `src/theme/tokens.ts` |
 | planning a larger change | [docs/ROADMAP.md](docs/ROADMAP.md), then [docs/exec-plans/create-plan-file.md](docs/exec-plans/create-plan-file.md) |
 
-Code: `src/app/` holds the routes (file-based routing), `src/theme/` holds the
-tokens and the theme hook.
+Code layout:
+
+| Path | Holds |
+|---|---|
+| `src/app/` | routes (file-based routing) |
+| `src/theme/` | design tokens — values only, no React |
+| `src/hooks/` | every hook, including `useTheme` |
+| `src/components/` | `Icon`, `Illustration`, and the primitives under `ui/` |
 
 ## Hard constraints
 

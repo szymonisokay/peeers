@@ -81,15 +81,42 @@ Token flow, mirroring how colour already works:
 
 ## Progress
 
-- [ ] Step 1 — motion tokens, reduced-motion hook, runtime smoke check
-- [ ] Step 2 — press feedback on `Button`, `Chip`, `ListRow`, `CheckboxRow`
-- [ ] Step 3 — `CheckboxRow` tick, list reorder, `ProgressBar`
-- [ ] Step 4 — `SegmentedControl` pill, `EmptyState` fade-in
-- [ ] Step 5 — gallery section demonstrating each, checked in both themes
+- [x] (2026-08-19 11:30Z) Step 1 — `motion` block in `tokens.ts`,
+  `src/theme/useReducedMotion.ts`, both exported from `useTheme()`. Smoke test
+  confirmed Reanimated worklets run in Expo Go alongside the React Compiler.
+- [x] (2026-08-19 11:36Z) Step 2 — `usePressScale` shared by `Button`, `Chip`
+  and `CheckboxRow`; `plain` buttons deliberately excluded.
+- [x] (2026-08-19 11:40Z) Step 3 — animated tick and fill, `LinearTransition` +
+  `FadeIn`/`FadeOut` on the row, `withTiming` width on `ProgressBar`.
+- [x] (2026-08-19 11:44Z) Step 4 — sliding pill in `SegmentedControl`,
+  `FadeIn` on `EmptyState`.
+- [x] (2026-08-19 11:50Z) Step 5 — gallery list of four items with add/remove
+  chips and a live progress bar; verified in both themes and with Reduce Motion.
+- [x] (2026-08-19 12:00Z) `ListRow` press feedback, applied only when `onPress`
+  is given.
 
 ## Surprises & Discoveries
 
-- (nothing yet)
+- Observation: `SegmentedControl` crashed with
+  "Cannot read property 'layout' of null" as soon as it mounted.
+  Evidence: the `onLayout` handler read `event.nativeEvent.layout` *inside* the
+  lazy `setLayouts` updater. React recycles the synthetic event before the
+  updater runs, so `nativeEvent` was null by then. Fixed by destructuring the
+  layout synchronously in the handler and closing over the plain object.
+
+- Observation: writing `ReduceMotionEnabled` into the simulator's
+  `com.apple.Accessibility.plist` does not affect a running simulator.
+  Evidence: the plist read back as `1` while the gallery still reported
+  "ruch: pełny" and Settings showed the switch off. `simctl ui` has no
+  `reduce_motion` option either. The only method that worked was toggling it in
+  Settings -> Dostępność -> Ruch inside the simulator. Worth knowing before
+  anyone tries to script this check.
+
+- Observation: a static screenshot cannot distinguish a skipped animation from a
+  finished one, so "Reduce Motion works" was unverifiable at first.
+  Evidence: resolved by rendering the hook's value in the gallery header
+  ("ruch: pełny / ograniczony"), which turned it into something observable. The
+  readout was kept — it is useful in a component gallery.
 
 ## Decision Log
 
@@ -107,12 +134,47 @@ Token flow, mirroring how colour already works:
   The test for adding motion is "does this connect a cause to its effect?"
   Date/Author: 2026-08-19, planning.
 
-- Decision (placeholder): whether the React Compiler needs any accommodation for
-  worklets. To be recorded in step 1.
+- Decision: the React Compiler needs no accommodation for Reanimated worklets.
+  Rationale: the step-1 smoke test animated a shared value with `withSpring` and
+  ran correctly with `reactCompiler: true`; the bundle contains the transformed
+  worklets and Metro logged no error. `babel-preset-expo` 57.0.7 wires
+  `react-native-worklets/plugin` on its own, so no babel config was needed.
+  Date/Author: 2026-08-19, implementation.
+
+- Decision: `plain` buttons get no press animation at all, not even opacity.
+  Rationale: scaling bare text reads as a wobble rather than a press, and the
+  variant is used for low-emphasis actions where a response would draw the eye
+  to the wrong control.
+  Date/Author: 2026-08-19, implementation.
 
 ## Outcomes & Retrospective
 
-- (to be filled at completion)
+All five steps are done. Motion tokens live in `tokens.ts`, every animated
+primitive honours Reduce Motion, and the core interaction — ticking an item —
+now springs the checkbox, carries the row into the checked group and grows the
+progress bar to match. Verified in both themes and with Reduce Motion on.
+`npx tsc --noEmit` exits 0.
+
+Against the original purpose: the app no longer reads as a form. The restraint
+held — nothing animates that the user did not cause, and the sheets, screen
+transitions and `Toggle` were left to their native behaviour.
+
+`ListRow` was finished afterwards: it now springs under the finger, but only
+when `onPress` is given. A row that shrinks and does nothing promises an action
+it does not have, so the non-interactive case stays a plain `View`. The gallery
+shows both side by side.
+
+Nothing remains.
+
+Lesson: both bugs in this milestone were about *when* something is read, not
+what — a recycled event read too late, and an OS setting read from a file the
+running system had already cached. Neither showed up in the type checker.
+
+Note added after completion: the hooks described above were later moved to
+`src/hooks/` (`useTheme`, `useReducedMotion`, `usePressScale`), and
+`AnimatedPressable` was split out into `src/components/ui/AnimatedPressable.ts`.
+Paths named earlier in this plan are the ones that existed while it ran.
+`src/theme/` now holds tokens only.
 
 ## Context and Orientation
 

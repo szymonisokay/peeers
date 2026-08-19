@@ -90,6 +90,23 @@ replaced at the end.
 Importing `.svg` as components works through `react-native-svg-transformer`,
 configured in `metro.config.js`.
 
+## Motion
+
+Timings and spring parameters live in the `motion` block of
+`src/theme/tokens.ts` and are read through `useTheme()`. They are the one part
+of the design system **not** measured from the mockups, which are static — treat
+them as a vocabulary to reuse rather than to re-pick per component.
+
+Animate only state changes the user caused. Cards, labels and screen entry stay
+still; sheets and `Toggle` keep their native behaviour; screen transitions
+belong to the navigator.
+
+Every animated component must honour `useReducedMotion()` from `src/hooks`.
+When the OS asks for reduced motion the animation must not play at all, not
+merely run shorter. Note that writing the simulator's accessibility plist has no
+effect on a running device and `simctl ui` cannot set it — toggle it in
+Settings → Dostępność → Ruch. The gallery header shows the current value.
+
 ## Known mockup defects
 
 Do not "fix" the code to match these.

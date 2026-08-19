@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '@/theme';
+import { useTheme } from '@/hooks';
 
 import { Text } from './Text';
 
