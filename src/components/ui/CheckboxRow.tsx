@@ -98,7 +98,7 @@ export function CheckboxRow({
               ]}
             >
               <Animated.View style={tickStyle}>
-                <Icon name="odhaczone-grube" size={16} color="#FFFFFF" />
+                <Icon name="check-bold" size={16} color="#FFFFFF" />
               </Animated.View>
             </Animated.View>
           </Pressable>

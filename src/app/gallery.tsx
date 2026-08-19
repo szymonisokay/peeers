@@ -194,13 +194,13 @@ export default function Gallery() {
               title="Kuba"
               subtitle="2 listy · bez 1 notatki"
               left={<Avatar name="Kuba" color={avatarColors[1]} size={36} />}
-              right={<Icon name="wiecej" size={20} color={colors.accent} />}
+              right={<Icon name="more" size={20} color={colors.accent} />}
             />
             <ListRow
               title="Powiadomienia"
               subtitle="klikalny — reaguje na dotyk"
               onPress={() => setNotify((value) => !value)}
-              right={<Icon name="chevron-prawo" size={20} color={colors.textMuted} />}
+              right={<Icon name="chevron-right" size={20} color={colors.textMuted} />}
             />
             <ListRow
               title="Wersja aplikacji"
@@ -236,7 +236,7 @@ export default function Gallery() {
         <SectionLabel>Stan pusty</SectionLabel>
         <Card>
           <EmptyState
-            illustration={<Illustration name="pusta-lista" />}
+            illustration={<Illustration name="empty-list" />}
             title="Lista jest jeszcze pusta"
             body="Dopisz pierwszą rzecz albo wklej całą listę z notatki."
             footer={

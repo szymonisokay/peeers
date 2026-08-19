@@ -49,12 +49,16 @@ because React Native does not accept relative units.
 | `assets/illustrations/` | empty-state illustrations, one light and one dark file per name |
 
 Keep new icons to the same convention: 24×24, `currentColor`, 1.9 stroke,
-round caps.
+round caps. **File names are English**, unlike the mockups in `assets/design/`,
+which keep their Polish export names and are referred to by number anyway. Name
+by shape, not by use: `chevron-down` is a chevron used as a dropdown caret,
+while `arrow-up` has a shaft — they are different drawings despite similar
+names in the original set.
 
 Illustrations carry their own colours instead of `currentColor`, so each needs
 a light and a dark file and is used through `src/components/Illustration.tsx`,
 which picks by scheme. Derive a dark variant rather than eyeballing it: mirror
-each stroke's oklch lightness around the surface token. `pusta-lista` was built
+each stroke's oklch lightness around the surface token. `empty-list` was built
 that way — a stroke sitting 0.10 below white sits 0.10 above `#1B1E25` in the
 dark file — and its card fill and accent map straight onto the `surface` and
 dark `accent` tokens.
@@ -62,7 +66,7 @@ dark `accent` tokens.
 **Never use `oklch()` in an SVG asset.** `react-native-svg` cannot parse it and
 the shape renders blank with no error. Write colours as hex. The design spec is
 kept in oklch, so convert on the way into an asset —
-`assets/illustrations/pusta-lista.svg` had to be converted after the fact.
+`assets/illustrations/empty-list.svg` had to be converted after the fact.
 
 Import them through `src/components/Icon.tsx`, which maps a name to a component
 and forwards `color`; every icon uses `currentColor`, so passing `color` is
@@ -75,12 +79,12 @@ asset, which surfaces as "Element type is invalid ... but got: number".
 
 ### What is missing
 
-Five of the six icons added in M1 (`chevron-prawo`, `chevron-lewo`,
-`strzalka-dol`, `plus`, `strzalka-w-gore`) are geometric reconstructions rather
-than traces from the mockups. They read correctly at 24 pt but were not
+Five of the six icons added in M1 (`chevron-right`, `chevron-left`,
+`chevron-down`, `plus`, `arrow-up`) are geometric reconstructions rather than
+traces from the mockups. They read correctly at 24 pt but were not
 pixel-matched.
 
-Illustrations: only `pusta-lista` exists, in both themes. Still unillustrated:
+Illustrations: only `empty-list` exists, in both themes. Still unillustrated:
 the empty feed of a fresh Przestrzeń, an empty note list, no search results, an
 empty archive.
 

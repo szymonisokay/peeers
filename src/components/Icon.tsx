@@ -1,27 +1,27 @@
 import type { SvgProps } from 'react-native-svg';
 
-import ChevronLewo from '@/assets/icons/chevron-lewo.svg';
-import ChevronPrawo from '@/assets/icons/chevron-prawo.svg';
-import Informacja from '@/assets/icons/informacja.svg';
-import ListaKontrolna from '@/assets/icons/lista-kontrolna.svg';
-import MinusWKole from '@/assets/icons/minus-w-kole.svg';
-import Notatka from '@/assets/icons/notatka.svg';
-import OdhaczoneCienkie from '@/assets/icons/odhaczone-cienkie.svg';
-import OdhaczoneGrube from '@/assets/icons/odhaczone-grube.svg';
-import Ostrzezenie from '@/assets/icons/ostrzezenie.svg';
+import ArrowUp from '@/assets/icons/arrow-up.svg';
+import Basket from '@/assets/icons/basket.svg';
+import CheckBold from '@/assets/icons/check-bold.svg';
+import Check from '@/assets/icons/check.svg';
+import Checklist from '@/assets/icons/checklist.svg';
+import ChevronDown from '@/assets/icons/chevron-down.svg';
+import ChevronLeft from '@/assets/icons/chevron-left.svg';
+import ChevronRight from '@/assets/icons/chevron-right.svg';
+import Clock from '@/assets/icons/clock.svg';
+import Close from '@/assets/icons/close.svg';
+import Home from '@/assets/icons/home.svg';
+import Info from '@/assets/icons/info.svg';
+import MinusCircle from '@/assets/icons/minus-circle.svg';
+import More from '@/assets/icons/more.svg';
+import Note from '@/assets/icons/note.svg';
+import Person from '@/assets/icons/person.svg';
+import Pin from '@/assets/icons/pin.svg';
 import Plus from '@/assets/icons/plus.svg';
-import PociagnijWDol from '@/assets/icons/pociagnij-w-dol.svg';
-import PrzestrzenHome from '@/assets/icons/przestrzen-home.svg';
-import Przypnij from '@/assets/icons/przypnij.svg';
-import StrzalkaDol from '@/assets/icons/strzalka-dol.svg';
-import StrzalkaWGore from '@/assets/icons/strzalka-w-gore.svg';
-import Szukaj from '@/assets/icons/szukaj.svg';
-import Tarcza from '@/assets/icons/tarcza.svg';
-import TyOsoba from '@/assets/icons/ty-osoba.svg';
-import Wiecej from '@/assets/icons/wiecej.svg';
-import ZakupyKoszyk from '@/assets/icons/zakupy-koszyk.svg';
-import Zamknij from '@/assets/icons/zamknij.svg';
-import Zegar from '@/assets/icons/zegar.svg';
+import PullDown from '@/assets/icons/pull-down.svg';
+import Search from '@/assets/icons/search.svg';
+import Shield from '@/assets/icons/shield.svg';
+import Warning from '@/assets/icons/warning.svg';
 
 /**
  * Every icon in assets/icons/, keyed by file name.
@@ -30,28 +30,28 @@ import Zegar from '@/assets/icons/zegar.svg';
  * so a dynamic `require(...)` here would fail at load time rather than at build.
  */
 const ICONS = {
-  'chevron-lewo': ChevronLewo,
-  'chevron-prawo': ChevronPrawo,
-  informacja: Informacja,
-  'lista-kontrolna': ListaKontrolna,
-  'minus-w-kole': MinusWKole,
-  notatka: Notatka,
-  'odhaczone-cienkie': OdhaczoneCienkie,
-  'odhaczone-grube': OdhaczoneGrube,
-  ostrzezenie: Ostrzezenie,
+  'arrow-up': ArrowUp,
+  basket: Basket,
+  check: Check,
+  'check-bold': CheckBold,
+  checklist: Checklist,
+  'chevron-down': ChevronDown,
+  'chevron-left': ChevronLeft,
+  'chevron-right': ChevronRight,
+  clock: Clock,
+  close: Close,
+  home: Home,
+  info: Info,
+  'minus-circle': MinusCircle,
+  more: More,
+  note: Note,
+  person: Person,
+  pin: Pin,
   plus: Plus,
-  'pociagnij-w-dol': PociagnijWDol,
-  'przestrzen-home': PrzestrzenHome,
-  przypnij: Przypnij,
-  'strzalka-dol': StrzalkaDol,
-  'strzalka-w-gore': StrzalkaWGore,
-  szukaj: Szukaj,
-  tarcza: Tarcza,
-  'ty-osoba': TyOsoba,
-  wiecej: Wiecej,
-  'zakupy-koszyk': ZakupyKoszyk,
-  zamknij: Zamknij,
-  zegar: Zegar,
+  'pull-down': PullDown,
+  search: Search,
+  shield: Shield,
+  warning: Warning,
 } as const satisfies Record<string, React.FC<SvgProps>>;
 
 export type IconName = keyof typeof ICONS;

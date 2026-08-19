@@ -254,7 +254,7 @@ written.
 | Question | Blocks | Notes |
 |---|---|---|
 | Push permission prompt | M12 | No mockup exists. |
-| Illustrations for empty states | M4, M5, M11 | Only `pusta-lista` exists — see [DESIGN.md](DESIGN.md#what-is-missing). |
+| Illustrations for empty states | M4, M5, M11 | Only `empty-list` exists — see [DESIGN.md](DESIGN.md#what-is-missing). |
 
 ## Mockup coverage
 
