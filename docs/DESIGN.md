@@ -24,7 +24,12 @@ Where the values come from:
   dark theme) was **measured from mockup pixels**; each token carries a comment
   naming the screen it came from,
 - the dark-theme semantic colors (`danger`, `success`, `warning*`) are the only
-  hand-derived values — the mockups do not show them.
+  hand-derived values — the mockups do not show them,
+- `shadow.raisedButton` was **fitted** rather than sampled: a shadow has no
+  single pixel to read. The luminance falloff around the raised tab-bar button
+  in `03` and `38` was sampled in four directions and matched against a
+  blurred disc, giving an 8 pt downward offset, a CSS blur of 18 px and no
+  spread. Only the opacity differs between themes (0.16 light, 0.43 dark).
 
 If you need a color that is not in the tokens: measure it from the mockup
 rather than picking by eye, and add it to `tokens.ts` with a source annotation.
@@ -39,6 +44,15 @@ loaded in `src/app/_layout.tsx`. The scale lives in `typography` in
 
 Labels use `letterSpacing: 0.88` — that is `.08em` resolved against 11 px,
 because React Native does not accept relative units.
+
+`caption` (12 px) is the secondary line under a title, as in the option cards
+on `05`. It is a genuinely smaller step than `bodySmall` (15 px), not a
+substitute for it — using `bodySmall` there makes the subtitle wrap where the
+mockup keeps it on one line.
+
+**Sizing text by eye does not work.** Two independent measurements should agree
+before you pick a size: the x-height in the mockup, and the rendered width of a
+known string. For `05` both landed on 12 px.
 
 ## Assets
 
@@ -111,6 +125,45 @@ merely run shorter. Note that writing the simulator's accessibility plist has no
 effect on a running device and `simctl ui` cannot set it — toggle it in
 Settings → Dostępność → Ruch. The gallery header shows the current value.
 
+## Android
+
+**Every mockup is iOS.** There is no Android reference for any screen, so
+anything Android-specific is a judgement call, not a measurement — say so when
+you add one. Two are already in the code:
+
+- the tab bar takes its lower breathing room from the home-indicator inset,
+  which on iOS is ours to paint and is where the raised button's shadow
+  falls. Android takes that region back: the navigation bar's contrast scrim
+  paints over it, and measured on API 37 the shadow died 2 dp below the
+  button — visible to the sides and above, gone underneath. `TabBar`
+  therefore floors the inset at `spacing.sm` so the bar is never flush, and
+  adds `spacing.xl` on Android so the button clears the scrim. The shadow
+  reaches 26 dp below the button, so anything less clips it,
+- `formSheet` is a Material bottom sheet on Android, not a UIKit sheet. The
+  8 pt inset described below is iOS-only, and the `sheet*` options behave
+  differently: Android accepts at most three detents, and `fitToContents`
+  derives its height from the laid-out content wrapper rather than from a
+  detent fraction.
+
+`fitToContents` does not survive that difference. Observed in Expo Go on
+Android: the content wrapper measures 0, so the sheet opens as a bare strip of
+the dialog's own white background — no content, and no dimming either, because
+Android fades the dimming view in proportion to how far the sheet has opened.
+The `new` route therefore passes a fraction detent on Android and keeps
+`fitToContents` on iOS, where the measurement does work. The fraction is the
+mockup's proportion rather than an Android measurement: 309 pt of 874 in `05`,
+rounded up to `0.36`.
+
+Do not give sheet content a fixed height to work around a sheet that is the
+wrong size. It defeats `fitToContents` on iOS, where the sheet measures
+correctly, and on Android it does not help — the wrapper still reports 0.
+
+Android also draws the sheet with square corners unless `sheetCornerRadius` is
+set, because the content wrapper fills the sheet and paints over whatever
+rounding the dialog had. It is set to the 22 pt measured from `05`, which
+applies on both platforms — unlike the 8 pt inset below, a corner radius *is*
+controllable, so the mockup wins over the iOS system default of roughly 40 pt.
+
 ## Known mockup defects
 
 Do not "fix" the code to match these.
@@ -122,3 +175,23 @@ Do not "fix" the code to match these.
 | `03` vs `35`, `38` | the same "3 items added" event is attributed to Nina at 11:07 and to Kuba at 17:05 |
 | `09` vs `14` | `09` shows a note hidden from Ala in a list viewed as Ala, while `14` states a hidden note does not appear for that person |
 | `34` | greys out taken avatar colors — contradicts the decision to keep colors global and unblocked |
+| `05` | draws the sheet flush with the screen edges — iOS 26 insets every sheet by 8 pt, see below |
+
+### Sheet insets
+
+`05` draws the "Co tworzymy" sheet edge to edge: 0 pt left, right and bottom,
+only the top corners rounded. On iOS 26 a `formSheet` is drawn inset by **8 pt**
+on those three sides — measured on iPhone 17 / iOS 26.4, where the sheet is
+386 pt wide on a 402 pt screen. That margin is the system appearance, not
+something the app sets: `react-native-screens` exposes ten `sheet*` options and
+none of them controls it, and UIKit has no such property either.
+
+`pageSheet` does render edge to edge, but `react-native-screens` applies the
+`sheet*` options to `formSheet` only, so switching also discards
+`sheetAllowedDetents: 'fitToContents'` and the grabber — the sheet then opens
+near full height instead of hugging its content. Matching the mockup exactly
+would mean building a custom sheet on `transparentModal`.
+
+**Decision: keep the 8 pt.** For a native modal, matching the current OS beats
+matching a drawing made before the OS changed. This holds for every sheet in
+the app, not just `05`.

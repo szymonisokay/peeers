@@ -1,6 +1,6 @@
 import { useColorScheme } from 'react-native';
 
-import { fontFamily, motion, palette, radius, spacing, typography, type ColorScheme } from '@/theme';
+import { fontFamily, motion, palette, radius, shadow, spacing, typography, type ColorScheme } from '@/theme';
 
 /**
  * Theme for the device's current color scheme.
@@ -18,6 +18,7 @@ export function useTheme() {
     typography,
     spacing,
     radius,
+    shadow: shadow[scheme],
     fontFamily,
     motion,
   };

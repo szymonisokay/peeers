@@ -91,7 +91,8 @@ from earlier SDKs.
 ### Local Development
 
 - Metro dev server: `localhost:8081`
-- The repo owner normally has the dev server and the iOS Simulator already running.
+- The repo owner normally has the dev server and the devices already running --
+  the iOS Simulator, and the Android emulator when a change touches Android.
 
 ### Common Commands
 
@@ -420,8 +421,9 @@ light and dark themes** -- the dark theme has its own token values and is easy
 to break unnoticed.
 
 Two standing rules while validating:
-- **Do not start the iOS Simulator.** It must already be running; if no device
-  is booted, say so and stop.
+- **Do not start the iOS Simulator or the Android emulator.** They must already
+  be running; if no device is booted, say so and stop. Driving a device that is
+  already up is verification, not launching, and is fine.
 - Stop the Metro dev server when finished and leave port 8081 free.
 
 ## Idempotence and Recovery

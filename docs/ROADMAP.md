@@ -17,11 +17,12 @@ document that individual exec plans refer back to.
 
 ## Where the project stands
 
-Done: Expo 57 project, theme tokens for both schemes, Public Sans, the
-`useTheme` hook, the repo harness, and **M1** — the SVG pipeline, 22 icons and
-13 primitives under `src/components/`, all visible at the `/gallery` route.
+Done: Expo 57 project, theme tokens for both schemes, Public Sans, the repo
+harness, **M1** — the SVG pipeline, 22 icons and 13 primitives visible at
+`/gallery` — and **M2**, the navigation shell: four tabs, the raised `+` with
+its sheet, and pushed detail routes.
 
-Next: M2. Everything from M2 down is unstarted.
+Next: M3. Everything from M3 down is unstarted.
 
 ## How the order was chosen
 
@@ -48,7 +49,7 @@ belong with the people screens.
 | # | Milestone | Delivers | Depends on |
 |---|---|---|---|
 | M1 | UI foundation | icon pipeline, primitives matching the mockups | — |
-| M2 | Navigation shell | tab bar and routes, screens as stubs | M1 |
+| M2 | Navigation shell | tab bar and routes, screens as stubs — **done** | M1 |
 | M3 | Data model and persistence | entities, local store, sync-ready event log | — |
 | M4 | Shopping lists | the core loop, single device | M1–M3 |
 | M5 | Notes | markdown notes | M1–M3 |
@@ -77,8 +78,12 @@ primitives can be checked against the mockups in both themes.
 ### M2 — Navigation shell
 
 The five-slot tab bar — Przestrzeń, Zakupy, centre `+`, Notatki, Ty — with the
-raised accent button, plus a stack per tab. Every screen is a stub. The point is
-that navigation and the bar's visual match land before any content does.
+raised accent button. Every screen is a stub. The point is that navigation and
+the bar's visual match land before any content does.
+
+Detail screens live on the **root stack**, not in a stack per tab: `07` has no
+tab bar, and lists are reachable from both the feed and the Zakupy tab, so a
+per-tab stack would need two copies of the same route.
 
 Bottom sheets are **routes**, not components: `presentation: 'formSheet'` with
 `sheetAllowedDetents: 'fitToContents'`, which the vendored native-stack in

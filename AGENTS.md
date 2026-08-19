@@ -62,8 +62,11 @@ npx tsc --noEmit
 Check UI changes against the running app in **both themes** — the dark theme
 has its own token values and is easy to break unnoticed.
 
-**Do not start the iOS Simulator.** It is expected to be running already,
-launched by the repo owner. If no device is booted, say so and start nothing.
+**Do not start the iOS Simulator or the Android emulator.** Both are expected
+to be running already, launched by the repo owner. If no device is booted, say
+so and start nothing — no `Simulator.app`, no `emulator -avd`, no `simctl boot`.
+Driving a device that is already up is verification, not launching, and is fine:
+`simctl io`/`ui`/`openurl` on iOS, `adb screencap`/`input`/`shell` on Android.
 
 There are no tests and no configured linter. `npm run lint` launches an
 interactive ESLint wizard — do not run it casually.
