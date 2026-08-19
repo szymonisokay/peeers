@@ -43,7 +43,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 	 */
 	const bottomInset =
 		Math.max(insets.bottom, spacing.sm) +
-		(Platform.OS === 'android' ? spacing.md : 0)
+		(Platform.OS === 'android' ? spacing.lg : 0)
 
 	const tabs = state.routes.map((route, index) => {
 		const { options } = descriptors[route.key]

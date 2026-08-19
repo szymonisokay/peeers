@@ -164,7 +164,7 @@ export const tabBar = {
  * only the opacity differs. The residual is under one 8-bit step in each.
  */
 export const shadow = {
-	light: { raisedButton: '0px 8px 18px rgba(0, 0, 0, 0.1)' },
+	light: { raisedButton: '0px 8px 18px rgba(0, 0, 0, 0.16)' },
 	dark: { raisedButton: '0px 8px 18px rgba(0, 0, 0, 0.43)' },
 } as const
 

@@ -137,8 +137,9 @@ you add one. Two are already in the code:
   paints over it, and measured on API 37 the shadow died 2 dp below the
   button — visible to the sides and above, gone underneath. `TabBar`
   therefore floors the inset at `spacing.sm` so the bar is never flush, and
-  adds `spacing.xl` on Android so the button clears the scrim. The shadow
-  reaches 26 dp below the button, so anything less clips it,
+  adds `spacing.lg` on Android to lift the button off the scrim. The shadow
+  reaches 26 dp below the button, so the tail of it is still trimmed — that is
+  a deliberate choice of proportion over completeness,
 - `formSheet` is a Material bottom sheet on Android, not a UIKit sheet. The
   8 pt inset described below is iOS-only, and the `sheet*` options behave
   differently: Android accepts at most three detents, and `fitToContents`

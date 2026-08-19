@@ -59,6 +59,13 @@ Code layout:
 npx tsc --noEmit
 ```
 
+**Both platforms run from a development build**, not Expo Go — `formSheet`
+collapses to zero height in Expo Go on Android. The bundler is `npm run dev`;
+`npm run android` and `npm run ios` rebuild a platform and are needed only when
+native code or config changes. Android builds require **JDK 17**, pinned in
+`~/.gradle/gradle.properties`; Android Studio's bundled JDK 25 breaks the CMake
+configuration of the native modules. See `README.md`.
+
 Check UI changes against the running app in **both themes** — the dark theme
 has its own token values and is easy to break unnoticed.
 
