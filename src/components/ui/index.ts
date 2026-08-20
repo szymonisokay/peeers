@@ -9,5 +9,8 @@ export { ProgressBar } from './ProgressBar';
 export { Screen } from './Screen';
 export { SectionLabel } from './SectionLabel';
 export { SegmentedControl } from './SegmentedControl';
+export { Stepper } from './Stepper';
+export { SwipeRow } from './SwipeRow';
 export { Text, type TextTone, type TextVariant } from './Text';
+export { TextField } from './TextField';
 export { Toggle } from './Toggle';

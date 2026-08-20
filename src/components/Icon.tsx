@@ -1,5 +1,6 @@
 import type { SvgProps } from 'react-native-svg';
 
+import ArrowCounterclockwise from '@/assets/icons/arrow-counterclockwise.svg';
 import ArrowUp from '@/assets/icons/arrow-up.svg';
 import Basket from '@/assets/icons/basket.svg';
 import CheckBold from '@/assets/icons/check-bold.svg';
@@ -21,6 +22,7 @@ import Plus from '@/assets/icons/plus.svg';
 import PullDown from '@/assets/icons/pull-down.svg';
 import Search from '@/assets/icons/search.svg';
 import Shield from '@/assets/icons/shield.svg';
+import Trash from '@/assets/icons/trash.svg';
 import Warning from '@/assets/icons/warning.svg';
 
 /**
@@ -30,6 +32,7 @@ import Warning from '@/assets/icons/warning.svg';
  * so a dynamic `require(...)` here would fail at load time rather than at build.
  */
 const ICONS = {
+  'arrow-counterclockwise': ArrowCounterclockwise,
   'arrow-up': ArrowUp,
   basket: Basket,
   check: Check,
@@ -51,6 +54,7 @@ const ICONS = {
   'pull-down': PullDown,
   search: Search,
   shield: Shield,
+  trash: Trash,
   warning: Warning,
 } as const satisfies Record<string, React.FC<SvgProps>>;
 

@@ -41,8 +41,9 @@ without leaving the app:
 - type `mleko owsiane x2` into the bar at the bottom and get an item called
   "Mleko owsiane" with a quantity of 2 — or `papier, duża paczka` and get an item
   with a note on it;
-- tap a row to open a sheet where the name, the quantity and the note can be
-  changed, or the item deleted;
+- tick something off with a tap anywhere on its row, hold the same row to open
+  a sheet where the name, the quantity and the note can be changed or the item
+  deleted, or drag it sideways to do either without aiming;
 - paste six lines out of a note and get six items, with the quantities picked out
   of the text;
 - open "Historia zmian", see who did what and when, and press "Przywróć" next to
@@ -315,10 +316,41 @@ Approved by the repo owner on 2026-08-20 together with the answers to Q1–Q4.
       row, chips. `src/lib/parseItem.ts`, the bar and the draft row on the list
       screen, suggestions from `frequentItemNames`, "Gotowe" in the header while
       typing, and `Screen` gained a `footer` slot. The keyboard spike changed
-      the approach — see Surprises. Verified on both platforms; the iOS lift
-      itself could not be observed, see the same entry. "Wklej listę" is left
-      out until Milestone 6, which is where it leads.
-- [ ] Milestone 4 — the item sheet (`28`), plus `TextField` and `Stepper`.
+      the approach — see Surprises. Verified on both platforms, the iOS lift
+      confirmed by the repo owner. "Wklej listę" is left out until Milestone 6,
+      which is where it leads.
+- [x] (2026-08-20 18:09Z) Milestone 4 — the item sheet (`28`), plus `TextField` and
+      `Stepper`. Holding a row opens the sheet; the name, quantity and note are
+      editable behind a "Zapisz" that only lights up when something changed, and
+      "Usuń" soft-deletes behind an `Alert`. Note chips come from
+      `frequentNotesFor` and hide themselves when there are none. Both new
+      primitives are in `/gallery`. Verified on both platforms and in both
+      themes; the Android detent needed measuring twice, see Surprises.
+- [x] (2026-08-20 18:19Z) Milestone 4, follow-up: the stepper and the note field were not
+      the same height (40 pt against 47) where `28` draws them as one row. Both
+      now take `controlHeight`, a new token measured from that mockup.
+- [x] (2026-08-20 18:25Z) Milestone 4, follow-up: a single-line `TextField` no longer
+      passes its line height into the input, which is what kept iOS from
+      centring the text while Android centred it. Both platforms measured
+      afterwards.
+- [x] (2026-08-20 18:31Z) Milestone 4, follow-up: the stepper's tile is press feedback now,
+      not a standing style — see the Decision Log and `docs/DESIGN.md`.
+- [x] (2026-08-20 18:47Z) Milestone 4, follow-up: list rows now check off on tap, open the
+      sheet on hold, and take a sideways drag for both. Needed
+      `GestureHandlerRootView` at the root — nothing in the app had used a
+      gesture before — and a new `SwipeRow` primitive. Verified on both
+      platforms: mid-drag the panel shows, on release the item moves or goes.
+- [x] (2026-08-20 19:06Z) Milestone 4, follow-up: two new icons — `trash` and
+      `arrow-counterclockwise` — drawn in the set's convention and checked in
+      `/gallery`, and the restore panel moved from muted to `accent`. Panels
+      measured mid-drag on Android: `danger` with the bin, `accent` (80, 90,
+      200) with the arrow.
+- [x] (2026-08-20 19:30Z) Milestone 4, follow-up: a review pass over the milestone. Six
+      findings fixed — the lost travel animation, the item sheet seeding once
+      instead of per item, the sheet outliving a soft delete, an unbounded
+      drag, a zero threshold before layout, and comments and plan prose left
+      describing a tap where the code now wants a hold. A seventh, a press
+      scale sticking through a drag, was measured and does not reproduce.
 - [ ] Milestone 5 — creating, renaming, pinning; `05` wired up.
 - [ ] Milestone 6 — paste a whole list (`19`).
 - [ ] Milestone 7 — change history with restore (`25`).
@@ -365,6 +397,65 @@ Approved by the repo owner on 2026-08-20 together with the answers to Q1–Q4.
   Evidence: two `adb shell am start -a android.intent.action.VIEW` calls, the
   first landing on the "DEVELOPMENT SERVERS" screen.
 
+- Observation: a layout animation has to sit on the node the list keys, not on
+  something inside it. `CheckboxRow` has carried `LinearTransition` since M1 so
+  that checking an item makes the row travel to ODHACZONE instead of
+  teleporting. Wrapping it in `SwipeRow` silently killed that: the wrapper is
+  what the list maps over and what moves, and the row inside it never changes
+  position relative to the wrapper, so there was nothing for the transition to
+  animate. `FadeOut` went the same way — the parent unmounted immediately and
+  took the exiting child with it. Found by a review pass, not by looking at the
+  screen, which is the point: the app looked fine, it had just stopped moving.
+
+- Observation: an explicit `lineHeight` stops iOS centring a single line in a
+  text input. Both platforms centre one line inside a fixed height on their own,
+  but the type scale carries a `lineHeight`, and passing it through made iOS lay
+  the glyphs along the bottom of the line box while Android still looked right —
+  the repo owner spotted the two platforms disagreeing. A single-line `TextField`
+  now drops the line height and keeps the rest of the type step.
+  Evidence, measured inside the 44 pt field:
+
+      iOS, with lineHeight     ink 59 px from the top, 32 from the bottom
+      iOS, without             ink 33 px from the top, 33 from the bottom
+      Android, without         ink 41 px from the top, 36 from the bottom
+
+  Android also needed `includeFontPadding: false`, or the room it leaves for
+  accents makes the field taller than the stepper beside it.
+
+- Observation: mockup pixels can be measured here after all. This machine has
+  no image library, but a throwaway virtualenv in the scratchpad with Pillow in
+  it reads them in seconds, which turns "it looks a step small" into a number.
+  The stepper and the field were the first use: the repo owner spotted that they
+  did not match, and the drawing says the stepper is 88 px tall at 2x and the
+  field 82 — so both take 44 pt, now `controlHeight` in `src/theme/tokens.ts`.
+  Measuring the rendered screen the same way confirmed it.
+  Evidence:
+
+      mockup 28   stepper  y 1306..1393  h=88 px = 44.0 pt
+                  field    y 1306..1387  h=82 px = 41.0 pt
+      rendered    stepper  y 1046..1177  h=132 px = 44.0 pt
+                  field    y 1046..1177  h=132 px = 44.0 pt
+
+  Worth remembering for the milestones still to come, and worth re-checking Q5
+  against — that question was answered partly because I said I could not
+  measure it.
+
+- Observation: a fixed detent has to hold the *tallest* version of a sheet,
+  not the drawn one. `28`'s own proportion is 388 pt of the 874 pt screen —
+  0.44 — and at that height Android clipped the footer, because its text runs
+  taller, the note chips add a row the mockup does not always have, and the
+  navigation bar takes a slice off the bottom. 0.56 clears all three, at the
+  cost of some empty space when there are no chips. The sheet also needed its
+  own `insets.bottom`: Android draws the navigation bar over it, while iOS
+  insets the whole sheet already.
+  Evidence: two Android screenshots of the same sheet, footer cut off at 0.46
+  and fully visible at 0.56.
+
+- Observation: adding a route file needs a full relaunch of the app, not just a
+  save. Fast Refresh does not make expo-router notice a new file, so the first
+  tap on a row went to the old code and toggled the item instead of opening the
+  sheet. Milestones 5 to 8 all add routes; terminate and launch after each one.
+
 - Observation (the Milestone 3 spike): `KeyboardAvoidingView` does not lift
   the quick-add bar on Android. Measured on API 37 with `behavior` unset and
   again with `behavior='padding'`: in both, the keyboard opened over the bar and
@@ -380,12 +471,12 @@ Approved by the repo owner on 2026-08-20 together with the answers to Q1–Q4.
   Evidence: three Android screenshots in the scratchpad — bar hidden, bar
   hidden, bar sitting on the keyboard.
 
-- Observation: the iOS lift could not be watched. The simulator has a hardware
-  keyboard attached, so focusing the field raises no software keyboard and the
-  lift is correctly zero. The code path is the same one Android proved. Worth
-  ten seconds of the repo owner's time: press Cmd+K in the simulator, tap the
-  bar on `/list/<id>`, and check that the bar sits on the keyboard rather than
-  behind it.
+- Observation: the same code path is right on iOS. It could not be watched
+  from here — the simulator has a hardware keyboard attached, so focusing the
+  field raises no software keyboard and the lift is correctly zero — and the
+  repo owner confirmed it with the software keyboard up: the bar sits on the
+  keyboard, not behind it. So `useAnimatedKeyboard` covers both platforms and
+  `KeyboardAvoidingView` is not used anywhere in this app.
 
 - Observation: the pushed header stayed white in the dark theme. Nothing in
   the app had ever shown a native header in dark before, and expo-router's Stack
@@ -477,6 +568,45 @@ taken while writing the plan, before any code was written.
   latter with `fontVariant: ['tabular-nums']` so the digits still line up.
   Bundling a whole mono font for two captions is not worth the app size, so the
   token resolves to the platform's own: `Menlo` on iOS, `monospace` on Android.
+  Date/Author: 2026-08-20, repo owner.
+
+- Decision: Rejected the review finding that the press scale sticks through a
+  sideways drag.
+  Rationale: the concern is sound in shape — `Pressable`'s `onPressIn` fires on
+  touch-down, before the pan clears its 12 px activation offset — but gesture
+  handler cancels the touch in the views under it when a gesture activates, and
+  a cancelled press runs `onPressOut` like a lifted one. Measured rather than
+  argued: the rendered width of a row's text is identical before a short drag
+  and after it, to the pixel. A row left at 0.97 would be about 27 px narrower.
+  Date/Author: 2026-08-20, Claude.
+
+- Decision: A list row answers to a tap, a hold and a sideways drag. Tap checks
+  the item off, hold opens the sheet of `28`, drag right checks off or puts a
+  checked item back, drag left removes.
+  Rationale: the repo owner's call, and it fixes a real fault — with the sheet on
+  tap, the commonest action in the app could only be reached by hitting a 26 pt
+  circle. The frequent thing now takes the careless gesture and the rare one
+  takes the deliberate gesture. The drags are an addition on top of the mockups,
+  which draw none of them; they are built from the tokens the app already has,
+  a coloured panel with one icon, and fire on release past a third of the width.
+  Two icons had to be drawn for them, `trash` and `arrow-counterclockwise`,
+  since the set had neither; the restore panel is `accent` rather than muted,
+  because putting something back is an action and not an absence of one.
+  Two things to know about the delete drag: it does not ask, because a
+  confirmation after every swipe defeats the gesture, and until Milestone 7
+  ships the change history there is no way back to a removed item from the UI —
+  the row is soft-deleted and still in the database either way. Recorded in
+  `docs/DESIGN.md` under Motion, since no drawing explains where the gestures
+  came from.
+  Date/Author: 2026-08-20, repo owner.
+
+- Decision: The light tile behind the stepper's plus on `28` becomes press
+  feedback rather than a standing style, on both signs.
+  Rationale: the repo owner's call. `28` draws the tile at rest, which spends the
+  one visual accent this control has on labelling the plus; a 36 pt button is
+  better served by saying it was hit. Measured on Android: the button reads
+  `tileFill` at rest and `surface` while held. Recorded in `docs/DESIGN.md`
+  under Motion so that nobody later "fixes" it back to the drawing.
   Date/Author: 2026-08-20, repo owner.
 
 - Decision: The `events` table gains a nullable, indexed `list_id` column, set by
@@ -812,6 +942,8 @@ Screen copy not drawn anywhere:
     the "Nowa lista" sheet      NOWA LISTA · NAZWA · np. Biedronka, sobota ·
                                 Utwórz · Anuluj
     the rename sheet            ZMIEŃ NAZWĘ · Zapisz · Anuluj
+    item delete confirmation    Usunąć „<nazwa>"? / Pozycję można przywrócić
+                                w historii zmian. / Anuluj · Usuń
     delete confirmations        Usunąć listę „…"?  /  Lista zniknie z
                                 archiwum. Tej operacji nie da się cofnąć. /
                                 Anuluj · Usuń
@@ -1306,8 +1438,8 @@ no items, and confirm `15`: illustration, both sentences, "CZĘSTE U WAS" and fo
 
 ### Milestone 4 — The item sheet, and the two primitives it needs
 
-Mockup `28`. At the end you can tap any row on a list and change what it says, or
-delete it.
+Mockup `28`. At the end you can hold any row on a list and change what it says,
+or delete it.
 
 **`src/components/ui/TextField.tsx`.** `28` uses two field looks and both recur
 later — `17` and `01` in M7 use the same shapes — so this is a primitive, not a
@@ -1344,9 +1476,10 @@ and "Usuń" in `danger`.
 "Zapisz" calls `editItem` and pops the sheet. It is disabled when nothing changed
 and when the name is blank — an item with no name is not something the log should
 record. "Usuń" opens an `Alert` and, on confirmation, calls `removeItem` and
-pops. Wire `onPress` on the list's `CheckboxRow`s to push this route; `onToggle`
-keeps checking the item, which `CheckboxRow` already separates for exactly this
-reason.
+pops. Wire `onLongPress` on the list's `CheckboxRow`s to push this route, and leave
+`onPress` to check the item off — the commonest action in the app should not be
+reachable only by hitting a 26 pt circle. See the Decision Log; the same entry
+covers the sideways drags that do both without aiming.
 
 Watch for the keyboard here too: a sheet with a focused field has to lift on iOS.
 If it does not, wrap the sheet's content in the same keyboard-avoiding wrapper
@@ -1673,7 +1806,7 @@ running and the app open:
    heading with a count and "Pokaż ›", and the info strip.
 2. "Nowa" creates a list; it opens showing `15`.
 3. Typing `mleko owsiane x2` into the bar produces "Mleko owsiane" with "×2 · Ty".
-4. Tapping a row opens `28`; changing the quantity and saving updates the row;
+4. Holding a row opens `28`; changing the quantity and saving updates the row;
    deleting removes it and drops the counter.
 5. "Wklej listę" turns six pasted lines into six items.
 6. "..." → "Historia zmian" shows the day-grouped log of everything above, with

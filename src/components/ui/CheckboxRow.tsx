@@ -21,6 +21,8 @@ type CheckboxRowProps = {
   checked?: boolean;
   onToggle?: () => void;
   onPress?: () => void;
+  /** Held rather than tapped — the item sheet of 28 opens this way. */
+  onLongPress?: () => void;
   last?: boolean;
   /** Rendered on the right: the author's avatar on 07, a checker's name below it. */
   right?: ReactNode;
@@ -49,6 +51,7 @@ export function CheckboxRow({
   checked = false,
   onToggle,
   onPress,
+  onLongPress,
   last = false,
   right,
   paddingX = 0,
@@ -93,6 +96,7 @@ export function CheckboxRow({
         accessibilityRole="checkbox"
         accessibilityState={{ checked }}
         onPress={onPress ?? onToggle}
+        onLongPress={onLongPress}
         onPressIn={press.onPressIn}
         onPressOut={press.onPressOut}
       >

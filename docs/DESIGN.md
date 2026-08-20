@@ -25,6 +25,10 @@ Where the values come from:
   naming the screen it came from,
 - the dark-theme semantic colors (`danger`, `success`, `warning*`) are the only
   hand-derived values — the mockups do not show them,
+- `controlHeight` was measured from `28`, where the ILOŚĆ stepper and the
+  DOPISEK field share a top edge and are drawn to read as one row: at 2x the
+  stepper is 88 px tall and the field 82. Both take the larger of the two, so a
+  row of controls lines up exactly rather than nearly,
 - `shadow.raisedButton` was **fitted** rather than sampled: a shadow has no
   single pixel to read. The luminance falloff around the raised tab-bar button
   in `03` and `38` was sampled in four directions and matched against a
@@ -58,7 +62,7 @@ known string. For `05` both landed on 12 px.
 
 | Directory | Contents |
 |---|---|
-| `assets/icons/` | 22 icons, 24×24, `stroke-width="1.9"`, `currentColor` |
+| `assets/icons/` | 24 icons, 24×24, `stroke-width="1.9"`, `currentColor` |
 | `assets/logo/` | the mark in 3 variants |
 | `assets/illustrations/` | empty-state illustrations, one light and one dark file per name |
 
@@ -96,7 +100,11 @@ asset, which surfaces as "Element type is invalid ... but got: number".
 Five of the six icons added in M1 (`chevron-right`, `chevron-left`,
 `chevron-down`, `plus`, `arrow-up`) are geometric reconstructions rather than
 traces from the mockups. They read correctly at 24 pt but were not
-pixel-matched.
+pixel-matched. So are the two added in M4 — `trash` and
+`arrow-counterclockwise` — which no mockup contains at all: the swipe actions
+they label were asked for on top of the drawings. `trash` is built from the
+same idiom as `basket`, a tapered container with 1.5-radius corners, and the
+two are told apart by the lid line and the ribs.
 
 Illustrations: only `empty-list` exists, in both themes. Still unillustrated:
 the empty feed of a fresh Przestrzeń, an empty note list, no search results, an
@@ -118,6 +126,21 @@ them as a vocabulary to reuse rather than to re-pick per component.
 Animate only state changes the user caused. Cards, labels and screen entry stay
 still; sheets and `Toggle` keep their native behaviour; screen transitions
 belong to the navigator.
+
+List rows on `07` answer to three gestures, none of which any mockup draws:
+a tap checks the item off, a hold opens its sheet, and a drag sideways does the
+same two things without aiming — right checks it off, left removes it, and on a
+row that is already checked the right drag puts it back. The coloured panel
+under the row is the affordance: `success` and a check, `danger` and a trash,
+`accent` and a counterclockwise arrow. The action fires on release past a third
+of the width, so a drag that changes its mind costs nothing.
+
+One deliberate departure from a mockup lives here rather than in the defects
+table, because the drawing is not wrong — the behaviour was chosen over it.
+`28` draws a standing light tile behind the stepper's plus. In the app that tile
+is the **press feedback**: nothing at rest, a tile under whichever sign the
+finger lands on. A control that small needs to say it was hit more than it needs
+to say which half is the plus. Do not restore the standing tile.
 
 Every animated component must honour `useReducedMotion()` from `src/hooks`.
 When the OS asks for reduced motion the animation must not play at all, not

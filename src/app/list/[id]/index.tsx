@@ -1,13 +1,25 @@
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite'
-import { Stack, useLocalSearchParams } from 'expo-router'
+import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Pressable, StyleSheet, TextInput, View } from 'react-native'
-import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated'
+import Animated, {
+	useAnimatedKeyboard,
+	useAnimatedStyle,
+} from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { Icon } from '@/components/Icon'
 import { Illustration } from '@/components/Illustration'
-import { Avatar, CheckboxRow, Chip, EmptyState, Screen, SectionLabel, Text } from '@/components/ui'
+import {
+	Avatar,
+	CheckboxRow,
+	Chip,
+	EmptyState,
+	Screen,
+	SectionLabel,
+	SwipeRow,
+	Text,
+} from '@/components/ui'
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable'
 import {
 	addItem,
@@ -20,6 +32,7 @@ import {
 	listById,
 	listItems as listItemsTable,
 	membersOfSpace,
+	removeItem,
 	uncheckItem,
 } from '@/db'
 import { usePressScale, useTheme } from '@/hooks'
@@ -80,7 +93,8 @@ export default function ListDetail() {
 		.sort((a, b) => (b.checkedAt ?? '').localeCompare(a.checkedAt ?? ''))
 
 	const person = (id: string | null) => persons.find((row) => row.id === id)
-	const who = (id: string | null) => (id === personId ? 'Ty' : (person(id)?.name ?? '—'))
+	const who = (id: string | null) =>
+		id === personId ? 'Ty' : (person(id)?.name ?? '—')
 
 	const others = members
 		.filter((member) => member.personId !== personId)
@@ -114,7 +128,10 @@ export default function ListDetail() {
 					// being built, so the slot is free for the second.
 					headerRight: typing
 						? () => (
-								<Pressable onPress={() => input.current?.blur()} hitSlop={spacing.sm}>
+								<Pressable
+									onPress={() => input.current?.blur()}
+									hitSlop={spacing.sm}
+								>
 									<Text variant='bodyMedium' tone='accent'>
 										Gotowe
 									</Text>
@@ -141,120 +158,208 @@ export default function ListDetail() {
 					/>
 				}
 			>
-			<View
-				style={[
-					styles.header,
-					{
-						padding: spacing.lg,
-						gap: spacing.md,
-						// 07 parts the title block from the list with a hairline.
-						borderBottomWidth: StyleSheet.hairlineWidth,
-						borderBottomColor: colors.border,
-					},
-				]}
-			>
-				<Text variant='titleLarge' style={styles.grow}>
-					{list.title}
-				</Text>
-				<View style={styles.counter}>
-					<Text variant='bodySmall' tone='muted'>
-						{items.length === 0
-							? `0 ${plural(0, 'pozycja', 'pozycje', 'pozycji')}`
-							: `${done.length} z ${items.length}`}
-					</Text>
-					<Text variant='bodySmall' tone='muted'>
-						{items.length === 0
-							? `${members.length} ${plural(members.length, 'osoba', 'osoby', 'osób')}`
-							: 'odhaczone'}
-					</Text>
-				</View>
-			</View>
-
-			{items.length === 0 ? (
-				<EmptyState
-					illustration={<Illustration name='empty-list' scale={1.4} />}
-					title='Lista jest jeszcze pusta'
-					body={
-						others.length > 0
-							? `Dopisz pierwszą rzecz albo wklej całą listę z notatki. ${joinNames(others)} zobaczą ją od razu.`
-							: 'Dopisz pierwszą rzecz albo wklej całą listę z notatki.'
-					}
-					footer={
-						suggestions.length > 0 ? (
-							<View style={{ gap: spacing.md, alignItems: 'center' }}>
-								<SectionLabel>CZĘSTE U WAS</SectionLabel>
-								<View style={[styles.chips, { gap: spacing.sm }]}>
-									{suggestions.map((name) => (
-										<Chip key={name} label={`+ ${name}`} onPress={() => add(name)} />
-									))}
-								</View>
-							</View>
-						) : undefined
-					}
-				/>
-			) : null}
-
-			{toBuy.length > 0 ? (
 				<View
-					style={{
-						paddingHorizontal: spacing.lg,
-						paddingTop: spacing.lg,
-						paddingBottom: spacing.sm,
-					}}
+					style={[
+						styles.header,
+						{
+							padding: spacing.lg,
+							gap: spacing.md,
+							// 07 parts the title block from the list with a hairline.
+							borderBottomWidth: StyleSheet.hairlineWidth,
+							borderBottomColor: colors.border,
+						},
+					]}
 				>
-					<SectionLabel>DO KUPIENIA</SectionLabel>
-				</View>
-			) : null}
-
-			{toBuy.map((item, index) => (
-				<CheckboxRow
-					key={item.id}
-					title={item.name}
-					subtitle={subtitle(item, who(item.createdBy))}
-					paddingX={spacing.lg}
-					last={index === toBuy.length - 1}
-					onToggle={() => checkItem({ spaceId, listId: id, itemId: item.id })}
-					right={
-						<Avatar
-							name={person(item.createdBy)?.name ?? '?'}
-							color={person(item.createdBy)?.color ?? colors.textMuted}
-							size={28}
-						/>
-					}
-				/>
-			))}
-
-			{draft.trim().length > 0 ? (
-				<Draft text={draft} onAdd={() => add(draft)} suggestions={suggestions} onPick={setDraft} />
-			) : null}
-
-			{done.length > 0 ? (
-				<View
-					style={{
-						paddingHorizontal: spacing.lg,
-						paddingTop: spacing.lg,
-						paddingBottom: spacing.sm,
-					}}
-				>
-					<SectionLabel>{`ODHACZONE · ${done.length}`}</SectionLabel>
-				</View>
-			) : null}
-
-			{done.map((item, index) => (
-				<CheckboxRow
-					key={item.id}
-					title={item.name}
-					checked
-					paddingX={spacing.lg}
-					last={index === done.length - 1}
-					onToggle={() => uncheckItem({ spaceId, listId: id, itemId: item.id })}
-					right={
+					<Text variant='titleLarge' style={styles.grow}>
+						{list.title}
+					</Text>
+					<View style={styles.counter}>
 						<Text variant='bodySmall' tone='muted'>
-							{who(item.checkedBy)}
+							{items.length === 0
+								? `0 ${plural(0, 'pozycja', 'pozycje', 'pozycji')}`
+								: `${done.length} z ${items.length}`}
 						</Text>
-					}
-				/>
-			))}
+						<Text variant='bodySmall' tone='muted'>
+							{items.length === 0
+								? `${members.length} ${plural(members.length, 'osoba', 'osoby', 'osób')}`
+								: 'odhaczone'}
+						</Text>
+					</View>
+				</View>
+
+				{items.length === 0 ? (
+					<EmptyState
+						illustration={
+							<Illustration name='empty-list' scale={1.4} />
+						}
+						title='Lista jest jeszcze pusta'
+						body={
+							others.length > 0
+								? `Dopisz pierwszą rzecz albo wklej całą listę z notatki. ${joinNames(others)} zobaczą ją od razu.`
+								: 'Dopisz pierwszą rzecz albo wklej całą listę z notatki.'
+						}
+						footer={
+							suggestions.length > 0 ? (
+								<View
+									style={{
+										gap: spacing.md,
+										alignItems: 'center',
+									}}
+								>
+									<SectionLabel>CZĘSTE U WAS</SectionLabel>
+									<View
+										style={[
+											styles.chips,
+											{ gap: spacing.sm },
+										]}
+									>
+										{suggestions.map((name) => (
+											<Chip
+												key={name}
+												label={`+ ${name}`}
+												onPress={() => add(name)}
+											/>
+										))}
+									</View>
+								</View>
+							) : undefined
+						}
+					/>
+				) : null}
+
+				{toBuy.length > 0 ? (
+					<View
+						style={{
+							paddingHorizontal: spacing.lg,
+							paddingTop: spacing.lg,
+							paddingBottom: spacing.sm,
+						}}
+					>
+						<SectionLabel>DO KUPIENIA</SectionLabel>
+					</View>
+				) : null}
+
+				{toBuy.map((item, index) => (
+					<SwipeRow
+						key={item.id}
+						right={{
+							onTrigger: () =>
+								checkItem({
+									spaceId,
+									listId: id,
+									itemId: item.id,
+								}),
+							icon: 'check',
+							color: colors.success,
+						}}
+						left={{
+							onTrigger: () =>
+								removeItem({
+									spaceId,
+									listId: id,
+									itemId: item.id,
+								}),
+							icon: 'trash',
+							color: colors.danger,
+						}}
+					>
+						<CheckboxRow
+							title={item.name}
+							subtitle={subtitle(item, who(item.createdBy))}
+							paddingX={spacing.lg}
+							last={index === toBuy.length - 1}
+							// A tap is the thing you do a hundred times; the sheet is the
+							// thing you do rarely, so it takes the deliberate gesture.
+							onToggle={() =>
+								checkItem({
+									spaceId,
+									listId: id,
+									itemId: item.id,
+								})
+							}
+							onLongPress={() => router.push(`/item/${item.id}`)}
+							right={
+								<Avatar
+									name={person(item.createdBy)?.name ?? '?'}
+									color={
+										person(item.createdBy)?.color ??
+										colors.textMuted
+									}
+									size={28}
+								/>
+							}
+						/>
+					</SwipeRow>
+				))}
+
+				{draft.trim().length > 0 ? (
+					<Draft
+						text={draft}
+						onAdd={() => add(draft)}
+						suggestions={suggestions}
+						onPick={setDraft}
+					/>
+				) : null}
+
+				{done.length > 0 ? (
+					<View
+						style={{
+							paddingHorizontal: spacing.lg,
+							paddingTop: spacing.lg,
+							paddingBottom: spacing.sm,
+						}}
+					>
+						<SectionLabel>{`ODHACZONE · ${done.length}`}</SectionLabel>
+					</View>
+				) : null}
+
+				{done.map((item, index) => (
+					<SwipeRow
+						key={item.id}
+						// The same drag as on an unchecked row, doing the same thing
+						// in reverse: rightwards puts a checked item back.
+						right={{
+							onTrigger: () =>
+								uncheckItem({
+									spaceId,
+									listId: id,
+									itemId: item.id,
+								}),
+							icon: 'arrow-counterclockwise',
+							color: colors.accent,
+						}}
+						left={{
+							onTrigger: () =>
+								removeItem({
+									spaceId,
+									listId: id,
+									itemId: item.id,
+								}),
+							icon: 'trash',
+							color: colors.danger,
+						}}
+					>
+						<CheckboxRow
+							title={item.name}
+							checked
+							paddingX={spacing.lg}
+							last={index === done.length - 1}
+							onToggle={() =>
+								uncheckItem({
+									spaceId,
+									listId: id,
+									itemId: item.id,
+								})
+							}
+							onLongPress={() => router.push(`/item/${item.id}`)}
+							right={
+								<Text variant='bodySmall' tone='muted'>
+									{who(item.checkedBy)}
+								</Text>
+							}
+						/>
+					</SwipeRow>
+				))}
 			</Screen>
 		</Animated.View>
 	)
@@ -294,13 +399,23 @@ function Draft({
 
 			<View style={{ padding: spacing.lg, gap: spacing.md }}>
 				<Text variant='bodySmall' tone='muted'>
-					„x2" czytamy jako ilość, tekst po przecinku jako dopisek — „papier, duża paczka".
+					„x2" czytamy jako ilość, tekst po przecinku jako dopisek —
+					„papier, duża paczka".
 				</Text>
 
 				{suggestions.length > 0 ? (
-					<View style={[styles.chips, { gap: spacing.sm, alignItems: 'center' }]}>
+					<View
+						style={[
+							styles.chips,
+							{ gap: spacing.sm, alignItems: 'center' },
+						]}
+					>
 						{suggestions.map((name) => (
-							<Chip key={name} label={name} onPress={() => onPick(name)} />
+							<Chip
+								key={name}
+								label={name}
+								onPress={() => onPick(name)}
+							/>
 						))}
 						<Text variant='bodySmall' tone='muted'>
 							częste u Was
@@ -392,9 +507,15 @@ function AddBar({
 					// Several items in a row without reaching for the field again.
 					submitBehavior='submit'
 					returnKeyType='done'
-					placeholder={empty ? 'Dodaj pierwszą pozycję…' : 'Dodaj pozycję…'}
+					placeholder={
+						empty ? 'Dodaj pierwszą pozycję…' : 'Dodaj pozycję…'
+					}
 					placeholderTextColor={colors.textMuted}
-					style={[typography.body, styles.input, { color: colors.text }]}
+					style={[
+						typography.body,
+						styles.input,
+						{ color: colors.text },
+					]}
 				/>
 			</View>
 

@@ -16,7 +16,9 @@ import {
   Screen,
   SectionLabel,
   SegmentedControl,
+  Stepper,
   Text,
+  TextField,
   Toggle,
 } from '@/components/ui';
 import { avatarColors } from '@/theme';
@@ -49,6 +51,9 @@ export default function Gallery() {
   const [rule, setRule] = useState<(typeof RULES)[number]>('Każdy');
   const [notify, setNotify] = useState(true);
   const [items, setItems] = useState(INITIAL_ITEMS);
+  const [itemName, setItemName] = useState('Papier toaletowy');
+  const [itemNote, setItemNote] = useState('duża paczka');
+  const [quantity, setQuantity] = useState(1);
   const [done, setDone] = useState<string[]>([]);
 
   const toggle = (id: string) =>
@@ -225,6 +230,37 @@ export default function Gallery() {
               }
               last
             />
+          </View>
+        </Card>
+      </View>
+
+      <View style={{ gap: spacing.md }}>
+        <SectionLabel>Pola i licznik</SectionLabel>
+        <Card>
+          <View style={{ gap: spacing.lg }}>
+            <View style={{ gap: spacing.xs }}>
+              <SectionLabel>NAZWA</SectionLabel>
+              <TextField
+                value={itemName}
+                onChangeText={setItemName}
+                variant="underline"
+                textVariant="title"
+              />
+            </View>
+            <View style={[styles.row, { gap: spacing.lg, alignItems: 'flex-start' }]}>
+              <View style={{ gap: spacing.xs }}>
+                <SectionLabel>ILOŚĆ</SectionLabel>
+                <Stepper value={quantity} onChange={setQuantity} />
+              </View>
+              <View style={{ flex: 1, gap: spacing.xs }}>
+                <SectionLabel>DOPISEK</SectionLabel>
+                <TextField
+                  value={itemNote}
+                  onChangeText={setItemNote}
+                  placeholder="duża paczka"
+                />
+              </View>
+            </View>
           </View>
         </Card>
       </View>

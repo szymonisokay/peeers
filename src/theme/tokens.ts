@@ -139,6 +139,17 @@ export const motion = {
 export const radius = { sm: 8, md: 12, lg: 16, xl: 24, pill: 999 } as const
 
 /**
+ * Height of a one-line control, so that controls standing side by side read as
+ * one row.
+ *
+ * Measured from 28-szczegoly-pozycji, where the ILOŚĆ stepper and the DOPISEK
+ * field share a top edge: the stepper is 88 px tall at 2x, the field 82. The
+ * two are drawn to read as the same height, so both take the larger of the two
+ * measurements — which is also the smallest comfortable touch target.
+ */
+export const controlHeight = 44
+
+/**
  * Tab bar geometry, measured from 13-ekran-ty at 2x.
  *
  * `height` sits above the device's bottom safe-area inset, which the bar adds

@@ -7,7 +7,8 @@ import {
 } from '@expo-google-fonts/public-sans'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import { Platform } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import { useDatabase, useTheme } from '@/hooks'
 
@@ -35,7 +36,12 @@ export default function RootLayout() {
 	if (!fontsLoaded || !dbReady) return null
 
 	return (
-		<>
+		/*
+		 * Gestures need this at the root or they never receive touches on
+		 * Android. Nothing in the app used one until the list rows could be
+		 * dragged sideways.
+		 */
+		<GestureHandlerRootView style={styles.fill}>
 			<StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
 			<Stack
 				screenOptions={{
@@ -76,6 +82,29 @@ export default function RootLayout() {
 				/>
 
 				{/*
+          The item sheet of 28, opened by holding a row on a list. Same
+          arrangement as `new` below: `fitToContents` measures correctly on
+          iOS and comes back as 0 on Android, so Android gets a fraction.
+          28's own proportion is 388 pt of the 874 pt screen — 0.44 — but a
+          fixed fraction has to hold the tallest version of this sheet, and
+          measured on API 37 that one clipped its footer: Android's text runs
+          taller, the note chips add a row, and the navigation bar takes a
+          slice off the bottom. 0.56 clears all three.
+        */}
+				<Stack.Screen
+					name='item/[id]'
+					options={{
+						presentation: 'formSheet',
+						sheetAllowedDetents:
+							Platform.OS === 'android' ? [0.56] : 'fitToContents',
+						sheetGrabberVisible: true,
+						sheetCornerRadius:
+							Platform.OS === 'android' ? radius.xl : undefined,
+						contentStyle: { backgroundColor: colors.surface },
+					}}
+				/>
+
+				{/*
           A tab screen cannot be a sheet — `presentation` is a native-stack
           option — so the "Co tworzymy" sheet lives here and the raised + in the
           tab bar pushes to it. `sheetGrabberVisible` is iOS-only by design.
@@ -112,6 +141,8 @@ export default function RootLayout() {
 					}}
 				/>
 			</Stack>
-		</>
+		</GestureHandlerRootView>
 	)
 }
+
+const styles = StyleSheet.create({ fill: { flex: 1 } })
