@@ -136,6 +136,13 @@ export default function Gallery() {
       </View>
 
       <View style={{ gap: spacing.md }}>
+        <SectionLabel icon="pin">Nagłówek z ikoną i akcją</SectionLabel>
+        <SectionLabel right={<Text variant="bodySmall" tone="accent">Pokaż ›</Text>}>
+          ARCHIWUM · 5
+        </SectionLabel>
+      </View>
+
+      <View style={{ gap: spacing.md }}>
         <SectionLabel>Lista — odhacz i zobacz, jak wiersz wędruje</SectionLabel>
         <Card>
           <View style={{ gap: spacing.sm }}>
@@ -155,6 +162,7 @@ export default function Gallery() {
                 subtitle={item.subtitle}
                 onToggle={() => toggle(item.id)}
                 last={index === open.length - 1 && closed.length === 0}
+                right={<Avatar name="Kuba" color={avatarColors[1]} size={28} />}
               />
             ))}
             {closed.map((item, index) => (
@@ -165,6 +173,11 @@ export default function Gallery() {
                 checked
                 onToggle={() => toggle(item.id)}
                 last={index === closed.length - 1}
+                right={
+                  <Text variant="bodySmall" tone="muted">
+                    Kuba
+                  </Text>
+                }
               />
             ))}
           </View>

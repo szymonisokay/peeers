@@ -25,6 +25,7 @@ Code layout:
 | `src/hooks/` | every hook, including `useTheme` |
 | `src/components/` | `Icon`, `Illustration`, and the primitives under `ui/` |
 | `src/db/` | the data layer: schema, event log, actions and queries |
+| `src/lib/` | pure helpers — Polish grammar, dates, parsing. No React, no database |
 
 ## Hard constraints
 

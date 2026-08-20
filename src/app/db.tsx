@@ -6,12 +6,14 @@ import { Avatar, Button, Card, CheckboxRow, Screen, SectionLabel, Text } from '@
 import {
 	addItem,
 	allPeople,
+	asAppEvent,
 	checkItem,
 	currentPersonId,
 	currentSpaceId,
 	db,
 	ensureSeed,
 	events,
+	itemNames,
 	itemsInList,
 	listItems,
 	lists,
@@ -27,6 +29,8 @@ import {
 	uncheckItem,
 } from '@/db'
 import { useTheme } from '@/hooks'
+import { describe, groupEvents } from '@/lib/eventText'
+import { clockTime } from '@/lib/time'
 
 /**
  * Development-only check screen for the data layer, reached from the "Ty" tab.
@@ -52,8 +56,15 @@ export default function DatabaseCheck() {
 	const { data: allLists } = useLiveQuery(listsInSpace(spaceId), [spaceId])
 	const { data: allNotes } = useLiveQuery(notesInSpace(spaceId), [spaceId])
 	const { data: log } = useLiveQuery(recentEvents(spaceId, 20), [spaceId])
+	// Every item in the database, for the names the log's sentences need. One
+	// table, so it stays live; the join happens here in JavaScript.
+	const { data: everyItem } = useLiveQuery(itemNames())
 
 	const list = allLists?.[0]
+
+	const personName = (id: string) => persons?.find((person) => person.id === id)?.name ?? '—'
+	const itemName = (id: string) => everyItem?.find((item) => item.id === id)?.name ?? ''
+	const groups = groupEvents((log ?? []).map(asAppEvent))
 
 	return (
 		<Screen scroll contentStyle={{ gap: spacing.md, paddingVertical: spacing.lg }}>
@@ -76,6 +87,17 @@ export default function DatabaseCheck() {
 
 			{list ? <ListSection listId={list.id} spaceId={spaceId} title={list.title} /> : null}
 
+			<SectionLabel>{`Lists · ${allLists?.length ?? 0}`}</SectionLabel>
+			<Card>
+				{allLists?.map((row) => (
+					<Text key={row.id} variant='caption' tone='muted'>
+						{row.pinnedAt ? '📌 ' : row.archivedAt ? '📦 ' : '• '}
+						{row.title}
+						{row.archivedReason ? ` · ${row.archivedReason}` : ''}
+					</Text>
+				))}
+			</Card>
+
 			<SectionLabel>Notes</SectionLabel>
 			{allNotes?.map((note) => (
 				<Text key={note.id} variant='bodySmall'>
@@ -88,11 +110,20 @@ export default function DatabaseCheck() {
 				newest first — the log only ever grows
 			</Text>
 			<Card>
-				{log?.map((event) => (
-					<Text key={event.id} variant='caption' tone='muted'>
-						{localTime(event.createdAt)} · {event.type}
-					</Text>
-				))}
+				{groups.map((group) => {
+					const described = describe(group, {
+						currentPersonId: safeActor(),
+						personName,
+						itemName,
+					})
+
+					return (
+						<Text key={group.id} variant='caption' tone='muted'>
+							{clockTime(group.createdAt)} · {described.actor} {described.rest}
+							{described.items ? ` (${described.items.join(' · ')})` : ''}
+						</Text>
+					)
+				})}
 			</Card>
 
 			<Button
@@ -176,23 +207,6 @@ function wipe(): void {
 		tx.delete(spaces).run()
 		tx.delete(settings).run()
 	})
-}
-
-/**
- * An event's time on this device's clock.
- *
- * Timestamps are stored as ISO-8601 **UTC**, so slicing the string shows UTC
- * and reads two hours early in Poland. `getHours` and `getMinutes` are local by
- * definition, which is what a person looking at the screen expects. M6 owns
- * real feed formatting — "wczoraj 12:04", the "DZIŚ W PRZESTRZENI" grouping —
- * and will need the same conversion.
- */
-function localTime(iso: string): string {
-	const date = new Date(iso)
-	const hours = String(date.getHours()).padStart(2, '0')
-	const minutes = String(date.getMinutes()).padStart(2, '0')
-
-	return `${hours}:${minutes}`
 }
 
 function safeActor(): string {

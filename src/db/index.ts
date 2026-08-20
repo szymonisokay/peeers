@@ -10,22 +10,41 @@
 export { db, sqlite } from './client'
 export {
 	addItem,
+	addItems,
 	addPerson,
+	archiveList,
 	checkItem,
 	createList,
 	createNote,
 	createSpace,
 	currentPersonId,
 	currentSpaceId,
+	deleteList,
+	editItem,
 	editNote,
 	getSetting,
+	pinList,
+	removeItem,
+	renameList,
+	restoreItem,
 	setSetting,
+	unarchiveList,
 	uncheckItem,
+	unpinList,
 } from './actions'
 export { applyEvent } from './apply'
 export {
+	allItemsInList,
 	allPeople,
+	eventsForList,
+	frequentItemNames,
+	frequentNotesFor,
+	itemById,
+	itemCountsByList,
+	itemNames,
 	itemsInList,
+	listActivity,
+	listById,
 	listsInSpace,
 	membersOfSpace,
 	notesInSpace,
@@ -33,5 +52,14 @@ export {
 	spaceById,
 } from './queries'
 export { ensureSeed } from './seed'
-export type { AppEvent, EventPayloads, EventType, Role, SpaceType } from './events'
+export { asAppEvent } from './events'
+export type {
+	AppEvent,
+	ArchiveReason,
+	EventPayloads,
+	EventRow,
+	EventType,
+	Role,
+	SpaceType,
+} from './events'
 export * from './schema'

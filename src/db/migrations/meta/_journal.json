@@ -15,6 +15,13 @@
       "when": 1787171143574,
       "tag": "0001_dashing_shocker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1787216660107,
+      "tag": "0002_sudden_vapor",
+      "breakpoints": true
     }
   ]
 }

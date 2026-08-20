@@ -77,6 +77,7 @@ interactive ESLint wizard on first use.
 | `src/hooks/` | hooks, including `useTheme` |
 | `src/components/` | icons, illustrations and the UI primitives |
 | `src/db/` | SQLite schema, event log, actions and queries |
+| `src/lib/` | pure helpers — Polish grammar, dates, parsing |
 | `assets/design/` | 41 PNG mockups — the UI spec |
 | `assets/icons/`, `assets/logo/`, `assets/illustrations/` | source SVGs |
 | `docs/` | project knowledge |

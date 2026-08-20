@@ -3,7 +3,14 @@ import { eq, max } from 'drizzle-orm'
 
 import { applyEvent } from './apply'
 import { db } from './client'
-import type { EventPayloads, EventType, Role, SpaceType, AppEvent } from './events'
+import type {
+	AppEvent,
+	ArchiveReason,
+	EventPayloads,
+	EventType,
+	Role,
+	SpaceType,
+} from './events'
 import { listItems, settings } from './schema'
 
 /**
@@ -131,6 +138,66 @@ export function createList(
 	return listId
 }
 
+export function renameList(
+	input: { spaceId: string; listId: string; title: string },
+	options?: EventOptions,
+): void {
+	applyEvent(
+		newEvent(input.spaceId, 'list.renamed', { listId: input.listId, title: input.title }, options),
+	)
+}
+
+export function pinList(
+	input: { spaceId: string; listId: string },
+	options?: EventOptions,
+): void {
+	applyEvent(newEvent(input.spaceId, 'list.pinned', { listId: input.listId }, options))
+}
+
+export function unpinList(
+	input: { spaceId: string; listId: string },
+	options?: EventOptions,
+): void {
+	applyEvent(newEvent(input.spaceId, 'list.unpinned', { listId: input.listId }, options))
+}
+
+/**
+ * Puts a list in the archive. `reason` is what mockup 41 prints under the
+ * title: 'completed' reads "zamknięta", 'manual' reads "schowana ręcznie".
+ */
+export function archiveList(
+	input: { spaceId: string; listId: string; reason: ArchiveReason },
+	options?: EventOptions,
+): void {
+	applyEvent(
+		newEvent(
+			input.spaceId,
+			'list.archived',
+			{ listId: input.listId, reason: input.reason },
+			options,
+		),
+	)
+}
+
+export function unarchiveList(
+	input: { spaceId: string; listId: string },
+	options?: EventOptions,
+): void {
+	applyEvent(newEvent(input.spaceId, 'list.unarchived', { listId: input.listId }, options))
+}
+
+/**
+ * "Usuń na zawsze" on mockup 41. Soft, like every delete here: the row keeps
+ * its `deleted_at` and stops being read, and the events that made it stay in
+ * the log, because the log is append-only.
+ */
+export function deleteList(
+	input: { spaceId: string; listId: string },
+	options?: EventOptions,
+): void {
+	applyEvent(newEvent(input.spaceId, 'list.deleted', { listId: input.listId }, options))
+}
+
 export function addItem(
 	input: {
 		spaceId: string
@@ -162,6 +229,40 @@ export function addItem(
 	return itemId
 }
 
+/**
+ * Everything mockup 19 recognised in a pasted block, in the order it was
+ * pasted.
+ *
+ * A plain loop, and deliberately so: one `item.added` event per item is what
+ * lets the change history of mockup 25 say "dopisał(-a) 3 pozycje" and list
+ * their names. Each call reads `max(position)` again, which is correct because
+ * the driver is synchronous — the second call already sees the first row. The
+ * writes cost one re-render between them, not one each, because expo-sqlite
+ * delivers its change notifications asynchronously and React batches what
+ * follows.
+ */
+export function addItems(
+	input: {
+		spaceId: string
+		listId: string
+		items: { name: string; quantity: number; note: string | null }[]
+	},
+	options?: EventOptions,
+): void {
+	for (const item of input.items) {
+		addItem(
+			{
+				spaceId: input.spaceId,
+				listId: input.listId,
+				name: item.name,
+				quantity: item.quantity,
+				note: item.note,
+			},
+			options,
+		)
+	}
+}
+
 export function checkItem(
 	input: { spaceId: string; listId: string; itemId: string },
 	options?: EventOptions,
@@ -184,6 +285,62 @@ export function uncheckItem(
 		newEvent(
 			input.spaceId,
 			'item.unchecked',
+			{ itemId: input.itemId, listId: input.listId },
+			options,
+		),
+	)
+}
+
+export function editItem(
+	input: {
+		spaceId: string
+		listId: string
+		itemId: string
+		name: string
+		quantity: number
+		note: string | null
+	},
+	options?: EventOptions,
+): void {
+	applyEvent(
+		newEvent(
+			input.spaceId,
+			'item.edited',
+			{
+				itemId: input.itemId,
+				listId: input.listId,
+				name: input.name,
+				quantity: input.quantity,
+				note: input.note,
+			},
+			options,
+		),
+	)
+}
+
+export function removeItem(
+	input: { spaceId: string; listId: string; itemId: string },
+	options?: EventOptions,
+): void {
+	applyEvent(
+		newEvent(
+			input.spaceId,
+			'item.removed',
+			{ itemId: input.itemId, listId: input.listId },
+			options,
+		),
+	)
+}
+
+/** "Przywróć" next to a removal on mockup 25. */
+export function restoreItem(
+	input: { spaceId: string; listId: string; itemId: string },
+	options?: EventOptions,
+): void {
+	applyEvent(
+		newEvent(
+			input.spaceId,
+			'item.restored',
 			{ itemId: input.itemId, listId: input.listId },
 			options,
 		),

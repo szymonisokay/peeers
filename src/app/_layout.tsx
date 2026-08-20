@@ -41,6 +41,15 @@ export default function RootLayout() {
 				screenOptions={{
 					headerShown: false,
 					contentStyle: { backgroundColor: colors.background },
+					/*
+					 * Without these the navigator uses React Navigation's own light
+					 * theme, so the header of a pushed screen stays white in the dark
+					 * theme while everything under it goes dark. 07 and 39 draw the
+					 * header and the screen as one surface, with no divider between.
+					 */
+					headerStyle: { backgroundColor: colors.surface },
+					headerTintColor: colors.accent,
+					headerShadowVisible: false,
 				}}
 			>
 				<Stack.Screen name='(tabs)' />
@@ -50,7 +59,7 @@ export default function RootLayout() {
           input bar where the tab bar would be.
         */}
 				<Stack.Screen
-					name='list/[id]'
+					name='list/[id]/index'
 					options={{
 						headerShown: true,
 						headerTitle: '',

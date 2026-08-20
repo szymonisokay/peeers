@@ -36,6 +36,7 @@ export function applyEvent(event: AppEvent): void {
 				type: event.type,
 				payload: event.payload,
 				createdAt: event.createdAt,
+				listId: listIdOf(event),
 				syncedAt: null,
 			})
 			.run()
@@ -137,6 +138,103 @@ function materialise(tx: Tx, event: AppEvent): void {
 			return
 		}
 
+		case 'item.edited': {
+			tx.update(listItems)
+				.set({
+					name: event.payload.name,
+					quantity: event.payload.quantity,
+					note: event.payload.note,
+				})
+				.where(eq(listItems.id, event.payload.itemId))
+				.run()
+
+			touchList(tx, event.payload.listId, event.createdAt)
+			return
+		}
+
+		case 'item.removed': {
+			tx.update(listItems)
+				.set({ deletedAt: event.createdAt })
+				.where(eq(listItems.id, event.payload.itemId))
+				.run()
+
+			touchList(tx, event.payload.listId, event.createdAt)
+			return
+		}
+
+		case 'item.restored': {
+			tx.update(listItems)
+				.set({ deletedAt: null })
+				.where(eq(listItems.id, event.payload.itemId))
+				.run()
+
+			touchList(tx, event.payload.listId, event.createdAt)
+			return
+		}
+
+		case 'list.renamed': {
+			tx.update(lists)
+				.set({ title: event.payload.title, updatedAt: event.createdAt })
+				.where(eq(lists.id, event.payload.listId))
+				.run()
+			return
+		}
+
+		case 'list.pinned': {
+			tx.update(lists)
+				.set({ pinnedAt: event.createdAt })
+				.where(eq(lists.id, event.payload.listId))
+				.run()
+
+			touchList(tx, event.payload.listId, event.createdAt)
+			return
+		}
+
+		case 'list.unpinned': {
+			tx.update(lists)
+				.set({ pinnedAt: null })
+				.where(eq(lists.id, event.payload.listId))
+				.run()
+
+			touchList(tx, event.payload.listId, event.createdAt)
+			return
+		}
+
+		case 'list.archived': {
+			tx.update(lists)
+				.set({
+					archivedAt: event.createdAt,
+					archivedReason: event.payload.reason,
+					// A list in the archive is not also pinned to the top of the
+					// active section; 35 draws PRZYPIĘTA above AKTYWNE, and 41 has
+					// no pinned row.
+					pinnedAt: null,
+				})
+				.where(eq(lists.id, event.payload.listId))
+				.run()
+
+			touchList(tx, event.payload.listId, event.createdAt)
+			return
+		}
+
+		case 'list.unarchived': {
+			tx.update(lists)
+				.set({ archivedAt: null, archivedReason: null })
+				.where(eq(lists.id, event.payload.listId))
+				.run()
+
+			touchList(tx, event.payload.listId, event.createdAt)
+			return
+		}
+
+		case 'list.deleted': {
+			tx.update(lists)
+				.set({ deletedAt: event.createdAt })
+				.where(eq(lists.id, event.payload.listId))
+				.run()
+			return
+		}
+
 		case 'note.created': {
 			tx.insert(notes)
 				.values({
@@ -171,6 +269,48 @@ function materialise(tx: Tx, event: AppEvent): void {
 		 * and this assignment stops compiling, so `npx tsc --noEmit` catches a
 		 * half-added event before it can silently do nothing at runtime.
 		 */
+		default: {
+			const unhandled: never = event
+			throw new Error(`Unhandled event type: ${JSON.stringify(unhandled)}`)
+		}
+	}
+}
+
+/**
+ * Which list an event is about, or null when it is about none.
+ *
+ * The answer already sits in the payload; this copies it into a column of its
+ * own so that the two screens which read events per list — the change history
+ * of mockup 25 and the activity line of mockup 35 — can do it with a plain
+ * WHERE. See the comment on `events` in ./schema.ts for why that matters.
+ *
+ * Written as an exhaustive switch rather than a `'listId' in payload` test on
+ * purpose: the `never` guard at the bottom means a new event type has to state
+ * its answer instead of quietly getting null.
+ */
+function listIdOf(event: AppEvent): string | null {
+	switch (event.type) {
+		case 'space.created':
+		case 'person.joined':
+		case 'note.created':
+		case 'note.edited':
+			return null
+
+		case 'list.created':
+		case 'list.renamed':
+		case 'list.pinned':
+		case 'list.unpinned':
+		case 'list.archived':
+		case 'list.unarchived':
+		case 'list.deleted':
+		case 'item.added':
+		case 'item.checked':
+		case 'item.unchecked':
+		case 'item.edited':
+		case 'item.removed':
+		case 'item.restored':
+			return event.payload.listId
+
 		default: {
 			const unhandled: never = event
 			throw new Error(`Unhandled event type: ${JSON.stringify(unhandled)}`)

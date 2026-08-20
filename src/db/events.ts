@@ -33,11 +33,27 @@ export type SpaceType = 'home' | 'work' | 'trip'
 export type Role = 'member' | 'admin'
 
 /**
- * Every event type M3 implements, with its payload.
+ * Why a list ended up in the archive. Mockup 41 shows both: "zamknięta 12
+ * sierpnia" for a list that closed itself once everything on it was checked
+ * off, "schowana ręcznie 3 sierpnia" for one somebody put away unfinished.
  *
- * M4 and M5 extend this as their screens need it. Adding an entry here without
+ * The distinction is not decoration. Unchecking an item reopens a list that
+ * closed itself and leaves a manually hidden one where it is.
+ */
+export type ArchiveReason = 'completed' | 'manual'
+
+/**
+ * Every event type the app can record, with its payload.
+ *
+ * M5 extends this as the note screens need it. Adding an entry here without
  * adding a matching branch to `materialise()` fails `npx tsc --noEmit`, so an
  * event type cannot be half-added.
+ *
+ * Note what the removal and restoration payloads do *not* carry: the item's
+ * name, even though mockup 25 renders "usunął(-ęła) pozycję „chipsy"". Rule 1
+ * above is about what the reducer needs, and the reducer needs an id. The
+ * history screen looks the name up in `list_items`, where the row still is —
+ * deletes are soft. `item.checked` has always worked this way.
  */
 export type EventPayloads = {
 	'space.created': { name: string; type: SpaceType }
@@ -58,6 +74,21 @@ export type EventPayloads = {
 	}
 	'item.checked': { itemId: string; listId: string }
 	'item.unchecked': { itemId: string; listId: string }
+	'item.edited': {
+		itemId: string
+		listId: string
+		name: string
+		quantity: number
+		note: string | null
+	}
+	'item.removed': { itemId: string; listId: string }
+	'item.restored': { itemId: string; listId: string }
+	'list.renamed': { listId: string; title: string }
+	'list.pinned': { listId: string }
+	'list.unpinned': { listId: string }
+	'list.archived': { listId: string; reason: ArchiveReason }
+	'list.unarchived': { listId: string }
+	'list.deleted': { listId: string }
 	'note.created': { noteId: string; title: string; body: string }
 	'note.edited': { noteId: string; title: string; body: string }
 }
@@ -91,3 +122,26 @@ export type AppEvent = {
 		createdAt: string
 	}
 }[EventType]
+
+/**
+ * A row as it comes back out of the `events` table.
+ *
+ * The column types cannot express that `type` and `payload` were chosen
+ * together, so a row reads as "some type and some payload" rather than as one
+ * of the pairs in `EventPayloads`. `asAppEvent` restores the pairing for code
+ * that switches on the type — the change history of mockup 25, and M6's feed.
+ * It is safe because every row was written by `newEvent`, which took both from
+ * the same key.
+ */
+export type EventRow = {
+	id: string
+	spaceId: string
+	actorId: string
+	type: EventType
+	payload: EventPayload
+	createdAt: string
+}
+
+export function asAppEvent(row: EventRow): AppEvent {
+	return row as AppEvent
+}

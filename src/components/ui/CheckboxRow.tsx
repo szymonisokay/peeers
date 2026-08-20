@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, {
   FadeIn,
@@ -21,6 +22,14 @@ type CheckboxRowProps = {
   onToggle?: () => void;
   onPress?: () => void;
   last?: boolean;
+  /** Rendered on the right: the author's avatar on 07, a checker's name below it. */
+  right?: ReactNode;
+  /**
+   * Horizontal padding inside the row. The separator is drawn on the row's own
+   * edge, so it still runs the full width of the screen — which is how 07 draws
+   * it, unlike a row that has been inset by its container.
+   */
+  paddingX?: number;
 };
 
 /**
@@ -29,6 +38,10 @@ type CheckboxRowProps = {
  * The row itself carries the layout animation, so when checking an item moves
  * it into the "odhaczone" group it travels there instead of teleporting.
  * See 07 and its dark counterpart 39.
+ *
+ * A checked row dims as a whole rather than only in its title: on 07 the filled
+ * circle is visibly lighter than the accent used elsewhere on the same screen,
+ * which is what the accent looks like at this opacity.
  */
 export function CheckboxRow({
   title,
@@ -37,6 +50,8 @@ export function CheckboxRow({
   onToggle,
   onPress,
   last = false,
+  right,
+  paddingX = 0,
 }: CheckboxRowProps) {
   const { colors, motion, spacing } = useTheme();
   const reduced = useReducedMotion();
@@ -60,8 +75,12 @@ export function CheckboxRow({
     transform: [{ scale: 0.6 + progress.value * 0.4 }],
   }));
 
-  const titleStyle = useAnimatedStyle(() => ({
-    opacity: reduced ? 1 : withTiming(checked ? 0.55 : 1, { duration: motion.duration.fast }),
+  const dimStyle = useAnimatedStyle(() => ({
+    opacity: reduced
+      ? checked
+        ? 0.55
+        : 1
+      : withTiming(checked ? 0.55 : 1, { duration: motion.duration.fast }),
   }));
 
   return (
@@ -81,8 +100,10 @@ export function CheckboxRow({
           style={[
             styles.row,
             press.style,
+            dimStyle,
             {
               paddingVertical: spacing.md,
+              paddingHorizontal: paddingX,
               gap: spacing.md,
               borderBottomWidth: last ? 0 : StyleSheet.hairlineWidth,
               borderBottomColor: colors.border,
@@ -104,21 +125,21 @@ export function CheckboxRow({
           </Pressable>
 
           <View style={styles.grow}>
-            <Animated.View style={titleStyle}>
-              <Text
-                variant="bodyMedium"
-                tone={checked ? 'muted' : 'default'}
-                style={checked ? styles.struck : undefined}
-              >
-                {title}
-              </Text>
-            </Animated.View>
+            <Text
+              variant="bodyMedium"
+              tone={checked ? 'muted' : 'default'}
+              style={checked ? styles.struck : undefined}
+            >
+              {title}
+            </Text>
             {subtitle ? (
               <Text variant="bodySmall" tone="muted">
                 {subtitle}
               </Text>
             ) : null}
           </View>
+
+          {right}
         </Animated.View>
       </Pressable>
     </Animated.View>

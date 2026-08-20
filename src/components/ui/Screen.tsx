@@ -10,17 +10,30 @@ type ScreenProps = {
   scroll?: boolean;
   /** Drop the standard horizontal padding, for full-bleed rows and lists. */
   bleed?: boolean;
+  /**
+   * Paint the screen in `surface` rather than `background`. 07 and 15 are white
+   * edge to edge, unlike 35, where cards sit on the app background.
+   */
+  surface?: boolean;
   contentStyle?: ViewStyle;
 };
 
 /** Safe-area container with the themed background and the standard gutter. */
-export function Screen({ children, scroll = false, bleed = false, contentStyle }: ScreenProps) {
+export function Screen({
+  children,
+  scroll = false,
+  bleed = false,
+  surface = false,
+  contentStyle,
+}: ScreenProps) {
   const { colors, spacing } = useTheme();
 
   const gutter: ViewStyle = { paddingHorizontal: bleed ? 0 : spacing.lg };
 
   return (
-    <SafeAreaView style={[styles.fill, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.fill, { backgroundColor: surface ? colors.surface : colors.background }]}
+    >
       {scroll ? (
         <ScrollView contentContainerStyle={[gutter, contentStyle]}>{children}</ScrollView>
       ) : (

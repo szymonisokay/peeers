@@ -1,6 +1,6 @@
 import { index, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
-import type { EventPayload, EventType, Role, SpaceType } from './events'
+import type { ArchiveReason, EventPayload, EventType, Role, SpaceType } from './events'
 
 /**
  * The on-device schema.
@@ -89,6 +89,13 @@ export const lists = sqliteTable(
 		updatedAt: text('updated_at').notNull(),
 		pinnedAt: text('pinned_at'),
 		archivedAt: text('archived_at'),
+		/*
+		 * Why a list was archived, which mockup 41 puts on screen: a completed
+		 * list reads "zamknięta 12 sierpnia", one hidden by hand reads "schowana
+		 * ręcznie 3 sierpnia". It also decides what unchecking an item does —
+		 * only a list that closed itself reopens itself.
+		 */
+		archivedReason: text('archived_reason').$type<ArchiveReason>(),
 		deletedAt: text('deleted_at'),
 	},
 	(table) => [index('lists_space_idx').on(table.spaceId)],
@@ -150,6 +157,15 @@ export const notes = sqliteTable(
  * No foreign keys here, unlike every table above: in M8 an event may refer to a
  * person this device has not pulled yet, and a constraint would reject it and
  * force the sync loop to order its inserts by dependency.
+ *
+ * `list_id` is derived, not authored: `listIdOf` in ./apply.ts digs it out of
+ * the payload as the event is written. It exists because two screens need the
+ * events of one list — mockup 25 in full, mockup 35 only the newest — and the
+ * id itself lives inside `payload`, which is JSON. Reaching into it would mean
+ * `json_extract`, and `useLiveQuery` refuses raw SQL outright. Local-only in
+ * the same way `synced_at` is: M8 pushes the six columns above it and
+ * recomputes this one when it applies a pulled event, because `applyEvent` is
+ * the only writer either way.
  */
 export const events = sqliteTable(
 	'events',
@@ -160,7 +176,11 @@ export const events = sqliteTable(
 		type: text('type').$type<EventType>().notNull(),
 		payload: text('payload', { mode: 'json' }).$type<EventPayload>().notNull(),
 		createdAt: text('created_at').notNull(),
+		listId: text('list_id'),
 		syncedAt: text('synced_at'),
 	},
-	(table) => [index('events_space_created_idx').on(table.spaceId, table.createdAt)],
+	(table) => [
+		index('events_space_created_idx').on(table.spaceId, table.createdAt),
+		index('events_list_created_idx').on(table.listId, table.createdAt),
+	],
 )
