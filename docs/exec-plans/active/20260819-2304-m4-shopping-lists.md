@@ -281,20 +281,11 @@ twelve minutes on Android on this machine. The decision is deferred to Milestone
 Q1 to Q4 were answered by the repo owner on 2026-08-20 and are recorded as D-Q1
 to D-Q4 in the Decision Log below. One question has been raised since.
 
-**Q5 — Is the card title on `35` bigger than `bodyMedium`?**
-Affects: `src/theme/tokens.ts`, Plan of Work Milestone 2 (already built, one
-line to change).
-The cards are rendered with `bodyMedium` (16 px, medium weight), and against the
-mockup that reads slightly small and slightly light: in `35` the title stands
-further apart from the grey line under it than it does on the device.
-`docs/DESIGN.md` requires two agreeing measurements before picking a size — the
-x-height in the mockup and the rendered width of a known string — and this
-machine has no image library installed to measure pixels with, so the honest
-answer is "it looks a step small, and I will not guess a token". Comparing the
-screenshots in this milestone's Artifacts against `assets/design/35-spis-list.png`
-takes about ten seconds and settles it. If it is a step bigger, it is a new
-entry in the type scale (something like 19/600) with `35` named as its source.
-Decision Log placeholder: D-Q5.
+None outstanding. Q5, raised in Milestone 2, was answered on 2026-08-20 and is
+recorded as D-Q5 below.
+
+Raise new questions here as implementation uncovers them, tagged with the
+section they affect, and pair each with a Decision Log placeholder.
 
 
 ## Progress
@@ -320,7 +311,13 @@ Approved by the repo owner on 2026-08-20 together with the answers to Q1–Q4.
       Android emulator. Deferred on purpose, because neither has anywhere to go
       yet: "Nowa" (Milestone 5), "Pokaż ›" (Milestone 8) and the quick-add bar
       (Milestone 3). One question raised — Q5 below.
-- [ ] Milestone 3 — quick-add: the input bar, the parser, the draft row, chips.
+- [x] (2026-08-20 09:49Z) Milestone 3 — quick-add: the input bar, the parser, the draft
+      row, chips. `src/lib/parseItem.ts`, the bar and the draft row on the list
+      screen, suggestions from `frequentItemNames`, "Gotowe" in the header while
+      typing, and `Screen` gained a `footer` slot. The keyboard spike changed
+      the approach — see Surprises. Verified on both platforms; the iOS lift
+      itself could not be observed, see the same entry. "Wklej listę" is left
+      out until Milestone 6, which is where it leads.
 - [ ] Milestone 4 — the item sheet (`28`), plus `TextField` and `Stepper`.
 - [ ] Milestone 5 — creating, renaming, pinning; `05` wired up.
 - [ ] Milestone 6 — paste a whole list (`19`).
@@ -368,6 +365,28 @@ Approved by the repo owner on 2026-08-20 together with the answers to Q1–Q4.
   Evidence: two `adb shell am start -a android.intent.action.VIEW` calls, the
   first landing on the "DEVELOPMENT SERVERS" screen.
 
+- Observation (the Milestone 3 spike): `KeyboardAvoidingView` does not lift
+  the quick-add bar on Android. Measured on API 37 with `behavior` unset and
+  again with `behavior='padding'`: in both, the keyboard opened over the bar and
+  the bar stayed where it was. The cause is that this app draws edge to edge, so
+  the window no longer resizes itself for the keyboard the way `adjustResize`
+  used to — the fixes people reach for are a native rebuild
+  (`softwareKeyboardLayoutMode: 'pan'`) or a new native module
+  (`react-native-keyboard-controller`), and neither is needed here.
+  `useAnimatedKeyboard` from `react-native-reanimated`, which is already
+  installed, reports the keyboard's height directly; an animated `paddingBottom`
+  of `keyboard.height - insets.bottom` lifts the bar exactly onto the keyboard.
+  One code path, both platforms, no rebuild.
+  Evidence: three Android screenshots in the scratchpad — bar hidden, bar
+  hidden, bar sitting on the keyboard.
+
+- Observation: the iOS lift could not be watched. The simulator has a hardware
+  keyboard attached, so focusing the field raises no software keyboard and the
+  lift is correctly zero. The code path is the same one Android proved. Worth
+  ten seconds of the repo owner's time: press Cmd+K in the simulator, tap the
+  bar on `/list/<id>`, and check that the bar sits on the keyboard rather than
+  behind it.
+
 - Observation: the pushed header stayed white in the dark theme. Nothing in
   the app had ever shown a native header in dark before, and expo-router's Stack
   falls back to React Navigation's own light theme unless told otherwise. Fixed
@@ -408,8 +427,16 @@ before:
 
 ## Decision Log
 
-The first four entries are the repo owner's answers to Q1–Q4. The rest were
+The first five entries are the repo owner's answers to Q1–Q5. The rest were
 taken while writing the plan, before any code was written.
+
+- Decision (D-Q5): The card titles on `35` stay `bodyMedium`. No new step in the
+  type scale.
+  Rationale: the repo owner compared the rendered screen against
+  `assets/design/35-spis-list.png` and read the difference as within the
+  drawing, not a distinct size. Adding a scale step for one screen would put a
+  value in `tokens.ts` that nothing else in the app can justify.
+  Date/Author: 2026-08-20, repo owner.
 
 - Decision (D-Q1): A list archives itself the moment its last unchecked item is
   ticked, with `reason: 'completed'`.

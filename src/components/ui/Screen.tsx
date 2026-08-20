@@ -15,6 +15,11 @@ type ScreenProps = {
    * edge to edge, unlike 35, where cards sit on the app background.
    */
   surface?: boolean;
+  /**
+   * Pinned below the scroll area and inside the safe area — the quick-add bar
+   * that sits where the tab bar would be on 07.
+   */
+  footer?: ReactNode;
   contentStyle?: ViewStyle;
 };
 
@@ -24,6 +29,7 @@ export function Screen({
   scroll = false,
   bleed = false,
   surface = false,
+  footer,
   contentStyle,
 }: ScreenProps) {
   const { colors, spacing } = useTheme();
@@ -35,10 +41,17 @@ export function Screen({
       style={[styles.fill, { backgroundColor: surface ? colors.surface : colors.background }]}
     >
       {scroll ? (
-        <ScrollView contentContainerStyle={[gutter, contentStyle]}>{children}</ScrollView>
+        <ScrollView
+          contentContainerStyle={[gutter, contentStyle]}
+          keyboardDismissMode="interactive"
+          keyboardShouldPersistTaps="handled"
+        >
+          {children}
+        </ScrollView>
       ) : (
         <View style={[styles.fill, gutter, contentStyle]}>{children}</View>
       )}
+      {footer}
     </SafeAreaView>
   );
 }
