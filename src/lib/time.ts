@@ -1,5 +1,5 @@
 /**
- * Dates and times, in Polish, on this device's clock.
+ * Dates and times, in the app's active language, on this device's clock.
  *
  * Everything here takes an ISO-8601 **UTC** string — what the database stores —
  * and goes through `new Date()` and the local getters. Never slice the string:
@@ -7,53 +7,26 @@
  *
  * Every function takes an optional `now` so that the boundaries can be checked
  * without waiting for midnight.
+ *
+ * These are not React components, so they reach the translator through the
+ * i18next instance rather than through `useTranslation()`. A screen that
+ * renders what they return calls `useTranslation()` itself, so that it
+ * re-renders when the language changes — see rule 3 in AGENTS.md.
  */
-
-/** Genitive, for a date read as "12 sierpnia". */
-const MONTHS_OF = [
-	'stycznia',
-	'lutego',
-	'marca',
-	'kwietnia',
-	'maja',
-	'czerwca',
-	'lipca',
-	'sierpnia',
-	'września',
-	'października',
-	'listopada',
-	'grudnia',
-] as const
-
-/** Nominative, for the month headings of mockup 41. */
-const MONTHS = [
-	'STYCZEŃ',
-	'LUTY',
-	'MARZEC',
-	'KWIECIEŃ',
-	'MAJ',
-	'CZERWIEC',
-	'LIPIEC',
-	'SIERPIEŃ',
-	'WRZESIEŃ',
-	'PAŹDZIERNIK',
-	'LISTOPAD',
-	'GRUDZIEŃ',
-] as const
+import i18n from '@/i18n'
 
 /**
- * Indexed by `Date#getDay()`, so Sunday first, and carrying the preposition —
- * which is not always the same word. "We wtorek", not "w wtorek".
+ * The calendar's words, from the message files.
+ *
+ * They live there rather than coming out of `Intl.DateTimeFormat` because the
+ * Polish weekdays carry their preposition and it is not always the same word —
+ * "we wtorek", not "w wtorek" — and no date formatter produces that. Having
+ * half the calendar come from the engine and half from a message file would be
+ * worse than either.
  */
-const WEEKDAYS = [
-	'w niedzielę',
-	'w poniedziałek',
-	'we wtorek',
-	'w środę',
-	'w czwartek',
-	'w piątek',
-	'w sobotę',
-] as const
+function table(key: 'time.monthsOf' | 'time.months' | 'time.weekdays'): string[] {
+	return i18n.t(key, { returnObjects: true })
+}
 
 /** "12:41" — local, never sliced out of the UTC string. */
 export function clockTime(iso: string): string {
@@ -64,15 +37,19 @@ export function clockTime(iso: string): string {
 	return `${hours}:${minutes}`
 }
 
-/** "12 sierpnia". */
+/** "12 sierpnia", "12 August". */
 export function dayMonth(iso: string): string {
 	const date = new Date(iso)
-	return `${date.getDate()} ${MONTHS_OF[date.getMonth()]}`
+
+	return i18n.t('time.dayMonth', {
+		day: date.getDate(),
+		month: table('time.monthsOf')[date.getMonth()],
+	})
 }
 
 /** "SIERPIEŃ" — the month headings of mockup 41. */
 export function monthHeading(iso: string): string {
-	return MONTHS[new Date(iso).getMonth()]
+	return table('time.months')[new Date(iso).getMonth()]
 }
 
 /**
@@ -87,9 +64,11 @@ export function shortWhen(iso: string, now: Date = new Date()): string {
 	const days = daysAgo(iso, now)
 
 	if (days <= 0) return clockTime(iso)
-	if (days === 1) return 'wczoraj'
-	if (days === 2) return '2 dni temu'
-	if (days < 7) return WEEKDAYS[new Date(iso).getDay()]
+	if (days === 1) return i18n.t('time.yesterday')
+	// Only 2 ever reaches this, but a counted key costs nothing and stays right
+	// if the boundary below ever moves.
+	if (days === 2) return i18n.t('time.daysAgo', { count: days })
+	if (days < 7) return table('time.weekdays')[new Date(iso).getDay()]
 
 	return dayMonth(iso)
 }
@@ -97,21 +76,22 @@ export function shortWhen(iso: string, now: Date = new Date()): string {
 /** "dziś 11:07" — the footer of mockup 28. */
 export function whenLong(iso: string, now: Date = new Date()): string {
 	const days = daysAgo(iso, now)
+	const time = clockTime(iso)
 
-	if (days <= 0) return `dziś ${clockTime(iso)}`
-	if (days === 1) return `wczoraj ${clockTime(iso)}`
+	if (days <= 0) return i18n.t('time.todayAt', { time })
+	if (days === 1) return i18n.t('time.yesterdayAt', { time })
 
-	return `${dayMonth(iso)} ${clockTime(iso)}`
+	return i18n.t('time.dateAt', { date: dayMonth(iso), time })
 }
 
 /** "DZIŚ", "WCZORAJ", "12 SIERPNIA" — the day groups of mockup 25. */
 export function dayHeading(iso: string, now: Date = new Date()): string {
 	const days = daysAgo(iso, now)
 
-	if (days <= 0) return 'DZIŚ'
-	if (days === 1) return 'WCZORAJ'
+	if (days <= 0) return i18n.t('time.headingToday')
+	if (days === 1) return i18n.t('time.headingYesterday')
 
-	return dayMonth(iso).toLocaleUpperCase('pl')
+	return dayMonth(iso).toLocaleUpperCase(i18n.language)
 }
 
 /**

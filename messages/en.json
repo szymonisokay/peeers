@@ -21,5 +21,66 @@
 		"profile": "Profile and settings — mockup 13",
 		"noteTitle": "Note {{id}}",
 		"note": "Note view — mockup 10"
+	},
+	"time": {
+		"monthsOf": [
+			"January", "February", "March", "April", "May", "June",
+			"July", "August", "September", "October", "November", "December"
+		],
+		"months": [
+			"JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+			"JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+		],
+		"weekdays": [
+			"on Sunday", "on Monday", "on Tuesday", "on Wednesday",
+			"on Thursday", "on Friday", "on Saturday"
+		],
+		"dayMonth": "{{day}} {{month}}",
+		"todayAt": "today {{time}}",
+		"yesterdayAt": "yesterday {{time}}",
+		"dateAt": "{{date}} {{time}}",
+		"yesterday": "yesterday",
+		"daysAgo_one": "{{count}} day ago",
+		"daysAgo_other": "{{count}} days ago",
+		"headingToday": "TODAY",
+		"headingYesterday": "YESTERDAY"
+	},
+	"list": {
+		"itemCount_one": "{{count}} item",
+		"itemCount_other": "{{count}} items",
+		"personCount_one": "{{count}} person",
+		"personCount_other": "{{count}} people",
+		"checkedLabel": "checked off"
+	},
+	"activity": {
+		"items_one": "{{count}} item",
+		"items_other": "{{count}} items",
+		"itemFallback": "an item",
+		"namesJoin": "{{names}} and {{last}}",
+		"spaceCreated": "created the Space",
+		"personJoined": "joined the Space",
+		"listCreated": "created a list",
+		"listCreatedWithItems": "created a list and added {{items}}",
+		"itemAdded": "added {{name}}",
+		"itemAddedMany": "added {{items}}",
+		"itemChecked": "checked off {{name}}",
+		"itemCheckedMany": "checked off {{items}}",
+		"itemUnchecked": "unchecked {{name}}",
+		"itemUncheckedMany": "unchecked {{items}}",
+		"itemEdited": "changed “{{name}}”",
+		"itemEditedMany": "changed {{items}}",
+		"itemRemoved": "removed “{{name}}”",
+		"itemRemovedMany": "removed {{items}}",
+		"itemRestored": "restored “{{name}}”",
+		"itemRestoredMany": "restored {{items}}",
+		"listRenamed": "renamed the list to “{{title}}”",
+		"listPinned": "pinned the list",
+		"listUnpinned": "unpinned the list",
+		"listClosed": "closed the list",
+		"listArchived": "moved the list to the archive",
+		"listUnarchived": "moved the list back to active",
+		"listDeleted": "deleted the list",
+		"noteCreated": "created the note “{{title}}”",
+		"noteEdited": "changed the note “{{title}}”"
 	}
 }

@@ -21,5 +21,74 @@
 		"profile": "Profil i ustawienia — makieta 13",
 		"noteTitle": "Notatka {{id}}",
 		"note": "Widok notatki — makieta 10"
+	},
+	"time": {
+		"monthsOf": [
+			"stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca",
+			"lipca", "sierpnia", "września", "października", "listopada", "grudnia"
+		],
+		"months": [
+			"STYCZEŃ", "LUTY", "MARZEC", "KWIECIEŃ", "MAJ", "CZERWIEC",
+			"LIPIEC", "SIERPIEŃ", "WRZESIEŃ", "PAŹDZIERNIK", "LISTOPAD", "GRUDZIEŃ"
+		],
+		"weekdays": [
+			"w niedzielę", "w poniedziałek", "we wtorek", "w środę",
+			"w czwartek", "w piątek", "w sobotę"
+		],
+		"dayMonth": "{{day}} {{month}}",
+		"todayAt": "dziś {{time}}",
+		"yesterdayAt": "wczoraj {{time}}",
+		"dateAt": "{{date}} {{time}}",
+		"yesterday": "wczoraj",
+		"daysAgo_one": "{{count}} dzień temu",
+		"daysAgo_few": "{{count}} dni temu",
+		"daysAgo_many": "{{count}} dni temu",
+		"daysAgo_other": "{{count}} dni temu",
+		"headingToday": "DZIŚ",
+		"headingYesterday": "WCZORAJ"
+	},
+	"list": {
+		"itemCount_one": "{{count}} pozycja",
+		"itemCount_few": "{{count}} pozycje",
+		"itemCount_many": "{{count}} pozycji",
+		"itemCount_other": "{{count}} pozycji",
+		"personCount_one": "{{count}} osoba",
+		"personCount_few": "{{count}} osoby",
+		"personCount_many": "{{count}} osób",
+		"personCount_other": "{{count}} osób",
+		"checkedLabel": "odhaczone"
+	},
+	"activity": {
+		"items_one": "{{count}} pozycję",
+		"items_few": "{{count}} pozycje",
+		"items_many": "{{count}} pozycji",
+		"items_other": "{{count}} pozycji",
+		"itemFallback": "pozycję",
+		"namesJoin": "{{names}} i {{last}}",
+		"spaceCreated": "utworzył(-a) Przestrzeń",
+		"personJoined": "dołączył(-a) do Przestrzeni",
+		"listCreated": "utworzył(-a) listę",
+		"listCreatedWithItems": "utworzył(-a) listę i dodał(-a) {{items}}",
+		"itemAdded": "dopisał(-a) {{name}}",
+		"itemAddedMany": "dopisał(-a) {{items}}",
+		"itemChecked": "odhaczył(-a) {{name}}",
+		"itemCheckedMany": "odhaczył(-a) {{items}}",
+		"itemUnchecked": "odznaczył(-a) {{name}}",
+		"itemUncheckedMany": "odznaczył(-a) {{items}}",
+		"itemEdited": "zmienił(-a) pozycję „{{name}}\"",
+		"itemEditedMany": "zmienił(-a) {{items}}",
+		"itemRemoved": "usunął(-ęła) pozycję „{{name}}\"",
+		"itemRemovedMany": "usunął(-ęła) {{items}}",
+		"itemRestored": "przywrócił(-a) pozycję „{{name}}\"",
+		"itemRestoredMany": "przywrócił(-a) {{items}}",
+		"listRenamed": "zmienił(-a) nazwę listy na „{{title}}\"",
+		"listPinned": "przypiął(-ęła) listę",
+		"listUnpinned": "odpiął(-ęła) listę",
+		"listClosed": "zamknął(-ęła) listę",
+		"listArchived": "schował(-a) listę do archiwum",
+		"listUnarchived": "przywrócił(-a) listę do aktywnych",
+		"listDeleted": "usunął(-ęła) listę",
+		"noteCreated": "utworzył(-a) notatkę „{{title}}\"",
+		"noteEdited": "zmienił(-a) notatkę „{{title}}\""
 	}
 }

@@ -50,7 +50,11 @@ export function parseItem(input: string): ParsedItem | null {
 	return {
 		// 08 shows "kawa ziarnista" being typed and 07 shows "Kawa ziarnista" on
 		// the list; 19 does the same to every pasted line.
-		name: name.charAt(0).toLocaleUpperCase('pl') + name.slice(1),
+		//
+		// Locale-independent on purpose: this name goes into the database and is
+		// read by everybody in the Przestrzeń, so it must not depend on which
+		// language the phone that typed it was set to.
+		name: name.charAt(0).toUpperCase() + name.slice(1),
 		quantity: quantity ?? 1,
 		note: note.length > 0 ? note : null,
 	}

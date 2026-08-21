@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Pressable, StyleSheet, TextInput, View } from 'react-native'
 import Animated, {
 	useAnimatedKeyboard,
@@ -38,7 +39,6 @@ import {
 import { usePressScale, useTheme } from '@/hooks'
 import { joinNames } from '@/lib/eventText'
 import { parseItem } from '@/lib/parseItem'
-import { plural } from '@/lib/plural'
 
 type Item = typeof listItemsTable.$inferSelect
 
@@ -53,6 +53,7 @@ type Item = typeof listItemsTable.$inferSelect
  */
 export default function ListDetail() {
 	const { colors, spacing } = useTheme()
+	const { t } = useTranslation()
 
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const spaceId = currentSpaceId()
@@ -176,13 +177,18 @@ export default function ListDetail() {
 					<View style={styles.counter}>
 						<Text variant='bodySmall' tone='muted'>
 							{items.length === 0
-								? `0 ${plural(0, 'pozycja', 'pozycje', 'pozycji')}`
-								: `${done.length} z ${items.length}`}
+								? t('list.itemCount', { count: 0 })
+								: t('app.progress', {
+										checked: done.length,
+										total: items.length,
+									})}
 						</Text>
 						<Text variant='bodySmall' tone='muted'>
 							{items.length === 0
-								? `${members.length} ${plural(members.length, 'osoba', 'osoby', 'osób')}`
-								: 'odhaczone'}
+								? t('list.personCount', {
+										count: members.length,
+									})
+								: t('list.checkedLabel')}
 						</Text>
 					</View>
 				</View>

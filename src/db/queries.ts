@@ -165,6 +165,16 @@ export function recentEvents(spaceId: string, limit: number) {
  * Being executed also frees them from the one-table rule, so they can join.
  * The grouping is done in JavaScript rather than with SQL's `lower()`, which
  * folds ASCII only and would treat "Żółty" and "żółty" as two different things.
+ *
+ * The folding below is deliberately **locale-independent** — `toLowerCase()`,
+ * not `toLocaleLowerCase(i18n.language)`. What is being folded is data: item
+ * names people typed, shared with everybody in the Przestrzeń whatever language
+ * each of their phones is set to. Tying it to the reader's UI language would
+ * make two people disagree about whether "Mleko" and "mleko" are one item.
+ * `toLowerCase()` is still Unicode-aware, so "Ż" folds to "ż" — the ASCII
+ * problem above is SQL's, not JavaScript's — and it cannot be broken by a
+ * language with its own casing rules: in Turkish, "INBOX" lowercases to
+ * "ınbox", which would stop matching the very rows it is meant to find.
  */
 
 /**
@@ -194,7 +204,7 @@ export function frequentItemNames(
 	const tally = new Map<string, { name: string; uses: number; lastUsed: string }>()
 
 	for (const row of rows) {
-		const key = row.name.toLocaleLowerCase('pl')
+		const key = row.name.toLowerCase()
 		if (row.listId === excludeListId) onThisList.add(key)
 
 		const entry = tally.get(key)
@@ -227,7 +237,7 @@ export function frequentItemNames(
  * no chip row at all rather than an empty one.
  */
 export function frequentNotesFor(spaceId: string, name: string, limit: number): string[] {
-	const wanted = name.toLocaleLowerCase('pl')
+	const wanted = name.toLowerCase()
 
 	const rows = db
 		.select({
@@ -245,8 +255,8 @@ export function frequentNotesFor(spaceId: string, name: string, limit: number): 
 
 	for (const row of rows) {
 		if (!row.note) continue
-		if (row.name.toLocaleLowerCase('pl') !== wanted) continue
-		if (notes.some((note) => note.toLocaleLowerCase('pl') === row.note?.toLocaleLowerCase('pl'))) {
+		if (row.name.toLowerCase() !== wanted) continue
+		if (notes.some((note) => note.toLowerCase() === row.note?.toLowerCase())) {
 			continue
 		}
 

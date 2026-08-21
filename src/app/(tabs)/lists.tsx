@@ -19,7 +19,6 @@ import {
 } from '@/db'
 import { usePressScale, useTheme } from '@/hooks'
 import { describe, groupEvents, type Described } from '@/lib/eventText'
-import { plural } from '@/lib/plural'
 import { shortWhen } from '@/lib/time'
 
 type ListRow = typeof listsTable.$inferSelect
@@ -76,7 +75,7 @@ export default function Lists() {
 	return (
 		<Screen scroll contentStyle={{ gap: spacing.md, paddingVertical: spacing.md }}>
 			<View>
-				<SectionLabel>{(space[0]?.name ?? '').toLocaleUpperCase('pl')}</SectionLabel>
+				<SectionLabel>{(space[0]?.name ?? '').toUpperCase()}</SectionLabel>
 				<Text variant='titleLarge'>Listy</Text>
 			</View>
 

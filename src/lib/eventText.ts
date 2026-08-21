@@ -1,9 +1,8 @@
 import type { AppEvent, EventType } from '@/db'
-
-import { plural } from './plural'
+import i18n from '@/i18n'
 
 /**
- * Events, turned into the Polish sentences that mockups 25 and 35 print.
+ * Events, turned into the sentences that mockups 25 and 35 print.
  *
  * Two steps, kept apart on purpose. `groupEvents` folds a run of related
  * events into one line — three items added at 11:07 read as "dopisał(-a) 3
@@ -13,6 +12,10 @@ import { plural } from './plural'
  *
  * The actor's name is returned separately from the rest of the sentence
  * because mockup 25 sets it in a heavier weight than what follows it.
+ *
+ * Only `describe` speaks a language. Everything above it — the grouping, the
+ * window, the creation burst — is arithmetic on timestamps and stays the same
+ * whichever language is active.
  */
 
 /** A run of events shown as one row. */
@@ -127,46 +130,61 @@ export type Described = {
  * The current person is written as "Ty" followed by the same verb form
  * everybody else gets — "Ty odhaczył(-a) chleb". Mockups 25 and 35 disagree
  * about this and 25 wins; see docs/DESIGN.md.
+ *
+ * Splitting the sentence into an actor and a rest survives translation because
+ * both languages put the subject first: "Kuba" plus "dopisał(-a) 3 pozycje",
+ * "Kuba" plus "added 3 items". A language that puts the verb first would need
+ * this shape reconsidered rather than a longer message file.
  */
 export function describe(group: ActivityGroup, ctx: DescribeContext): Described {
-	const actor = group.actorId === ctx.currentPersonId ? 'Ty' : ctx.personName(group.actorId)
+	const actor =
+		group.actorId === ctx.currentPersonId ? i18n.t('app.you') : ctx.personName(group.actorId)
 	const [first] = group.events
 	const count = group.events.length
 
 	switch (first.type) {
 		case 'space.created':
-			return { actor, rest: 'utworzył(-a) Przestrzeń' }
+			return { actor, rest: i18n.t('activity.spaceCreated') }
 
 		case 'person.joined':
-			return { actor, rest: 'dołączył(-a) do Przestrzeni' }
+			return { actor, rest: i18n.t('activity.personJoined') }
 
 		case 'list.created': {
 			const added = group.addedWithList
-			if (!added) return { actor, rest: 'utworzył(-a) listę' }
+			if (!added) return { actor, rest: i18n.t('activity.listCreated') }
 
 			return {
 				actor,
-				rest: `utworzył(-a) listę i dodał(-a) ${items(added.length)}`,
+				rest: i18n.t('activity.listCreatedWithItems', { items: items(added.length) }),
 			}
 		}
 
 		case 'item.added':
 			return {
 				actor,
-				rest: count === 1 ? `dopisał(-a) ${name(first, ctx)}` : `dopisał(-a) ${items(count)}`,
+				rest:
+					count === 1
+						? i18n.t('activity.itemAdded', { name: name(first, ctx) })
+						: i18n.t('activity.itemAddedMany', { items: items(count) }),
 				items: count === 1 ? undefined : group.events.map((event) => name(event, ctx)),
 			}
 
 		case 'item.checked':
 			return {
 				actor,
-				rest: count === 1 ? `odhaczył(-a) ${name(first, ctx)}` : `odhaczył(-a) ${items(count)}`,
+				rest:
+					count === 1
+						? i18n.t('activity.itemChecked', { name: name(first, ctx) })
+						: i18n.t('activity.itemCheckedMany', { items: items(count) }),
 			}
 
 		case 'item.unchecked':
 			return {
 				actor,
-				rest: count === 1 ? `odznaczył(-a) ${name(first, ctx)}` : `odznaczył(-a) ${items(count)}`,
+				rest:
+					count === 1
+						? i18n.t('activity.itemUnchecked', { name: name(first, ctx) })
+						: i18n.t('activity.itemUncheckedMany', { items: items(count) }),
 			}
 
 		case 'item.edited':
@@ -174,8 +192,8 @@ export function describe(group: ActivityGroup, ctx: DescribeContext): Described 
 				actor,
 				rest:
 					count === 1
-						? `zmienił(-a) pozycję „${name(first, ctx)}"`
-						: `zmienił(-a) ${items(count)}`,
+						? i18n.t('activity.itemEdited', { name: name(first, ctx) })
+						: i18n.t('activity.itemEditedMany', { items: items(count) }),
 			}
 
 		case 'item.removed':
@@ -183,8 +201,8 @@ export function describe(group: ActivityGroup, ctx: DescribeContext): Described 
 				actor,
 				rest:
 					count === 1
-						? `usunął(-ęła) pozycję „${name(first, ctx)}"`
-						: `usunął(-ęła) ${items(count)}`,
+						? i18n.t('activity.itemRemoved', { name: name(first, ctx) })
+						: i18n.t('activity.itemRemovedMany', { items: items(count) }),
 			}
 
 		case 'item.restored':
@@ -192,39 +210,39 @@ export function describe(group: ActivityGroup, ctx: DescribeContext): Described 
 				actor,
 				rest:
 					count === 1
-						? `przywrócił(-a) pozycję „${name(first, ctx)}"`
-						: `przywrócił(-a) ${items(count)}`,
+						? i18n.t('activity.itemRestored', { name: name(first, ctx) })
+						: i18n.t('activity.itemRestoredMany', { items: items(count) }),
 			}
 
 		case 'list.renamed':
-			return { actor, rest: `zmienił(-a) nazwę listy na „${first.payload.title}"` }
+			return { actor, rest: i18n.t('activity.listRenamed', { title: first.payload.title }) }
 
 		case 'list.pinned':
-			return { actor, rest: 'przypiął(-ęła) listę' }
+			return { actor, rest: i18n.t('activity.listPinned') }
 
 		case 'list.unpinned':
-			return { actor, rest: 'odpiął(-ęła) listę' }
+			return { actor, rest: i18n.t('activity.listUnpinned') }
 
 		case 'list.archived':
 			return {
 				actor,
 				rest:
 					first.payload.reason === 'completed'
-						? 'zamknął(-ęła) listę'
-						: 'schował(-a) listę do archiwum',
+						? i18n.t('activity.listClosed')
+						: i18n.t('activity.listArchived'),
 			}
 
 		case 'list.unarchived':
-			return { actor, rest: 'przywrócił(-a) listę do aktywnych' }
+			return { actor, rest: i18n.t('activity.listUnarchived') }
 
 		case 'list.deleted':
-			return { actor, rest: 'usunął(-ęła) listę' }
+			return { actor, rest: i18n.t('activity.listDeleted') }
 
 		case 'note.created':
-			return { actor, rest: `utworzył(-a) notatkę „${first.payload.title}"` }
+			return { actor, rest: i18n.t('activity.noteCreated', { title: first.payload.title }) }
 
 		case 'note.edited':
-			return { actor, rest: `zmienił(-a) notatkę „${first.payload.title}"` }
+			return { actor, rest: i18n.t('activity.noteEdited', { title: first.payload.title }) }
 
 		/*
 		 * Load-bearing, like the one in src/db/apply.ts: an event type added
@@ -238,14 +256,23 @@ export function describe(group: ActivityGroup, ctx: DescribeContext): Described 
 	}
 }
 
-/** "3 pozycje", "8 pozycji" — accusative, which is what every verb here takes. */
+/**
+ * "3 pozycje", "8 pozycji", "3 items".
+ *
+ * The Polish forms here are **accusative**, which is what every verb in this
+ * file takes — "dopisał(-a) 3 pozycje". The nominative ones a list header needs
+ * are a separate key, `list.itemCount`. Two keys, because Polish needs two;
+ * English fills both with the same words.
+ */
 function items(count: number): string {
-	return `${count} ${plural(count, 'pozycję', 'pozycje', 'pozycji')}`
+	return i18n.t('activity.items', { count })
 }
 
 function name(event: AppEvent, ctx: DescribeContext): string {
-	if (!('itemId' in event.payload)) return 'pozycję'
-	return ctx.itemName(event.payload.itemId) || 'pozycję'
+	const fallback = i18n.t('activity.itemFallback')
+
+	if (!('itemId' in event.payload)) return fallback
+	return ctx.itemName(event.payload.itemId) || fallback
 }
 
 /** "Kuba", "Kuba i Nina", "Kuba, Nina i Ola" — the empty list of mockup 15. */
@@ -253,5 +280,8 @@ export function joinNames(names: string[]): string {
 	if (names.length === 0) return ''
 	if (names.length === 1) return names[0]
 
-	return `${names.slice(0, -1).join(', ')} i ${names[names.length - 1]}`
+	return i18n.t('activity.namesJoin', {
+		names: names.slice(0, -1).join(', '),
+		last: names[names.length - 1],
+	})
 }
