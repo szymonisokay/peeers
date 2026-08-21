@@ -13,6 +13,7 @@ This file is a map. The detail lives in `docs/`.
 | "is this in the MVP?" | [docs/PROJECT.md](docs/PROJECT.md) |
 | "what comes next?" | [docs/ROADMAP.md](docs/ROADMAP.md) |
 | naming, roles, permissions | [docs/PROJECT.md](docs/PROJECT.md#glossary) |
+| writing or changing UI copy | `messages/pl.json` and `messages/en.json`, and rule 3 below |
 | colors, typography, icons | [docs/DESIGN.md](docs/DESIGN.md), `src/theme/tokens.ts` |
 | planning a larger change | [docs/ROADMAP.md](docs/ROADMAP.md), then [docs/exec-plans/create-plan-file.md](docs/exec-plans/create-plan-file.md) |
 
@@ -25,7 +26,9 @@ Code layout:
 | `src/hooks/` | every hook, including `useTheme` |
 | `src/components/` | `Icon`, `Illustration`, and the primitives under `ui/` |
 | `src/db/` | the data layer: schema, event log, actions and queries |
-| `src/lib/` | pure helpers — Polish grammar, dates, parsing. No React, no database |
+| `src/i18n/` | language detection and the i18next setup. Everything else imports `@/i18n` |
+| `src/lib/` | helpers — grammar, dates, parsing. No React, no database |
+| `messages/` | every user-visible string, as `pl.json` and `en.json` |
 
 ## Hard constraints
 
@@ -45,10 +48,26 @@ Code layout:
    the tokens with a source annotation — never eyeball it, and never hard-code
    it in a component.
 3. **Language split.** Documentation (`AGENTS.md`, `README.md`, everything in
-   `docs/`), code, and code comments are written in **English**. UI copy is
-   **Polish** and is taken verbatim from the mockups, never translated by hand.
-   Polish domain terms (Przestrzeń, Lista, Notatka, Członek, Admin) stay Polish
-   in prose too — they are the product's vocabulary, not text to localize.
+   `docs/`), code, and code comments are written in **English**. Polish domain
+   terms (Przestrzeń, Lista, Notatka, Członek, Admin) stay Polish in that prose
+   — they are the product's vocabulary, not text to localize.
+
+   **UI copy lives in `messages/pl.json` and `messages/en.json`, never in a
+   component.** A new string means a new key in *both* files; `npx tsc --noEmit`
+   fails if you add one and forget the other. Polish is taken verbatim from the
+   mockups and is the reference for layout; English is authored, and an English
+   string too long for its row gets shortened rather than accommodated. The
+   mockups show no English at all — see [docs/DESIGN.md](docs/DESIGN.md#copy).
+
+   In a component, `const { t } = useTranslation()`. Outside React — `src/lib/`,
+   and helpers defined at module scope in a screen file — `import i18n from
+   '@/i18n'` and call `i18n.t`. A component rendering text that a `src/lib`
+   helper produced calls `useTranslation()` itself even if it never uses `t`
+   directly, so it re-renders when the language changes.
+
+   The language is the phone's, resolved once at startup, with English for
+   anything that is not Polish. There is no in-app switcher yet; it arrives with
+   M7's settings screen.
 4. **Do not widen the MVP.** The list of deliberately deferred work is in
    [docs/PROJECT.md](docs/PROJECT.md#deliberately-out-of-scope). Do not add any
    of it while doing something else.

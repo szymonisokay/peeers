@@ -10,6 +10,24 @@ code is wrong — except for the defects listed at the bottom of this file.
 
 Dark variants: `38` (feed), `39` (list), `40` (note).
 
+## Copy
+
+The mockups are the source of the **Polish** copy and nothing else: take a
+string from the drawing rather than paraphrasing it. They show no English at
+all, so the English copy is authored — by whoever builds the screen, in
+`messages/en.json`, next to the Polish it translates.
+
+Polish stays the reference for layout, because it is the language the drawings
+were laid out in. Where a row, a chip or a counter is tight, that is Polish's
+measurement, and an English string that does not fit gets shortened rather than
+accommodated. Do not widen a component or add a token to make room for an
+English word; English is almost always the shorter of the two anyway, and where
+it is not, it is the half that can be rewritten.
+
+Both files live at the repository root, in `messages/`. A new string is a new
+key in both — `npx tsc --noEmit` fails otherwise. See rule 3 in
+[AGENTS.md](../AGENTS.md).
+
 ## Tokens
 
 **`src/theme/tokens.ts` is canonical.** Do not write colors, spacing or text

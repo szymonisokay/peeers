@@ -1,0 +1,25 @@
+{
+	"app": {
+		"cancel": "Cancel",
+		"save": "Save",
+		"delete": "Delete",
+		"done": "Done",
+		"you": "You",
+		"progress": "{{checked}} of {{total}}"
+	},
+	"tabs": {
+		"space": "Space",
+		"lists": "Shopping",
+		"notes": "Notes",
+		"you": "You",
+		"create": "Create"
+	},
+	"stubs": {
+		"feed": "Feed — mockup 03",
+		"notes": "Note list — mockup 09",
+		"openNote": "Open a note →",
+		"profile": "Profile and settings — mockup 13",
+		"noteTitle": "Note {{id}}",
+		"note": "Note view — mockup 10"
+	}
+}

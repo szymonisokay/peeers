@@ -1,0 +1,25 @@
+{
+	"app": {
+		"cancel": "Anuluj",
+		"save": "Zapisz",
+		"delete": "Usuń",
+		"done": "Gotowe",
+		"you": "Ty",
+		"progress": "{{checked}} z {{total}}"
+	},
+	"tabs": {
+		"space": "Przestrzeń",
+		"lists": "Zakupy",
+		"notes": "Notatki",
+		"you": "Ty",
+		"create": "Utwórz"
+	},
+	"stubs": {
+		"feed": "Feed — makieta 03",
+		"notes": "Lista notatek — makieta 09",
+		"openNote": "Otwórz notatkę →",
+		"profile": "Profil i ustawienia — makieta 13",
+		"noteTitle": "Notatka {{id}}",
+		"note": "Widok notatki — makieta 10"
+	}
+}

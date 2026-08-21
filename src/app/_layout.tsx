@@ -11,6 +11,10 @@ import { Platform, StyleSheet } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import { useDatabase, useTheme } from '@/hooks'
+// Side-effect import: resolves the language and initialises i18next. It has to
+// happen before any module calls `t`, and this is the first module expo-router
+// evaluates.
+import '@/i18n'
 
 export default function RootLayout() {
 	const { scheme, colors, radius } = useTheme()

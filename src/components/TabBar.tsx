@@ -1,5 +1,6 @@
 import { router } from 'expo-router'
 import type { BottomTabBarProps } from 'expo-router/build/react-navigation/bottom-tabs/types'
+import { useTranslation } from 'react-i18next'
 import { Platform, Pressable, StyleSheet, View } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -30,6 +31,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 	const { colors, shadow, spacing } = useTheme()
 	const insets = useSafeAreaInsets()
 	const press = usePressScale()
+	const { t } = useTranslation()
 
 	/*
 	 * 13 is an iOS mockup, where the home-indicator inset gives the bar its
@@ -92,7 +94,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 			>
 				<Pressable
 					accessibilityRole='button'
-					accessibilityLabel='Utwórz'
+					accessibilityLabel={t('tabs.create')}
 					onPress={() => router.push('/new')}
 					onPressIn={press.onPressIn}
 					onPressOut={press.onPressOut}

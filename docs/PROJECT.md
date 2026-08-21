@@ -8,17 +8,23 @@ that it stays visible who did what.
 
 ## Glossary
 
-Polish domain terms are the product's vocabulary — the mockups and the UI use
-exactly these words, so keep them in code and prose rather than translating.
+Polish domain terms are the product's vocabulary. Keep them Polish in code,
+comments and documentation — including this file — rather than translating them
+into prose. The middle column is the **English UI** word, and the only place a
+translation belongs: it appears in `messages/en.json` and nowhere else.
 
-| Term | Meaning |
-|---|---|
-| **Przestrzeń** | container for lists, notes and people. Type: Dom / Praca / Wyjazd. A person can belong to several. |
-| **Lista** | a shopping list. Items have a name, a quantity and a note. Once everything is checked off, the list moves to the archive. |
-| **Notatka** | free text inside a Przestrzeń. Can be hidden from selected people. |
-| **Feed** | stream of events in a Przestrzeń ("Kuba odhaczył chleb i masło"). |
-| **Rola** | `Członek` (adds, checks off, creates, invites) or `Admin` (everything a member does, plus Przestrzeń rules, deleting lists and changing roles). At least one admin must remain in a Przestrzeń. |
-| **Kod zaproszenia** | 6-character code for joining a Przestrzeń, expires after 24 h. |
+| Term | In the English UI | Meaning |
+|---|---|---|
+| **Przestrzeń** | Space | container for lists, notes and people. Type: Dom / Praca / Wyjazd. A person can belong to several. |
+| **Lista** | List | a shopping list. Items have a name, a quantity and a note. Once everything is checked off, the list moves to the archive. |
+| **Notatka** | Note | free text inside a Przestrzeń. Can be hidden from selected people. |
+| **Feed** | Feed | stream of events in a Przestrzeń ("Kuba odhaczył chleb i masło"). |
+| **Rola** | Role | `Członek` / Member (adds, checks off, creates, invites) or `Admin` / Admin (everything a member does, plus Przestrzeń rules, deleting lists and changing roles). At least one admin must remain in a Przestrzeń. |
+| **Kod zaproszenia** | Invite code | 6-character code for joining a Przestrzeń, expires after 24 h. |
+
+"Space" was chosen over "Home" and "Household" because both of those narrow it:
+a Przestrzeń can be a Praca or a Wyjazd, which is what `SpaceType` in
+`src/db/events.ts` records.
 
 ## Identity
 

@@ -24,7 +24,10 @@ sheet, and pushed detail routes — and **M3**, the data layer: SQLite through
 Drizzle, an append-only event log, and a seeded "Mieszkanie 14" visible at
 `/db`.
 
-Next: M4. Everything from M4 down is unstarted.
+Next: M4, which is part-built — the list index, a list, quick-add and the item
+sheet are in. **M4b** interrupts it on purpose: the app had to speak two
+languages before more copy was written, so that the rest of M4 is authored
+bilingual instead of extracted twice. Everything from M5 down is unstarted.
 
 ## How the order was chosen
 
@@ -54,6 +57,7 @@ belong with the people screens.
 | M2 | Navigation shell | tab bar and routes, screens as stubs — **done** | M1 |
 | M3 | Data model and persistence | entities, local store, sync-ready event log — **done** | — |
 | M4 | Shopping lists | the core loop, single device | M1–M3 |
+| M4b | Bilingual UI | Polish and English from message files | M4 (partly) |
 | M5 | Notes | markdown notes | M1–M3 |
 | M6 | Feed and Przestrzeń switching | activity stream, multi-Przestrzeń | M4, M5 |
 | M7 | Onboarding and profile | first run, identity, appearance | M3, M6 |
@@ -153,6 +157,31 @@ Mockups: `05`, `07`, `08`, `15`, `19`, `25`, `28`, `35`, `39`, `41`.
 
 Soft delete from the start — `25` offers "Przywróć" for both checked-off and
 deleted items.
+
+### M4b — Bilingual UI
+
+Every user-visible string moves out of the components and into
+`messages/pl.json` and `messages/en.json`, and the app picks a language from the
+phone at startup — Polish for a phone that asks for Polish, English for
+everything else. `src/i18n/` holds the setup; `i18next` with `react-i18next`
+does the lookup, and `intl-pluralrules` supplies the `Intl.PluralRules` that
+Hermes lacks and that Polish's three plural forms need.
+
+**No in-app language switcher.** Changing the language belongs to M7's
+appearance settings, next to the theme and the text scale, and `setLanguage` in
+`src/i18n/index.ts` is the seam it plugs into.
+
+This landed between M4.4 and M4.5 rather than at the end, because every
+milestone after it writes new copy and the alternative was extracting it twice.
+
+**The standing rule it leaves behind:** a new string is a new key in *both*
+message files. `npx tsc --noEmit` enforces it — English types the keys, and an
+assignment in `src/i18n/index.ts` fails when Polish is missing one. Polish is
+verbatim from the mockups and is the reference for layout; English is authored.
+See rule 3 in [AGENTS.md](../AGENTS.md).
+
+Not translated, deliberately: `src/db/seed.ts`, whose data is the Przestrzeń the
+mockups draw, and the two development routes `/gallery` and `/db`.
 
 ### M5 — Notes
 
