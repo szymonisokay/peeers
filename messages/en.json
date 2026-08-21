@@ -45,12 +45,48 @@
 		"headingToday": "TODAY",
 		"headingYesterday": "YESTERDAY"
 	},
+	"new": {
+		"heading": "What are we making",
+		"listTitle": "Shopping list",
+		"listSubtitle": "A shared list — everyone checks off their own",
+		"noteTitle": "Note",
+		"noteSubtitle": "Text or a checklist, you choose who sees it"
+	},
+	"lists": {
+		"title": "Lists",
+		"empty": "No lists yet",
+		"pinned": "PINNED",
+		"active": "ACTIVE · {{count}}",
+		"archive": "ARCHIVE · {{count}}",
+		"archiveHint": "Closed lists land here once everything is checked off"
+	},
 	"list": {
 		"itemCount_one": "{{count}} item",
 		"itemCount_other": "{{count}} items",
 		"personCount_one": "{{count}} person",
 		"personCount_other": "{{count}} people",
-		"checkedLabel": "checked off"
+		"checkedLabel": "checked off",
+		"emptyTitle": "This list is still empty",
+		"emptyBody": "Add the first thing, or paste a whole list from a note.",
+		"emptyBodyWithPeople": "Add the first thing, or paste a whole list from a note. {{names}} will see it right away.",
+		"frequentHeading": "OFTEN ON YOUR LISTS",
+		"frequentInline": "often on your lists",
+		"toBuy": "TO BUY",
+		"checked": "CHECKED OFF · {{count}}",
+		"add": "add",
+		"parseHint": "“x2” is read as a quantity, and text after a comma as a note — “paper towels, the big pack”.",
+		"placeholderFirst": "Add the first item…",
+		"placeholder": "Add an item…"
+	},
+	"item": {
+		"heading": "ITEM",
+		"name": "NAME",
+		"quantity": "QUANTITY",
+		"note": "NOTE",
+		"noteHint": "Everyone on the list sees the note — a good place for a brand, a size, or “the one in the green box”.",
+		"removeTitle": "Remove “{{name}}”?",
+		"removeBody": "You can restore it from the change history.",
+		"addedBy": "Added by {{who}} · {{when}}"
 	},
 	"activity": {
 		"items_one": "{{count}} item",

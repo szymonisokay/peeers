@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite'
 import { router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { StyleSheet, View } from 'react-native'
 
 import { Icon } from '@/components/Icon'
@@ -18,6 +19,7 @@ import {
 	spaceById,
 } from '@/db'
 import { usePressScale, useTheme } from '@/hooks'
+import i18n from '@/i18n'
 import { describe, groupEvents, type Described } from '@/lib/eventText'
 import { shortWhen } from '@/lib/time'
 
@@ -33,6 +35,7 @@ type ListRow = typeof listsTable.$inferSelect
  */
 export default function Lists() {
 	const { colors, radius, spacing } = useTheme()
+	const { t } = useTranslation()
 
 	const spaceId = currentSpaceId()
 	const personId = currentPersonId()
@@ -76,21 +79,21 @@ export default function Lists() {
 		<Screen scroll contentStyle={{ gap: spacing.md, paddingVertical: spacing.md }}>
 			<View>
 				<SectionLabel>{(space[0]?.name ?? '').toUpperCase()}</SectionLabel>
-				<Text variant='titleLarge'>Listy</Text>
+				<Text variant='titleLarge'>{t('lists.title')}</Text>
 			</View>
 
-			{rows.length === 0 ? <EmptyState title='Nie ma jeszcze żadnej listy' /> : null}
+			{rows.length === 0 ? <EmptyState title={t('lists.empty')} /> : null}
 
 			{pinned.length > 0 ? (
 				<>
-					<SectionLabel icon='pin'>PRZYPIĘTA</SectionLabel>
+					<SectionLabel icon='pin'>{t('lists.pinned')}</SectionLabel>
 					{pinned.map(card)}
 				</>
 			) : null}
 
 			{active.length > 0 ? (
 				<>
-					<SectionLabel>{`AKTYWNE · ${active.length}`}</SectionLabel>
+					<SectionLabel>{t('lists.active', { count: active.length })}</SectionLabel>
 					{active.map(card)}
 				</>
 			) : null}
@@ -98,7 +101,7 @@ export default function Lists() {
 			{archived.length > 0 ? (
 				<>
 					{/* "Pokaż ›" arrives with the archive screen in Milestone 8. */}
-					<SectionLabel>{`ARCHIWUM · ${archived.length}`}</SectionLabel>
+					<SectionLabel>{t('lists.archive', { count: archived.length })}</SectionLabel>
 					<View
 						style={[
 							styles.strip,
@@ -112,7 +115,7 @@ export default function Lists() {
 					>
 						<Icon name='check' size={20} color={colors.success} />
 						<Text variant='bodySmall' tone='muted' style={styles.grow}>
-							Zamknięte listy schodzą tu po odhaczeniu wszystkiego
+							{t('lists.archiveHint')}
 						</Text>
 					</View>
 				</>
@@ -133,6 +136,7 @@ type ListCardProps = {
 
 function ListCard({ list, checked, total, said, actorName, actorColor }: ListCardProps) {
 	const { colors, radius, spacing } = useTheme()
+	const { t } = useTranslation()
 	const press = usePressScale()
 	const isPinned = Boolean(list.pinnedAt)
 
@@ -164,7 +168,7 @@ function ListCard({ list, checked, total, said, actorName, actorColor }: ListCar
 									: undefined
 							}
 						>
-							{`${checked} z ${total}`}
+							{t('app.progress', { checked, total })}
 						</Text>
 					</View>
 
@@ -203,8 +207,14 @@ function summary(
 	// and that row always knows who made it and when.
 	if (!newest) {
 		return {
-			actor: list.createdBy === ctx.currentPersonId ? 'Ty' : ctx.personName(list.createdBy),
-			rest: 'utworzył(-a) listę',
+			// Module scope, so no `useTranslation()` here — see rule 3 in AGENTS.md.
+			// The key is the one `describe` returns for `list.created`: one sentence,
+			// one place it is written.
+			actor:
+				list.createdBy === ctx.currentPersonId
+					? i18n.t('app.you')
+					: ctx.personName(list.createdBy),
+			rest: i18n.t('activity.listCreated'),
 			at: list.createdAt,
 		}
 	}

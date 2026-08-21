@@ -1,4 +1,5 @@
 import { router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { StyleSheet, View } from 'react-native'
 
 import { Icon, type IconName } from '@/components/Icon'
@@ -9,26 +10,31 @@ import { usePressScale, useTheme } from '@/hooks'
 /**
  * "Co tworzymy" — the sheet behind the raised +. See 05.
  *
- * Copy is taken verbatim from the mockup. Targets are stubs: M4 and M5 wire
- * them to real creation flows.
+ * Targets are stubs: M4 and M5 wire them to real creation flows.
+ *
+ * The array holds keys rather than words because it is evaluated once, at
+ * module scope, where there is no component to call `useTranslation()` in — and
+ * a sentence resolved at import time would keep the language the app started
+ * with. `OptionCard` translates as it renders.
  */
 const OPTIONS = [
 	{
 		icon: 'checklist' as IconName,
-		title: 'Lista zakupów',
-		subtitle: 'Wspólna lista, każdy odhacza po swojemu',
+		titleKey: 'new.listTitle',
+		subtitleKey: 'new.listSubtitle',
 		highlighted: true,
 	},
 	{
 		icon: 'note' as IconName,
-		title: 'Notatka',
-		subtitle: 'Tekst albo checklista, wybierasz kto widzi',
+		titleKey: 'new.noteTitle',
+		subtitleKey: 'new.noteSubtitle',
 		highlighted: false,
 	},
-]
+] as const
 
 export default function New() {
 	const { colors, spacing } = useTheme()
+	const { t } = useTranslation()
 
 	return (
 		// Not `Screen`: a sheet sits on the surface colour, and 05 shows the sheet
@@ -42,12 +48,12 @@ export default function New() {
 				paddingBottom: spacing.lg,
 			}}
 		>
-			<SectionLabel>Co tworzymy</SectionLabel>
+			<SectionLabel>{t('new.heading')}</SectionLabel>
 
 			<View style={{ gap: spacing.sm }}>
 				{OPTIONS.map((option) => (
 					<OptionCard
-						key={option.title}
+						key={option.titleKey}
 						{...option}
 						onPress={() => router.back()}
 					/>
@@ -55,7 +61,7 @@ export default function New() {
 			</View>
 
 			<Button
-				label='Anuluj'
+				label={t('app.cancel')}
 				variant='plain'
 				onPress={() => router.back()}
 			/>
@@ -65,8 +71,8 @@ export default function New() {
 
 type OptionCardProps = {
 	icon: IconName
-	title: string
-	subtitle: string
+	titleKey: (typeof OPTIONS)[number]['titleKey']
+	subtitleKey: (typeof OPTIONS)[number]['subtitleKey']
 	/** The first option is tinted in 05, drawing the eye to the common choice. */
 	highlighted: boolean
 	onPress: () => void
@@ -74,12 +80,13 @@ type OptionCardProps = {
 
 function OptionCard({
 	icon,
-	title,
-	subtitle,
+	titleKey,
+	subtitleKey,
 	highlighted,
 	onPress,
 }: OptionCardProps) {
 	const { colors, radius, spacing } = useTheme()
+	const { t } = useTranslation()
 	const press = usePressScale()
 	const tile = 38
 
@@ -126,9 +133,9 @@ function OptionCard({
 			</View>
 
 			<View style={styles.grow}>
-				<Text variant='bodyMedium'>{title}</Text>
+				<Text variant='bodyMedium'>{t(titleKey)}</Text>
 				<Text variant='caption' tone='muted'>
-					{subtitle}
+					{t(subtitleKey)}
 				</Text>
 			</View>
 

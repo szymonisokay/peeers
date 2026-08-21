@@ -7,6 +7,7 @@ import {
 } from '@expo-google-fonts/public-sans'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
+import { useTranslation } from 'react-i18next'
 import { Platform, StyleSheet } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
@@ -18,6 +19,7 @@ import '@/i18n'
 
 export default function RootLayout() {
 	const { scheme, colors, radius } = useTheme()
+	const { t } = useTranslation()
 	const [fontsLoaded] = useFonts({
 		PublicSans_400Regular,
 		PublicSans_500Medium,
@@ -73,7 +75,8 @@ export default function RootLayout() {
 					options={{
 						headerShown: true,
 						headerTitle: '',
-						headerBackTitle: 'Mieszkanie 14',
+						// The back title is the Przestrzeń this list belongs to, so
+						// the screen itself sets it — see src/app/list/[id]/index.tsx.
 					}}
 				/>
 				<Stack.Screen
@@ -81,7 +84,7 @@ export default function RootLayout() {
 					options={{
 						headerShown: true,
 						headerTitle: '',
-						headerBackTitle: 'Notatki',
+						headerBackTitle: t('tabs.notes'),
 					}}
 				/>
 

@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Alert, Pressable, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
@@ -27,6 +28,7 @@ import { whenLong } from '@/lib/time'
  */
 export default function ItemDetail() {
 	const { colors, spacing } = useTheme()
+	const { t } = useTranslation()
 	const insets = useSafeAreaInsets()
 
 	const { id } = useLocalSearchParams<{ id: string }>()
@@ -101,10 +103,10 @@ export default function ItemDetail() {
 	}
 
 	const remove = () => {
-		Alert.alert(`Usunąć „${item.name}"?`, 'Pozycję można przywrócić w historii zmian.', [
-			{ text: 'Anuluj', style: 'cancel' },
+		Alert.alert(t('item.removeTitle', { name: item.name }), t('item.removeBody'), [
+			{ text: t('app.cancel'), style: 'cancel' },
 			{
-				text: 'Usuń',
+				text: t('app.delete'),
 				style: 'destructive',
 				onPress: () => {
 					removeItem({ spaceId, listId: item.listId, itemId: item.id })
@@ -127,16 +129,16 @@ export default function ItemDetail() {
 			}}
 		>
 			<View style={styles.row}>
-				<SectionLabel>POZYCJA</SectionLabel>
+				<SectionLabel>{t('item.heading')}</SectionLabel>
 				<Pressable onPress={save} disabled={!canSave} hitSlop={spacing.sm} style={styles.right}>
 					<Text variant='bodyMedium' tone='accent' style={{ opacity: canSave ? 1 : 0.4 }}>
-						Zapisz
+						{t('app.save')}
 					</Text>
 				</Pressable>
 			</View>
 
 			<View style={{ gap: spacing.xs }}>
-				<SectionLabel>NAZWA</SectionLabel>
+				<SectionLabel>{t('item.name')}</SectionLabel>
 				<TextField
 					value={name}
 					onChangeText={setName}
@@ -148,12 +150,12 @@ export default function ItemDetail() {
 
 			<View style={[styles.row, { gap: spacing.lg, alignItems: 'flex-start' }]}>
 				<View style={{ gap: spacing.xs }}>
-					<SectionLabel>ILOŚĆ</SectionLabel>
+					<SectionLabel>{t('item.quantity')}</SectionLabel>
 					<Stepper value={quantity} onChange={setQuantity} />
 				</View>
 
 				<View style={[styles.grow, { gap: spacing.xs }]}>
-					<SectionLabel>DOPISEK</SectionLabel>
+					<SectionLabel>{t('item.note')}</SectionLabel>
 					<TextField value={note} onChangeText={setNote} onSubmitEditing={save} />
 				</View>
 			</View>
@@ -167,8 +169,7 @@ export default function ItemDetail() {
 			) : null}
 
 			<Text variant='bodySmall' tone='muted'>
-				Dopisek widzą wszyscy na liście — dobre miejsce na markę, rozmiar albo „ten w zielonym
-				pudełku".
+				{t('item.noteHint')}
 			</Text>
 
 			<View
@@ -188,11 +189,14 @@ export default function ItemDetail() {
 					size={28}
 				/>
 				<Text variant='bodySmall' tone='muted' style={styles.grow} numberOfLines={1}>
-					{`Dodał(-a) ${item.createdBy === personId ? 'Ty' : (author?.name ?? '—')} · ${whenLong(item.createdAt)}`}
+					{t('item.addedBy', {
+						who: item.createdBy === personId ? t('app.you') : (author?.name ?? '—'),
+						when: whenLong(item.createdAt),
+					})}
 				</Text>
 				<Pressable onPress={remove} hitSlop={spacing.sm}>
 					<Text variant='bodyMedium' tone='danger'>
-						Usuń
+						{t('app.delete')}
 					</Text>
 				</Pressable>
 			</View>

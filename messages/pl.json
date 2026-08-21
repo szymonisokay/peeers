@@ -47,6 +47,21 @@
 		"headingToday": "DZIŚ",
 		"headingYesterday": "WCZORAJ"
 	},
+	"new": {
+		"heading": "Co tworzymy",
+		"listTitle": "Lista zakupów",
+		"listSubtitle": "Wspólna lista, każdy odhacza po swojemu",
+		"noteTitle": "Notatka",
+		"noteSubtitle": "Tekst albo checklista, wybierasz kto widzi"
+	},
+	"lists": {
+		"title": "Listy",
+		"empty": "Nie ma jeszcze żadnej listy",
+		"pinned": "PRZYPIĘTA",
+		"active": "AKTYWNE · {{count}}",
+		"archive": "ARCHIWUM · {{count}}",
+		"archiveHint": "Zamknięte listy schodzą tu po odhaczeniu wszystkiego"
+	},
 	"list": {
 		"itemCount_one": "{{count}} pozycja",
 		"itemCount_few": "{{count}} pozycje",
@@ -56,7 +71,28 @@
 		"personCount_few": "{{count}} osoby",
 		"personCount_many": "{{count}} osób",
 		"personCount_other": "{{count}} osób",
-		"checkedLabel": "odhaczone"
+		"checkedLabel": "odhaczone",
+		"emptyTitle": "Lista jest jeszcze pusta",
+		"emptyBody": "Dopisz pierwszą rzecz albo wklej całą listę z notatki.",
+		"emptyBodyWithPeople": "Dopisz pierwszą rzecz albo wklej całą listę z notatki. {{names}} zobaczą ją od razu.",
+		"frequentHeading": "CZĘSTE U WAS",
+		"frequentInline": "częste u Was",
+		"toBuy": "DO KUPIENIA",
+		"checked": "ODHACZONE · {{count}}",
+		"add": "dodaj",
+		"parseHint": "„x2\" czytamy jako ilość, tekst po przecinku jako dopisek — „papier, duża paczka\".",
+		"placeholderFirst": "Dodaj pierwszą pozycję…",
+		"placeholder": "Dodaj pozycję…"
+	},
+	"item": {
+		"heading": "POZYCJA",
+		"name": "NAZWA",
+		"quantity": "ILOŚĆ",
+		"note": "DOPISEK",
+		"noteHint": "Dopisek widzą wszyscy na liście — dobre miejsce na markę, rozmiar albo „ten w zielonym pudełku\".",
+		"removeTitle": "Usunąć „{{name}}\"?",
+		"removeBody": "Pozycję można przywrócić w historii zmian.",
+		"addedBy": "Dodał(-a) {{who}} · {{when}}"
 	},
 	"activity": {
 		"items_one": "{{count}} pozycję",

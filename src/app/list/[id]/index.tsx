@@ -34,6 +34,7 @@ import {
 	listItems as listItemsTable,
 	membersOfSpace,
 	removeItem,
+	spaceById,
 	uncheckItem,
 } from '@/db'
 import { usePressScale, useTheme } from '@/hooks'
@@ -86,6 +87,7 @@ export default function ListDetail() {
 	const { data: items } = useLiveQuery(itemsInList(id), [id])
 	const { data: persons } = useLiveQuery(allPeople())
 	const { data: members } = useLiveQuery(membersOfSpace(spaceId), [spaceId])
+	const { data: space } = useLiveQuery(spaceById(spaceId), [spaceId])
 
 	const list = found[0]
 	const toBuy = items.filter((item) => !item.checkedAt)
@@ -95,7 +97,7 @@ export default function ListDetail() {
 
 	const person = (id: string | null) => persons.find((row) => row.id === id)
 	const who = (id: string | null) =>
-		id === personId ? 'Ty' : (person(id)?.name ?? '—')
+		id === personId ? t('app.you') : (person(id)?.name ?? '—')
 
 	const others = members
 		.filter((member) => member.personId !== personId)
@@ -125,6 +127,11 @@ export default function ListDetail() {
 		<Animated.View style={[styles.fill, lift]}>
 			<Stack.Screen
 				options={{
+					// Where this screen was pushed from. It was a hard-coded
+					// "Mieszkanie 14" in src/app/_layout.tsx, which is one seeded
+					// Przestrzeń's name standing in for whichever one the list is in.
+					// iOS draws it beside the back arrow; Android ignores it.
+					headerBackTitle: space[0]?.name,
 					// 07 puts "Udostępnij" here and 08 puts "Gotowe". The first is not
 					// being built, so the slot is free for the second.
 					headerRight: typing
@@ -134,7 +141,7 @@ export default function ListDetail() {
 									hitSlop={spacing.sm}
 								>
 									<Text variant='bodyMedium' tone='accent'>
-										Gotowe
+										{t('app.done')}
 									</Text>
 								</Pressable>
 							)
@@ -198,11 +205,13 @@ export default function ListDetail() {
 						illustration={
 							<Illustration name='empty-list' scale={1.4} />
 						}
-						title='Lista jest jeszcze pusta'
+						title={t('list.emptyTitle')}
 						body={
 							others.length > 0
-								? `Dopisz pierwszą rzecz albo wklej całą listę z notatki. ${joinNames(others)} zobaczą ją od razu.`
-								: 'Dopisz pierwszą rzecz albo wklej całą listę z notatki.'
+								? t('list.emptyBodyWithPeople', {
+										names: joinNames(others),
+									})
+								: t('list.emptyBody')
 						}
 						footer={
 							suggestions.length > 0 ? (
@@ -212,7 +221,7 @@ export default function ListDetail() {
 										alignItems: 'center',
 									}}
 								>
-									<SectionLabel>CZĘSTE U WAS</SectionLabel>
+									<SectionLabel>{t('list.frequentHeading')}</SectionLabel>
 									<View
 										style={[
 											styles.chips,
@@ -241,7 +250,7 @@ export default function ListDetail() {
 							paddingBottom: spacing.sm,
 						}}
 					>
-						<SectionLabel>DO KUPIENIA</SectionLabel>
+						<SectionLabel>{t('list.toBuy')}</SectionLabel>
 					</View>
 				) : null}
 
@@ -315,7 +324,7 @@ export default function ListDetail() {
 							paddingBottom: spacing.sm,
 						}}
 					>
-						<SectionLabel>{`ODHACZONE · ${done.length}`}</SectionLabel>
+						<SectionLabel>{t('list.checked', { count: done.length })}</SectionLabel>
 					</View>
 				) : null}
 
@@ -388,6 +397,7 @@ function Draft({
 	onPick: (name: string) => void
 }) {
 	const { colors, spacing } = useTheme()
+	const { t } = useTranslation()
 
 	return (
 		<View style={{ backgroundColor: colors.selectedSurface }}>
@@ -398,15 +408,14 @@ function Draft({
 				onPress={onAdd}
 				right={
 					<Text variant='bodySmall' tone='accent'>
-						dodaj
+						{t('list.add')}
 					</Text>
 				}
 			/>
 
 			<View style={{ padding: spacing.lg, gap: spacing.md }}>
 				<Text variant='bodySmall' tone='muted'>
-					„x2" czytamy jako ilość, tekst po przecinku jako dopisek —
-					„papier, duża paczka".
+					{t('list.parseHint')}
 				</Text>
 
 				{suggestions.length > 0 ? (
@@ -424,7 +433,7 @@ function Draft({
 							/>
 						))}
 						<Text variant='bodySmall' tone='muted'>
-							częste u Was
+							{t('list.frequentInline')}
 						</Text>
 					</View>
 				) : null}
@@ -458,6 +467,7 @@ function AddBar({
 	inputRef: React.RefObject<TextInput | null>
 }) {
 	const { colors, radius, spacing, typography } = useTheme()
+	const { t } = useTranslation()
 	const press = usePressScale()
 	const button = 36
 	const ready = value.trim().length > 0
@@ -514,7 +524,9 @@ function AddBar({
 					submitBehavior='submit'
 					returnKeyType='done'
 					placeholder={
-						empty ? 'Dodaj pierwszą pozycję…' : 'Dodaj pozycję…'
+						empty
+							? t('list.placeholderFirst')
+							: t('list.placeholder')
 					}
 					placeholderTextColor={colors.textMuted}
 					style={[
