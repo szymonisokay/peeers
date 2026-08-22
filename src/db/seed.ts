@@ -307,6 +307,15 @@ function seedArchived(input: {
 		)
 	})
 
+	/*
+	 * A list whose every item is checked closes itself — `closeIfDone` in
+	 * ./actions.ts appended that event as part of the last `checkItem` above.
+	 * Saying it again here would put two archivals in the log and make the
+	 * change history report the same thing twice.
+	 */
+	const closedItself = reason === 'completed' && checked === items.length && items.length > 0
+	if (closedItself) return
+
 	archiveList(
 		{ spaceId, listId, reason },
 		{ actorId, createdAt: at(closedDaysAgo, 11, items.length) },

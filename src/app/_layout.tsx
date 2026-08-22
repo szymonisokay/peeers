@@ -80,6 +80,11 @@ export default function RootLayout() {
 					}}
 				/>
 				{/*
+          The archive of 41, pushed from "Pokaż ›" on 35.
+        */}
+				<Stack.Screen name='archive' options={{ headerShown: true, headerTitle: '' }} />
+
+				{/*
           The change history of 25. A pushed screen like the list itself, with
           its own header — the back title is the list's name and is set by the
           screen, which is the only place that knows it.

@@ -1,5 +1,5 @@
 import { randomUUID } from 'expo-crypto'
-import { eq, max } from 'drizzle-orm'
+import { and, eq, isNull, max } from 'drizzle-orm'
 
 import { applyEvent } from './apply'
 import { db } from './client'
@@ -11,7 +11,7 @@ import type {
 	Role,
 	SpaceType,
 } from './events'
-import { listItems, settings } from './schema'
+import { listItems, lists, settings } from './schema'
 
 /**
  * One function per thing a person can do.
@@ -275,6 +275,8 @@ export function checkItem(
 			options,
 		),
 	)
+
+	closeIfDone(input, options)
 }
 
 export function uncheckItem(
@@ -289,6 +291,59 @@ export function uncheckItem(
 			options,
 		),
 	)
+
+	reopenIfClosed(input, options)
+}
+
+/**
+ * A list closes itself once its last unchecked item is ticked. D-Q1.
+ *
+ * This is a **second event**, appended after the first, and it lives here in
+ * the action layer rather than in the reducer. `applyEvent` must stay true to
+ * the M3 rule that applying an event never depends on what this device already
+ * knows — otherwise the same event would produce different results on two
+ * phones depending on which one had caught up. Deciding is the writer's job;
+ * the reducer only applies. M8 pushes both events in the order they were
+ * appended, and every phone replays the same two.
+ *
+ * Two guards, both load-bearing. A list with nothing on it has not been
+ * finished, so an empty list does not archive itself the moment it is made. And
+ * a list already in the archive is left alone, so ticking something on an
+ * archived list does not append a second archival.
+ */
+function closeIfDone(
+	input: { spaceId: string; listId: string },
+	options?: EventOptions,
+): void {
+	const [list] = db.select().from(lists).where(eq(lists.id, input.listId)).all()
+	if (!list || list.archivedAt || list.deletedAt) return
+
+	const alive = db
+		.select({ checkedAt: listItems.checkedAt })
+		.from(listItems)
+		.where(and(eq(listItems.listId, input.listId), isNull(listItems.deletedAt)))
+		.all()
+
+	if (alive.length === 0) return
+	if (alive.some((item) => item.checkedAt === null)) return
+
+	archiveList({ ...input, reason: 'completed' }, options)
+}
+
+/**
+ * The mirror image: unticking something reopens a list that had closed itself.
+ *
+ * Only that kind. A list somebody put away by hand stays away until somebody
+ * takes it back out — that is the whole reason `archived_reason` exists.
+ */
+function reopenIfClosed(
+	input: { spaceId: string; listId: string },
+	options?: EventOptions,
+): void {
+	const [list] = db.select().from(lists).where(eq(lists.id, input.listId)).all()
+	if (!list?.archivedAt || list.archivedReason !== 'completed') return
+
+	unarchiveList(input, options)
 }
 
 export function editItem(

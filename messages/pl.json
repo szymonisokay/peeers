@@ -64,7 +64,8 @@
 		"active": "AKTYWNE · {{count}}",
 		"archive": "ARCHIWUM · {{count}}",
 		"archiveHint": "Zamknięte listy schodzą tu po odhaczeniu wszystkiego",
-		"new": "Nowa"
+		"new": "Nowa",
+		"show": "Pokaż ›"
 	},
 	"list": {
 		"itemCount_one": "{{count}} pozycja",
@@ -107,6 +108,20 @@
 		"submit_many": "Dodaj {{count}} pozycji do listy",
 		"submit_other": "Dodaj {{count}} pozycji do listy"
 	},
+	"archive": {
+		"title": "Archiwum",
+		"listCount_one": "{{count}} lista",
+		"listCount_few": "{{count}} listy",
+		"listCount_many": "{{count}} list",
+		"listCount_other": "{{count}} list",
+		"clear": "Wyczyść",
+		"clearTitle": "Usunąć na zawsze {{lists}}?",
+		"clearBody": "Znikną wszystkim w Przestrzeni i nie da się ich przywrócić.",
+		"closed": "{{items}} · zamknięta {{date}}",
+		"hidden": "{{progress}} · schowana ręcznie {{date}}",
+		"empty": "Archiwum jest puste",
+		"info": "Z archiwum bierzemy podpowiedzi przy dopisywaniu. Trzy kropki otwierają „Przywróć do aktywnych\", „Skopiuj pozycje na nową listę\" i „Usuń na zawsze\"."
+	},
 	"history": {
 		"title": "Historia zmian",
 		"window": "Ostatnie 30 dni",
@@ -126,6 +141,9 @@
 		"unpin": "Odepnij",
 		"archive": "Schowaj do archiwum",
 		"delete": "Usuń listę",
+		"unarchive": "Przywróć do aktywnych",
+		"copy": "Skopiuj pozycje na nową listę",
+		"deleteForever": "Usuń na zawsze",
 		"deleteTitle": "Usunąć „{{title}}\"?",
 		"deleteBody": "Zniknie wszystkim w Przestrzeni i nie da się jej przywrócić."
 	},

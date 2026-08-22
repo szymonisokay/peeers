@@ -24,10 +24,13 @@ sheet, and pushed detail routes — and **M3**, the data layer: SQLite through
 Drizzle, an append-only event log, and a seeded "Mieszkanie 14" visible at
 `/db`.
 
-Next: M4, which is part-built — the list index, a list, quick-add and the item
-sheet are in. **M4b** interrupts it on purpose: the app had to speak two
-languages before more copy was written, so that the rest of M4 is authored
-bilingual instead of extracted twice. Everything from M5 down is unstarted.
+Also done: **M4b**, which interrupted M4 on purpose — the app had to speak two
+languages before more copy was written, so the rest of M4 was authored bilingual
+instead of extracted twice — and **M4**, the core loop: lists, quick-add, the
+item sheet, creating and renaming, pasting a whole list, the change history and
+the archive.
+
+Next: M5, notes. Everything from M5 down is unstarted.
 
 ## How the order was chosen
 
@@ -56,8 +59,8 @@ belong with the people screens.
 | M1 | UI foundation | icon pipeline, primitives matching the mockups | — |
 | M2 | Navigation shell | tab bar and routes, screens as stubs — **done** | M1 |
 | M3 | Data model and persistence | entities, local store, sync-ready event log — **done** | — |
-| M4 | Shopping lists | the core loop, single device | M1–M3 |
-| M4b | Bilingual UI | Polish and English from message files | M4 (partly) |
+| M4 | Shopping lists | the core loop, single device — **done** | M1–M3 |
+| M4b | Bilingual UI | Polish and English from message files — **done** | M4 (partly) |
 | M5 | Notes | markdown notes | M1–M3 |
 | M6 | Feed and Przestrzeń switching | activity stream, multi-Przestrzeń | M4, M5 |
 | M7 | Onboarding and profile | first run, identity, appearance | M3, M6 |
@@ -157,6 +160,19 @@ Mockups: `05`, `07`, `08`, `15`, `19`, `25`, `28`, `35`, `39`, `41`.
 
 Soft delete from the start — `25` offers "Przywróć" for both checked-off and
 deleted items.
+
+Two things this milestone settled that no mockup drew, both recorded in its exec
+plan's Decision Log. The list detail header gets a "..." menu in the slot `07`
+gives to "Udostępnij", which is not being built; and a list is named in a small
+sheet before it exists, the same sheet doing the rename and `41`'s "Skopiuj
+pozycje na nową listę".
+
+**A list closes itself** once its last unchecked item is ticked, and reopens
+when one is unticked — but only if it closed itself, because a list somebody hid
+by hand stays hidden. That decision lives in the action layer, not the reducer:
+`applyEvent` must stay true to M3's rule that applying an event never depends on
+what this device already knows, so `checkItem` decides and appends a second
+event. M8 pushes both in order and every phone replays the same two.
 
 ### M4b — Bilingual UI
 

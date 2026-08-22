@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { Icon, type IconName } from '@/components/Icon'
 import { Button, ListRow, SectionLabel } from '@/components/ui'
-import { archiveList, deleteList, listById, pinList, unpinList } from '@/db'
+import { archiveList, deleteList, listById, pinList, unarchiveList, unpinList } from '@/db'
 import { useTheme } from '@/hooks'
 
 /**
@@ -29,13 +29,14 @@ export default function ListMenu() {
 	if (!list) return <View style={{ backgroundColor: colors.surface }} />
 
 	const pinned = Boolean(list.pinnedAt)
+	const archived = Boolean(list.archivedAt)
 	const where = { spaceId: list.spaceId, listId: list.id }
 
 	const remove = () => {
 		Alert.alert(t('menu.deleteTitle', { title: list.title }), t('menu.deleteBody'), [
 			{ text: t('app.cancel'), style: 'cancel' },
 			{
-				text: t('app.delete'),
+				text: archived ? t('menu.deleteForever') : t('app.delete'),
 				style: 'destructive',
 				onPress: () => {
 					deleteList(where)
@@ -48,7 +49,33 @@ export default function ListMenu() {
 		])
 	}
 
-	const actions: { key: string; label: string; icon: IconName; danger?: boolean; run: () => void }[] =
+	type Action = { key: string; label: string; icon: IconName; danger?: boolean; run: () => void }
+
+	/*
+	 * An archived list is offered a different set, which 41 names in its own
+	 * info strip. Branching here rather than building a second sheet keeps one
+	 * route, one layout and one place where a list's actions live.
+	 */
+	const archivedActions: Action[] = [
+		{
+			key: 'unarchive',
+			label: t('menu.unarchive'),
+			icon: 'arrow-counterclockwise',
+			run: () => {
+				unarchiveList(where)
+				router.back()
+			},
+		},
+		{
+			key: 'copy',
+			label: t('menu.copy'),
+			icon: 'checklist',
+			run: () => router.replace(`/new-list?copyFrom=${list.id}`),
+		},
+		{ key: 'delete', label: t('menu.deleteForever'), icon: 'trash', danger: true, run: remove },
+	]
+
+	const activeActions: Action[] =
 		[
 			{
 				key: 'rename',
@@ -86,6 +113,8 @@ export default function ListMenu() {
 			},
 			{ key: 'delete', label: t('menu.delete'), icon: 'trash', danger: true, run: remove },
 		]
+
+	const actions = archived ? archivedActions : activeActions
 
 	return (
 		<View

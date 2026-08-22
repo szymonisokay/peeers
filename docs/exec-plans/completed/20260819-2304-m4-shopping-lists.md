@@ -388,7 +388,12 @@ Approved by the repo owner on 2026-08-20 together with the answers to Q1–Q4.
       its "Historia zmian" row. Restoring appends the inverse event and leaves
       the row you pressed where it was, which is the log showing its own shape.
       The `25` vs `35` disagreement is now in the defects table.
-- [ ] Milestone 8 — the archive (`41`) and automatic archiving.
+- [x] (2026-08-22 15:05Z) Milestone 8 — the archive (`41`) and automatic
+      archiving. `src/app/archive.tsx` behind "Pokaż ›", the menu sheet
+      branching on `archivedAt` for its archived variant, and `closeIfDone` /
+      `reopenIfClosed` in the action layer. The seed stops archiving its own
+      fully-checked lists by hand, because they now close themselves.
+      **M4 is complete**; the plan moves to `docs/exec-plans/completed/`.
 - [ ] Documentation: `docs/ROADMAP.md`, `docs/DESIGN.md`, `AGENTS.md`, `README.md`.
 - [ ] Both themes checked on both platforms; `npx tsc --noEmit` clean; 8081 free.
 
@@ -892,6 +897,46 @@ taken while writing the plan, before any code was written.
 
 
 ## Outcomes & Retrospective
+
+**What works now.** The core loop the app exists for. You can make a list and
+name it, type items into it with `x2` read as a quantity and text after a comma
+as a note, paste six lines at once and choose which of them go in, check things
+off by tapping or by dragging sideways, open one item to change its name,
+quantity or note, rename or pin or archive or delete the list, read everything
+that has happened to it in the last thirty days, and take back a check or a
+deletion from there. A list closes itself when the last thing on it is bought,
+and the archive keeps it — feeding the quick-add suggestions rather than merely
+storing it — until somebody restores it, copies it onto a new list, or deletes
+it for good.
+
+**What the mockups did not draw, and this plan decided.** The "..." menu (D-Q2)
+and the naming sheet (D-Q3) exist because `25`, `35`'s pinned section and `41`'s
+manually hidden lists all had no way in. Both were built once and reused: one
+menu route serves an active and an archived list by branching on `archivedAt`,
+and one `TitleSheet` serves creating, renaming and — from M5 — naming a note.
+
+**Where the drawings were wrong or incomplete**, recorded in docs/DESIGN.md's
+defects table rather than fixed in code: the `07` vs `39` subtitle order, the
+`25` vs `35` disagreement about how your own actions read, and — found while
+building — that `25`'s timestamp column can be measured for size but not for
+width, because it is drawn in a face the app does not use.
+
+**What was harder than expected.** Three things, none of them the features
+themselves. Android's `formSheet` needs a fraction detent because
+`fitToContents` measures 0 there, and that fraction has to hold the tallest
+version of the sheet, keyboard included. Layout animations belong on the node
+the list keys, which is not obvious until wrapping a row in something silently
+stops it animating. And identity — of a parsed line on the paste screen, of a
+row in the history — turned out to be the thing to get right first: both
+defects the repo owner found were one wrong answer to "what makes this row the
+same row as before".
+
+**What M4 leaves for later.** Automatic archiving writes a second event rather
+than deriving state, which is what keeps M8's sync honest but does mean two
+events arrive from one tap. The archive's "Wyczyść" deletes list by list in a
+loop; fine for the handful a Przestrzeń accumulates, and it would want a batched
+event if it ever were not. And `parseItem` still knows only `x2` and a trailing
+bare number, which is what `08` and `19` promise and no more.
 
 To be written at the end of the milestone. It must answer: does the loop
 described under "Purpose" work end to end on both platforms in both themes;

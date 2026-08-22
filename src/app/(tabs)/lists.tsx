@@ -117,8 +117,17 @@ export default function Lists() {
 
 			{archived.length > 0 ? (
 				<>
-					{/* "Pokaż ›" arrives with the archive screen in Milestone 8. */}
-					<SectionLabel>{t('lists.archive', { count: archived.length })}</SectionLabel>
+					<SectionLabel
+						right={
+							<Pressable onPress={() => router.push('/archive')} hitSlop={spacing.sm}>
+								<Text variant='bodySmall' tone='accent'>
+									{t('lists.show')}
+								</Text>
+							</Pressable>
+						}
+					>
+						{t('lists.archive', { count: archived.length })}
+					</SectionLabel>
 					<View
 						style={[
 							styles.strip,

@@ -60,7 +60,8 @@
 		"active": "ACTIVE · {{count}}",
 		"archive": "ARCHIVE · {{count}}",
 		"archiveHint": "Closed lists land here once everything is checked off",
-		"new": "New"
+		"new": "New",
+		"show": "Show ›"
 	},
 	"list": {
 		"itemCount_one": "{{count}} item",
@@ -95,6 +96,18 @@
 		"submit_one": "Add {{count}} item to the list",
 		"submit_other": "Add {{count}} items to the list"
 	},
+	"archive": {
+		"title": "Archive",
+		"listCount_one": "{{count}} list",
+		"listCount_other": "{{count}} lists",
+		"clear": "Clear",
+		"clearTitle": "Delete {{lists}} for good?",
+		"clearBody": "They disappear for everyone in the Space, and cannot be brought back.",
+		"closed": "{{items}} · closed {{date}}",
+		"hidden": "{{progress}} · hidden by hand {{date}}",
+		"empty": "The archive is empty",
+		"info": "Suggestions when you add an item are drawn from the archive too. The three dots open “Move back to active”, “Copy the items to a new list” and “Delete for good”."
+	},
 	"history": {
 		"title": "Change history",
 		"window": "The last 30 days",
@@ -114,6 +127,9 @@
 		"unpin": "Unpin",
 		"archive": "Move to the archive",
 		"delete": "Delete list",
+		"unarchive": "Move back to active",
+		"copy": "Copy the items to a new list",
+		"deleteForever": "Delete for good",
 		"deleteTitle": "Delete “{{title}}”?",
 		"deleteBody": "It disappears for everyone in the Space, and cannot be brought back."
 	},
