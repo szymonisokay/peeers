@@ -186,6 +186,7 @@ export default function ListDetail() {
 						onFocus={() => setTyping(true)}
 						onBlur={() => setTyping(false)}
 						empty={items.length === 0}
+						onPaste={() => router.push(`/list/${id}/paste`)}
 						inputRef={input}
 					/>
 				}
@@ -471,7 +472,9 @@ function Draft({
  * keyboard up: a round accent "+" and a placeholder until you touch it, a plain
  * field and a round ↑ once you do.
  *
- * "Wklej listę" belongs on the right of it and arrives with Milestone 6.
+ * "Wklej listę" sits inside the pill at its right edge — 15 draws it there, not
+ * beside the bar — and gives way to the ↑ button once there is something to
+ * add, since the two would otherwise compete for the same corner.
  */
 function AddBar({
 	value,
@@ -480,6 +483,7 @@ function AddBar({
 	onFocus,
 	onBlur,
 	empty,
+	onPaste,
 	inputRef,
 }: {
 	value: string
@@ -488,6 +492,7 @@ function AddBar({
 	onFocus: () => void
 	onBlur: () => void
 	empty: boolean
+	onPaste: () => void
 	inputRef: React.RefObject<TextInput | null>
 }) {
 	const { colors, radius, spacing, typography } = useTheme()
@@ -559,6 +564,14 @@ function AddBar({
 						{ color: colors.text },
 					]}
 				/>
+
+				{ready ? null : (
+					<Pressable onPress={onPaste} hitSlop={spacing.sm}>
+						<Text variant='bodyMedium' tone='accent'>
+							{t('paste.open')}
+						</Text>
+					</Pressable>
+				)}
 			</View>
 
 			{ready ? (

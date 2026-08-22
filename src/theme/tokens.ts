@@ -8,6 +8,8 @@
  * re-checked.
  */
 
+import { Platform } from 'react-native'
+
 export const palette = {
 	light: {
 		/** oklch(0.92 0.005 260) — app background */
@@ -78,6 +80,17 @@ export const fontFamily = {
 	medium: 'PublicSans_500Medium',
 	semibold: 'PublicSans_600SemiBold',
 	bold: 'PublicSans_700Bold',
+	/*
+	 * The pasted-text block on 19, and nothing else in the app.
+	 *
+	 * Three mockups use a monospace face, but only there is it carrying meaning:
+	 * that block is raw text somebody pasted, not app copy, and the fixed pitch
+	 * says so. 08's "częste u Was" caption and 25's timestamp column stay in
+	 * Public Sans. Bundling a whole mono family for one screen is not worth the
+	 * app size, so this resolves to the platform's own — which is also why it is
+	 * the one entry here that is not a loaded font.
+	 */
+	mono: Platform.select({ ios: 'Menlo', default: 'monospace' }),
 } as const
 
 /**

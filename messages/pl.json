@@ -88,6 +88,25 @@
 		"placeholderFirst": "Dodaj pierwszą pozycję…",
 		"placeholder": "Dodaj pozycję…"
 	},
+	"paste": {
+		"open": "Wklej listę",
+		"title": "Wklej listę",
+		"add": "Dodaj",
+		"pastedLabel": "WKLEJONY TEKST",
+		"placeholder": "Wklej tu listę…",
+		"recognised": "ROZPOZNANE POZYCJE · {{count}}",
+		"deselectAll": "Odznacz wszystkie",
+		"selectAll": "Zaznacz wszystkie",
+		"more_one": "i {{count}} dalsza pozycja",
+		"more_few": "i {{count}} dalsze pozycje",
+		"more_many": "i {{count}} dalszych pozycji",
+		"more_other": "i {{count}} dalszych pozycji",
+		"hint": "Jedna linia to jedna pozycja. Ilości typu „x2\" albo „10\" wpisujemy w osobne pole.",
+		"submit_one": "Dodaj {{count}} pozycję do listy",
+		"submit_few": "Dodaj {{count}} pozycje do listy",
+		"submit_many": "Dodaj {{count}} pozycji do listy",
+		"submit_other": "Dodaj {{count}} pozycji do listy"
+	},
 	"newList": {
 		"heading": "NOWA LISTA",
 		"placeholder": "np. Biedronka, sobota",

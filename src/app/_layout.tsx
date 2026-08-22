@@ -112,6 +112,17 @@ export default function RootLayout() {
 				/>
 
 				{/*
+          "Wklej listę" of 19 — a full modal rather than a sheet, because it
+          carries a header with three actions and a block of text that can be
+          six lines or twenty. `headerShown` is on for that header; the rest of
+          the app's pushed screens draw their own.
+        */}
+				<Stack.Screen
+					name='list/[id]/paste'
+					options={{ presentation: 'modal', headerShown: true }}
+				/>
+
+				{/*
           The three sheets of Milestone 5: naming a new list, renaming one, and
           the "..." menu behind the list header. All three follow the same
           arrangement as the item sheet above — `fitToContents` measures on iOS

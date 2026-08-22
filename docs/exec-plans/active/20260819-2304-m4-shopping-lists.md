@@ -371,7 +371,18 @@ Approved by the repo owner on 2026-08-20 together with the answers to Q1–Q4.
       that list's menu, and "PRZYPIĘTA" became a counted key — both asked for by
       the repo owner. Checked on the iPhone 17 with two pinned lists reading
       "PRZYPIĘTE" and one reading "PRZYPIĘTA".
-- [ ] Milestone 6 — paste a whole list (`19`).
+- [x] (2026-08-22 12:00Z) Milestone 6 — paste a whole list (`19`). The modal at
+      `src/app/list/[id]/paste.tsx`, "Wklej listę" inside the quick-add pill
+      where `15` draws it, `fontFamily.mono` per D-Q4, and `CheckboxRow` gained
+      a `select` variant because a tick there means "going in", not "bought".
+      No clipboard read and no new native module — see the Decision Log.
+- [x] (2026-08-22 12:00Z) Milestone 6, follow-up: "i N dalszych pozycji" opens
+      the rest of the rows. Asked for by the repo owner, and correctly — see the
+      Decision Log.
+- [x] (2026-08-22 13:40Z) Milestone 6, follow-up: two defects the repo owner
+      found on the paste screen — a checkbox blinking on every keystroke, and
+      unticked rows re-ticking themselves after an edit. One cause, see
+      Surprises.
 - [ ] Milestone 7 — change history with restore (`25`).
 - [ ] Milestone 8 — the archive (`41`) and automatic archiving.
 - [ ] Documentation: `docs/ROADMAP.md`, `docs/DESIGN.md`, `AGENTS.md`, `README.md`.
@@ -571,6 +582,52 @@ before:
   hold and drag it somewhere else — and it does not exist in a release build.
   Worth knowing before mistaking it for a layout collision.
 
+- Observation: `CheckboxRow` could not be used as it stood. Its `checked` state
+  means *bought* — the row dims to 0.55 and the title is struck through — which
+  on `19` said the opposite of the truth: the ticked rows are the ones about to
+  be added. The fix is a `variant`, `done` against `select`, rather than a new
+  row: the box, its spring, the tick and the layout are all wanted, and only the
+  two lines that express "spent" are not.
+
+- Observation: two defects on the paste screen turned out to be one mistake
+  about what identifies a parsed row.
+
+  Rows were keyed by name — `` key={`${item.name}-${index}`} `` — so every
+  keystroke in a line changed that row's key, React unmounted and remounted it,
+  and `CheckboxRow`'s `FadeIn` replayed. That is the blink. And `onChangeText`
+  cleared the whole selection, on the reasoning that re-parsing renumbers the
+  rows, so one typed character undid every tick the person had set.
+
+  Both go away by identifying a row by the **line of text it came from** rather
+  than by what that line currently says. The line number survives editing, so
+  the key is stable, the row is never remounted, and the selection can be stored
+  against it and left alone. `parsed` now carries `{ line, item }`, and the
+  expansion state stops resetting for the same reason the ticks do.
+
+  What remains is inserting a line in the middle, which shifts the numbering
+  below it and moves those ticks with the wrong rows. That is inherent to
+  positional identity, and it is a far rarer edit than fixing a word.
+
+- Observation: a native header with actions on both sides needs
+  `headerTitleAlign: 'center'` to survive Android. iOS centres a header title on
+  its own; Android's left-aligns it, which parked "Paste a list" hard against
+  "Cancel" with no gap at all — the two read as one word. `19` centres it, so
+  the option is set for both platforms rather than only for Android. This is
+  the first screen in the app with a native header carrying a left action; the
+  pushed detail screens only have a back button and a right action.
+
+- Observation: neither of the two ways this session can put text on the
+  simulator carries anything outside ASCII, which made a paste look broken when
+  it was not. `xcrun simctl pbcopy` delivered "chleb Ňľytni" and "masŇāo extra"
+  for "chleb żytni" and "masło extra" — UTF-8 bytes read as a single-byte code
+  page — and the panel's own `text` action reports "unsupported characters
+  dropped" for anything non-ASCII. The mangled text corrected itself the moment
+  the field's contents round-tripped through a keystroke, and the items landed
+  on the list with their Polish intact, so the app is not implicated. It is
+  worth one paste by hand to close the question properly, because the alternative
+  reading — a multiline `TextInput` handing JS a mis-decoded paste — cannot be
+  ruled out from here.
+
 ## Decision Log
 
 The first five entries are the repo owner's answers to Q1–Q5. The rest were
@@ -595,6 +652,31 @@ taken while writing the plan, before any code was written.
   reducer, because `applyEvent` must never depend on what this device already
   knows.
   Date/Author: 2026-08-20, repo owner.
+
+- Decision: "i N dalszych pozycji" on `19` is a button that opens the rest of
+  the parsed rows, drawn in accent rather than the drawing's muted grey.
+  Rationale: raised by the repo owner, and it is a real gap rather than a
+  refinement. `19` lists four rows and counts the rest, which is right for
+  reading and wrong for choosing: the button underneath offers to add all six,
+  and everything past the fourth was going in with no way to say otherwise. The
+  count now opens them. The colour changes with the behaviour — the drawing has
+  that line doing nothing, and a line that opens the rest of a list has to say
+  it does; accent is how every other tappable label in this app reads. Opening
+  is one-way: nothing in `19` names a way back, and a modal that is about to be
+  dismissed does not need one.
+  Date/Author: 2026-08-22, repo owner.
+
+- Decision: Milestone 6 does not read the clipboard, and `expo-clipboard` is
+  not installed.
+  Rationale: the plan set this up as a question for the repo owner because the
+  package is native and costs a rebuild of both development builds. The screen
+  was built on the fallback first — an empty, focused, multiline field that the
+  person pastes into with the system menu — and the fallback turned out to cost
+  one long press and one tap, produce no "Allow Paste?" prompt on iOS 16 and
+  later, and leave the text editable so a bad paste is fixed rather than
+  restarted. Auto-filling would save that one gesture. The owner can still ask
+  for it; nothing else about the screen would change.
+  Date/Author: 2026-08-22, Claude (implementing).
 
 - Decision (D-Q6): "PRZYPIĘTA" becomes a counted key, reading "PRZYPIĘTE" from
   two lists up. Pinning stays unlimited.

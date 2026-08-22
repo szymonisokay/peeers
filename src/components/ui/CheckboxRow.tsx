@@ -32,6 +32,16 @@ type CheckboxRowProps = {
    * it, unlike a row that has been inset by its container.
    */
   paddingX?: number;
+  /**
+   * What a tick means here.
+   *
+   * `done` is a shopping list: the thing has been bought, so the row dims and
+   * the title is struck through. `select` is the parsed rows of 19, where a
+   * tick means "this one is going in" — the box fills and nothing else changes,
+   * because striking out the items you are about to add would read as the
+   * opposite of what it is.
+   */
+  variant?: 'done' | 'select';
 };
 
 /**
@@ -55,11 +65,13 @@ export function CheckboxRow({
   last = false,
   right,
   paddingX = 0,
+  variant = 'done',
 }: CheckboxRowProps) {
   const { colors, motion, spacing } = useTheme();
   const reduced = useReducedMotion();
   const press = usePressScale();
   const box = 26;
+  const spent = variant === 'done' && checked;
 
   const progress = useDerivedValue(() =>
     reduced
@@ -80,10 +92,10 @@ export function CheckboxRow({
 
   const dimStyle = useAnimatedStyle(() => ({
     opacity: reduced
-      ? checked
+      ? spent
         ? 0.55
         : 1
-      : withTiming(checked ? 0.55 : 1, { duration: motion.duration.fast }),
+      : withTiming(spent ? 0.55 : 1, { duration: motion.duration.fast }),
   }));
 
   return (
@@ -131,8 +143,8 @@ export function CheckboxRow({
           <View style={styles.grow}>
             <Text
               variant="bodyMedium"
-              tone={checked ? 'muted' : 'default'}
-              style={checked ? styles.struck : undefined}
+              tone={spent ? 'muted' : 'default'}
+              style={spent ? styles.struck : undefined}
             >
               {title}
             </Text>

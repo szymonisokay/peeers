@@ -80,6 +80,21 @@
 		"placeholderFirst": "Add the first item…",
 		"placeholder": "Add an item…"
 	},
+	"paste": {
+		"open": "Paste a list",
+		"title": "Paste a list",
+		"add": "Add",
+		"pastedLabel": "PASTED TEXT",
+		"placeholder": "Paste your list here…",
+		"recognised": "RECOGNISED ITEMS · {{count}}",
+		"deselectAll": "Deselect all",
+		"selectAll": "Select all",
+		"more_one": "and {{count}} more item",
+		"more_other": "and {{count}} more items",
+		"hint": "One line is one item. Quantities like “x2” or “10” go in a field of their own.",
+		"submit_one": "Add {{count}} item to the list",
+		"submit_other": "Add {{count}} items to the list"
+	},
 	"newList": {
 		"heading": "NEW LIST",
 		"placeholder": "e.g. Saturday, Tesco",
