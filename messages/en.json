@@ -95,6 +95,12 @@
 		"submit_one": "Add {{count}} item to the list",
 		"submit_other": "Add {{count}} items to the list"
 	},
+	"history": {
+		"title": "Change history",
+		"window": "The last 30 days",
+		"restore": "Restore",
+		"empty": "Nothing here from the last 30 days"
+	},
 	"newList": {
 		"heading": "NEW LIST",
 		"placeholder": "e.g. Saturday, Tesco",

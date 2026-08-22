@@ -107,6 +107,12 @@
 		"submit_many": "Dodaj {{count}} pozycji do listy",
 		"submit_other": "Dodaj {{count}} pozycji do listy"
 	},
+	"history": {
+		"title": "Historia zmian",
+		"window": "Ostatnie 30 dni",
+		"restore": "Przywróć",
+		"empty": "Z ostatnich 30 dni nic tu nie ma"
+	},
 	"newList": {
 		"heading": "NOWA LISTA",
 		"placeholder": "np. Biedronka, sobota",

@@ -68,9 +68,10 @@ Labels use `letterSpacing: 0.88` — that is `.08em` resolved against 11 px,
 because React Native does not accept relative units.
 
 `caption` (12 px) is the secondary line under a title, as in the option cards
-on `05`. It is a genuinely smaller step than `bodySmall` (15 px), not a
-substitute for it — using `bodySmall` there makes the subtitle wrap where the
-mockup keeps it on one line.
+on `05`, and the timestamp column on `25`. It is a genuinely smaller step than
+`bodySmall` (15 px), not a substitute for it — using `bodySmall` there makes the
+subtitle wrap where the mockup keeps it on one line, and on `25` it overflows
+the time gutter and breaks "14:06" across two lines.
 
 **Sizing text by eye does not work.** Two independent measurements should agree
 before you pick a size: the x-height in the mockup, and the rendered width of a
@@ -220,6 +221,7 @@ Do not "fix" the code to match these.
 | `05` | draws the sheet flush with the screen edges — iOS 26 insets every sheet by 8 pt, see below |
 | `07` vs `39` | the item subtitle is "×2 · Kuba" in one and "Kuba · x2" in the other, and a checked row shows the checker's name in one and the name plus a time in the other |
 | `03` vs `07` | the feed card reads "Nina dopisał(-a) 3 rzeczy" and names *kawa ziarnista · ziemniaki 2 kg · worki 60 l*, but `07` holds the first two and no "worki 60 l", and counts eight rows |
+| `25` vs `35` | your own actions read "Ty odhaczył(-a) chleb" on `25` and "Ty odhaczył(-a)ś buty" on `35` — third person against second. `25` wins: one sentence shape then serves everybody, and `src/lib/eventText.ts` writes it once rather than branching on who is reading |
 
 ### Sheet insets
 

@@ -79,6 +79,16 @@ export default function RootLayout() {
 						// the screen itself sets it — see src/app/list/[id]/index.tsx.
 					}}
 				/>
+				{/*
+          The change history of 25. A pushed screen like the list itself, with
+          its own header — the back title is the list's name and is set by the
+          screen, which is the only place that knows it.
+        */}
+				<Stack.Screen
+					name='list/[id]/history'
+					options={{ headerShown: true, headerTitle: '' }}
+				/>
+
 				<Stack.Screen
 					name='note/[id]'
 					options={{

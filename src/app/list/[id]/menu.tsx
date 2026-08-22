@@ -68,6 +68,12 @@ export default function ListMenu() {
 				},
 			},
 			{
+				key: 'history',
+				label: t('history.title'),
+				icon: 'clock',
+				run: () => router.replace(`/list/${list.id}/history`),
+			},
+			{
 				key: 'archive',
 				label: t('menu.archive'),
 				icon: 'pull-down',

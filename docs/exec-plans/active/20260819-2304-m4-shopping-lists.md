@@ -383,7 +383,11 @@ Approved by the repo owner on 2026-08-20 together with the answers to Q1–Q4.
       found on the paste screen — a checkbox blinking on every keystroke, and
       unticked rows re-ticking themselves after an edit. One cause, see
       Surprises.
-- [ ] Milestone 7 — change history with restore (`25`).
+- [x] (2026-08-22 14:20Z) Milestone 7 — change history with restore (`25`).
+      `src/app/list/[id]/history.tsx`, reached from the "..." menu, which gained
+      its "Historia zmian" row. Restoring appends the inverse event and leaves
+      the row you pressed where it was, which is the log showing its own shape.
+      The `25` vs `35` disagreement is now in the defects table.
 - [ ] Milestone 8 — the archive (`41`) and automatic archiving.
 - [ ] Documentation: `docs/ROADMAP.md`, `docs/DESIGN.md`, `AGENTS.md`, `README.md`.
 - [ ] Both themes checked on both platforms; `npx tsc --noEmit` clean; 8081 free.
@@ -627,6 +631,22 @@ before:
   worth one paste by hand to close the question properly, because the alternative
   reading — a multiline `TextInput` handing JS a mis-decoded paste — cannot be
   ruled out from here.
+
+- Observation: the timestamp column of `25` is `caption`, not `bodySmall`, and
+  its width cannot be taken from the drawing at all.
+
+  The size is settled by two independent measurements of the mockup: the digits
+  are 8 pt tall against the sentence's 10 pt cap height — a ratio of 0.8, which
+  is 12/16 and not 15/16 — and 12 px is the size at which "12:41" comes out the
+  30 pt wide it is drawn. In `bodySmall` the clock breaks across two lines,
+  "14:0" over "6".
+
+  The width is a different matter. `25` draws the time in a monospace-looking
+  face where "12:41" is 30 pt; Public Sans with `tabular-nums` measures 33.7 pt
+  of ink for the same string on the device, and wants a little more for its side
+  bearings — a 36 pt column still truncated to "14:…". The column is 40, which
+  puts the avatars 3.5 pt right of where `25` has them. Measuring the drawing
+  was necessary and not sufficient; the rendered text had to be measured too.
 
 ## Decision Log
 
