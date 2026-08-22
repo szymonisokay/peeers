@@ -57,10 +57,14 @@
 	"lists": {
 		"title": "Listy",
 		"empty": "Nie ma jeszcze żadnej listy",
-		"pinned": "PRZYPIĘTA",
+		"pinned_one": "PRZYPIĘTA",
+		"pinned_few": "PRZYPIĘTE",
+		"pinned_many": "PRZYPIĘTE",
+		"pinned_other": "PRZYPIĘTE",
 		"active": "AKTYWNE · {{count}}",
 		"archive": "ARCHIWUM · {{count}}",
-		"archiveHint": "Zamknięte listy schodzą tu po odhaczeniu wszystkiego"
+		"archiveHint": "Zamknięte listy schodzą tu po odhaczeniu wszystkiego",
+		"new": "Nowa"
 	},
 	"list": {
 		"itemCount_one": "{{count}} pozycja",
@@ -83,6 +87,22 @@
 		"parseHint": "„x2\" czytamy jako ilość, tekst po przecinku jako dopisek — „papier, duża paczka\".",
 		"placeholderFirst": "Dodaj pierwszą pozycję…",
 		"placeholder": "Dodaj pozycję…"
+	},
+	"newList": {
+		"heading": "NOWA LISTA",
+		"placeholder": "np. Biedronka, sobota",
+		"create": "Utwórz",
+		"renameHeading": "ZMIEŃ NAZWĘ"
+	},
+	"menu": {
+		"open": "Akcje listy",
+		"rename": "Zmień nazwę",
+		"pin": "Przypnij do góry",
+		"unpin": "Odepnij",
+		"archive": "Schowaj do archiwum",
+		"delete": "Usuń listę",
+		"deleteTitle": "Usunąć „{{title}}\"?",
+		"deleteBody": "Zniknie wszystkim w Przestrzeni i nie da się jej przywrócić."
 	},
 	"item": {
 		"heading": "POZYCJA",

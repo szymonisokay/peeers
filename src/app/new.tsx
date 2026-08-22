@@ -23,12 +23,20 @@ const OPTIONS = [
 		titleKey: 'new.listTitle',
 		subtitleKey: 'new.listSubtitle',
 		highlighted: true,
+		/*
+		 * A sheet replacing itself rather than opening a second one over the
+		 * first: `push` from inside a presented sheet leaves two stacked, and
+		 * their detents then fight. M5 needs the same trick for "Notatka".
+		 */
+		go: () => router.replace('/new-list'),
 	},
 	{
 		icon: 'note' as IconName,
 		titleKey: 'new.noteTitle',
 		subtitleKey: 'new.noteSubtitle',
 		highlighted: false,
+		// M5 builds the note editor; until then this closes the sheet.
+		go: () => router.back(),
 	},
 ] as const
 
@@ -51,12 +59,8 @@ export default function New() {
 			<SectionLabel>{t('new.heading')}</SectionLabel>
 
 			<View style={{ gap: spacing.sm }}>
-				{OPTIONS.map((option) => (
-					<OptionCard
-						key={option.titleKey}
-						{...option}
-						onPress={() => router.back()}
-					/>
+				{OPTIONS.map(({ go, ...option }) => (
+					<OptionCard key={option.titleKey} {...option} onPress={go} />
 				))}
 			</View>
 

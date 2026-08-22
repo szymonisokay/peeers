@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite'
 import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
-import { StyleSheet, View } from 'react-native'
+import { Pressable, StyleSheet, View } from 'react-native'
 
 import { Icon } from '@/components/Icon'
 import { Avatar, Card, EmptyState, ProgressBar, Screen, SectionLabel, Text } from '@/components/ui'
@@ -77,16 +77,33 @@ export default function Lists() {
 
 	return (
 		<Screen scroll contentStyle={{ gap: spacing.md, paddingVertical: spacing.md }}>
-			<View>
-				<SectionLabel>{(space[0]?.name ?? '').toUpperCase()}</SectionLabel>
-				<Text variant='titleLarge'>{t('lists.title')}</Text>
+			{/* 35 puts "Nowa" on the title's line, at the right, in accent. */}
+			<View style={[styles.header, { gap: spacing.md }]}>
+				<View style={styles.grow}>
+					<SectionLabel>{(space[0]?.name ?? '').toUpperCase()}</SectionLabel>
+					<Text variant='titleLarge'>{t('lists.title')}</Text>
+				</View>
+				<Pressable onPress={() => router.push('/new-list')} hitSlop={spacing.sm}>
+					<Text variant='bodyMedium' tone='accent'>
+						{t('lists.new')}
+					</Text>
+				</Pressable>
 			</View>
 
 			{rows.length === 0 ? <EmptyState title={t('lists.empty')} /> : null}
 
 			{pinned.length > 0 ? (
 				<>
-					<SectionLabel icon='pin'>{t('lists.pinned')}</SectionLabel>
+					{/*
+					 * 35 draws one pinned list and labels it "PRZYPIĘTA", which agrees
+					 * with a single feminine *lista*. Two of them need "PRZYPIĘTE", so
+					 * the label is a counted key even though it never prints the
+					 * number — the count is only there to pick the form. English has
+					 * one word either way.
+					 */}
+					<SectionLabel icon='pin'>
+						{t('lists.pinned', { count: pinned.length })}
+					</SectionLabel>
 					{pinned.map(card)}
 				</>
 			) : null}
@@ -144,6 +161,10 @@ function ListCard({ list, checked, total, said, actorName, actorColor }: ListCar
 		<AnimatedPressable
 			accessibilityRole='button'
 			onPress={() => router.push(`/list/${list.id}`)}
+			// The same pair of gestures as a row on 07: the thing you do every
+			// time is a tap, and the sheet takes the deliberate one. It saves
+			// opening a list only to reach for the "..." in its header.
+			onLongPress={() => router.push(`/list/${list.id}/menu`)}
 			onPressIn={press.onPressIn}
 			onPressOut={press.onPressOut}
 			style={press.style}
@@ -229,6 +250,10 @@ function actorOf(list: ListRow, activity: { listId: string | null; actorId: stri
 
 const styles = StyleSheet.create({
 	row: { flexDirection: 'row', alignItems: 'center' },
+	// The title block is two lines and "Nowa" is one, so they meet at the
+	// baseline of "Listy" rather than at the middle of the block. Its own style
+	// because `row` is shared with two rows inside the card, which do centre.
+	header: { flexDirection: 'row', alignItems: 'flex-end' },
 	strip: { flexDirection: 'row', alignItems: 'center' },
 	grow: { flex: 1 },
 	// Shrinks but does not grow, so the sentence and its time stay next to each

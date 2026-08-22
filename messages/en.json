@@ -55,10 +55,12 @@
 	"lists": {
 		"title": "Lists",
 		"empty": "No lists yet",
-		"pinned": "PINNED",
+		"pinned_one": "PINNED",
+		"pinned_other": "PINNED",
 		"active": "ACTIVE · {{count}}",
 		"archive": "ARCHIVE · {{count}}",
-		"archiveHint": "Closed lists land here once everything is checked off"
+		"archiveHint": "Closed lists land here once everything is checked off",
+		"new": "New"
 	},
 	"list": {
 		"itemCount_one": "{{count}} item",
@@ -77,6 +79,22 @@
 		"parseHint": "“x2” is read as a quantity, and text after a comma as a note — “paper towels, the big pack”.",
 		"placeholderFirst": "Add the first item…",
 		"placeholder": "Add an item…"
+	},
+	"newList": {
+		"heading": "NEW LIST",
+		"placeholder": "e.g. Saturday, Tesco",
+		"create": "Create",
+		"renameHeading": "RENAME"
+	},
+	"menu": {
+		"open": "List actions",
+		"rename": "Rename",
+		"pin": "Pin to the top",
+		"unpin": "Unpin",
+		"archive": "Move to the archive",
+		"delete": "Delete list",
+		"deleteTitle": "Delete “{{title}}”?",
+		"deleteBody": "It disappears for everyone in the Space, and cannot be brought back."
 	},
 	"item": {
 		"heading": "ITEM",

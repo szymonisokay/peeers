@@ -113,6 +113,17 @@ export default function ListDetail() {
 		setSuggestions(frequentItemNames(spaceId, id, 4))
 	}, [spaceId, id, items.length, typing])
 
+	/*
+	 * The list can disappear from under this screen: the "..." menu deletes it,
+	 * and M8 lets somebody else's phone do the same. `listById` has no reason to
+	 * hide a soft-deleted row — the change history reads deleted things back —
+	 * so the screen leaves on its own, the same way the item sheet does. That
+	 * also means the menu only has to close itself.
+	 */
+	useEffect(() => {
+		if (list?.deletedAt) router.back()
+	}, [list?.deletedAt])
+
 	const add = (text: string) => {
 		const parsed = parseItem(text)
 		if (!parsed) return
@@ -121,7 +132,7 @@ export default function ListDetail() {
 		setDraft('')
 	}
 
-	if (!list) return <Screen>{null}</Screen>
+	if (!list || list.deletedAt) return <Screen>{null}</Screen>
 
 	return (
 		<Animated.View style={[styles.fill, lift]}>
@@ -132,8 +143,12 @@ export default function ListDetail() {
 					// Przestrzeń's name standing in for whichever one the list is in.
 					// iOS draws it beside the back arrow; Android ignores it.
 					headerBackTitle: space[0]?.name,
-					// 07 puts "Udostępnij" here and 08 puts "Gotowe". The first is not
-					// being built, so the slot is free for the second.
+					/*
+					 * 07 puts "Udostępnij" here and 08 puts "Gotowe". The first is
+					 * not being built — link sharing is out of the MVP — so the slot
+					 * holds "Gotowe" while the input has focus and the "..." menu of
+					 * D-Q2 the rest of the time.
+					 */
 					headerRight: typing
 						? () => (
 								<Pressable
@@ -145,7 +160,16 @@ export default function ListDetail() {
 									</Text>
 								</Pressable>
 							)
-						: undefined,
+						: () => (
+								<Pressable
+									accessibilityRole='button'
+									accessibilityLabel={t('menu.open')}
+									onPress={() => router.push(`/list/${id}/menu`)}
+									hitSlop={spacing.sm}
+								>
+									<Icon name='more' size={22} color={colors.accent} />
+								</Pressable>
+							),
 				}}
 			/>
 

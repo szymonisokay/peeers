@@ -2,7 +2,7 @@ import { useLiveQuery } from 'drizzle-orm/expo-sqlite'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert, Pressable, StyleSheet, View } from 'react-native'
+import { Alert, Platform, Pressable, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { Avatar, Chip, SectionLabel, Stepper, Text, TextField } from '@/components/ui'
@@ -122,9 +122,15 @@ export default function ItemDetail() {
 				backgroundColor: colors.surface,
 				paddingHorizontal: spacing.lg,
 				paddingTop: spacing.xl,
-				// Android draws its navigation bar over the sheet; iOS insets the
-				// whole sheet already, so this only ever adds where it is needed.
-				paddingBottom: Math.max(spacing.lg, insets.bottom),
+				/*
+				 * Android's navigation bar is drawn over the sheet and has to be
+				 * cleared. iOS does not need this and was getting it anyway: it
+				 * lifts the whole sheet 8 pt off the screen edge, and `insets.bottom`
+				 * still reports the home indicator's 34 pt inside the sheet, so the
+				 * sheet was padded twice — 18 pt of dead space under the last row.
+				 */
+				paddingBottom:
+					Platform.OS === 'android' ? Math.max(spacing.lg, insets.bottom) : spacing.lg,
 				gap: spacing.lg,
 			}}
 		>

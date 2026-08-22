@@ -46,6 +46,7 @@ export {
 	listActivity,
 	listById,
 	listsInSpace,
+	listToCopy,
 	membersOfSpace,
 	notesInSpace,
 	recentEvents,

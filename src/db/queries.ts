@@ -231,6 +231,30 @@ export function frequentItemNames(
 }
 
 /**
+ * One list's title and items, for "Skopiuj pozycje na nową listę" on mockup 41.
+ *
+ * A snapshot, not a live query: the copy happens once, at the moment the new
+ * list is created, and nothing about it should change under the person naming
+ * it. Checked items come back unchecked — copying a shopping list means copying
+ * what to buy, not what somebody already bought.
+ */
+export function listToCopy(
+	listId: string,
+): { title: string; items: { name: string; quantity: number; note: string | null }[] } | null {
+	const [list] = db.select().from(lists).where(eq(lists.id, listId)).all()
+	if (!list) return null
+
+	const items = db
+		.select({ name: listItems.name, quantity: listItems.quantity, note: listItems.note })
+		.from(listItems)
+		.where(and(eq(listItems.listId, listId), isNull(listItems.deletedAt)))
+		.orderBy(listItems.position)
+		.all()
+
+	return { title: list.title, items }
+}
+
+/**
  * The note chips on mockup 28 — "duża paczka", "bezzapachowy", "jak zwykle" —
  * which are the notes this Przestrzeń has put on this item before, most recent
  * first. Returns an empty array when there are none, and the caller then draws

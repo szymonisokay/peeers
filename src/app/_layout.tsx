@@ -112,6 +112,53 @@ export default function RootLayout() {
 				/>
 
 				{/*
+          The three sheets of Milestone 5: naming a new list, renaming one, and
+          the "..." menu behind the list header. All three follow the same
+          arrangement as the item sheet above — `fitToContents` measures on iOS
+          and comes back 0 on Android, so Android gets a fraction.
+
+          The two naming sheets open with the keyboard up, which Android does
+          not lift a `formSheet` for, so their detent has to hold the sheet
+          clear of it rather than merely fit the content.
+        */}
+				<Stack.Screen
+					name='new-list'
+					options={{
+						presentation: 'formSheet',
+						sheetAllowedDetents:
+							Platform.OS === 'android' ? [0.42] : 'fitToContents',
+						sheetGrabberVisible: true,
+						sheetCornerRadius:
+							Platform.OS === 'android' ? radius.xl : undefined,
+						contentStyle: { backgroundColor: colors.surface },
+					}}
+				/>
+				<Stack.Screen
+					name='list/[id]/rename'
+					options={{
+						presentation: 'formSheet',
+						sheetAllowedDetents:
+							Platform.OS === 'android' ? [0.42] : 'fitToContents',
+						sheetGrabberVisible: true,
+						sheetCornerRadius:
+							Platform.OS === 'android' ? radius.xl : undefined,
+						contentStyle: { backgroundColor: colors.surface },
+					}}
+				/>
+				<Stack.Screen
+					name='list/[id]/menu'
+					options={{
+						presentation: 'formSheet',
+						sheetAllowedDetents:
+							Platform.OS === 'android' ? [0.52] : 'fitToContents',
+						sheetGrabberVisible: true,
+						sheetCornerRadius:
+							Platform.OS === 'android' ? radius.xl : undefined,
+						contentStyle: { backgroundColor: colors.surface },
+					}}
+				/>
+
+				{/*
           A tab screen cannot be a sheet — `presentation` is a native-stack
           option — so the "Co tworzymy" sheet lives here and the raised + in the
           tab bar pushes to it. `sheetGrabberVisible` is iOS-only by design.

@@ -282,8 +282,11 @@ twelve minutes on Android on this machine. The decision is deferred to Milestone
 Q1 to Q4 were answered by the repo owner on 2026-08-20 and are recorded as D-Q1
 to D-Q4 in the Decision Log below. One question has been raised since.
 
-None outstanding. Q5, raised in Milestone 2, was answered on 2026-08-20 and is
-recorded as D-Q5 below.
+Q5, raised in Milestone 2, was answered on 2026-08-20 and is recorded as D-Q5
+below.
+
+None outstanding. Q6, raised in Milestone 5, was answered the same day and is
+recorded as D-Q6 below.
 
 Raise new questions here as implementation uncovers them, tagged with the
 section they affect, and pair each with a Decision Log placeholder.
@@ -351,7 +354,23 @@ Approved by the repo owner on 2026-08-20 together with the answers to Q1–Q4.
       drag, a zero threshold before layout, and comments and plan prose left
       describing a tap where the code now wants a hold. A seventh, a press
       scale sticking through a drag, was measured and does not reproduce.
-- [ ] Milestone 5 — creating, renaming, pinning; `05` wired up.
+- [x] (2026-08-21 18:00Z) **M4b interrupted this plan.** The app now speaks
+      Polish and English, every user-visible string lives in `messages/pl.json`
+      and `messages/en.json`, and `src/lib/plural.ts` is gone — CLDR plural keys
+      replace it. See `docs/exec-plans/completed/20260820-2147-m4b-bilingual-ui.md`.
+      Milestones 5 to 8 of this plan write their copy into both message files as
+      they go; where the text below still says `plural(...)`, the note beside it
+      says what to use instead.
+- [x] (2026-08-21 20:00Z) Milestone 5 — creating, renaming, pinning; `05` wired
+      up. Three sheet routes (`new-list`, `list/[id]/rename`, `list/[id]/menu`),
+      the shared `src/components/TitleSheet.tsx` behind the first two, "Nowa" in
+      the `35` header, the "..." in the list header, and `listToCopy` for the
+      `copyFrom` the archive will use in Milestone 8. `ListRow` gained a `tone`
+      for the destructive row. Verified on both platforms in both languages.
+- [x] (2026-08-22 11:25Z) Milestone 5, follow-ups: holding a card on `35` opens
+      that list's menu, and "PRZYPIĘTA" became a counted key — both asked for by
+      the repo owner. Checked on the iPhone 17 with two pinned lists reading
+      "PRZYPIĘTE" and one reading "PRZYPIĘTA".
 - [ ] Milestone 6 — paste a whole list (`19`).
 - [ ] Milestone 7 — change history with restore (`25`).
 - [ ] Milestone 8 — the archive (`41`) and automatic archiving.
@@ -516,6 +535,42 @@ before:
   app applies generated migrations at startup (`AGENTS.md`).
 
 
+- Observation: a sheet can replace itself. `router.replace` from inside a
+  presented `formSheet` swaps the screen without dismissing and re-presenting,
+  so "Co tworzymy" → "NOWA LISTA" and the "..." menu → "ZMIEŃ NAZWĘ" are both
+  one sheet that changes its contents. No stacking, no detents fighting, and the
+  first of the two dismissal strategies the plan offered was the one that
+  worked. **M5 needs the same trick for "Notatka".**
+  Evidence: verified on the iPhone 17 — the "Co tworzymy" sheet is replaced in
+  place by the naming sheet at the naming sheet's own detent.
+
+- Observation: the sheets were padded twice at the bottom on iOS, and the
+  comment in `src/app/item/[id].tsx` explaining why they were not was wrong. It
+  said "iOS insets the whole sheet already, so this only ever adds where it is
+  needed" — but `insets.bottom` inside a `formSheet` still reports the home
+  indicator's 34 pt, against a `spacing.lg` of 16, so `Math.max` added 18 pt of
+  dead space under the last row of every sheet. The "Co tworzymy" sheet of `05`
+  never had the problem because it uses a plain `spacing.lg`. All three now take
+  the inset on Android only, where the navigation bar really is drawn over the
+  sheet.
+
+- Observation: one list unpinned itself during Milestone 5's verification and
+  the cause was never established. It happened inside the same second as a
+  synthesised long press on that card, which is why it first looked like the
+  long press misfiring — a lift landing on the sheet as it slid up. That
+  hypothesis did not survive testing: three more long presses, held 700 ms,
+  900 ms and 1400 ms, each opened the menu with nothing triggered and the list
+  untouched. The repo owner was using the same simulator around that time and
+  had pinned both lists by hand minutes earlier, so the likeliest reading is
+  simply that they unpinned one. Recorded rather than explained away; if a hold
+  on a card is ever seen to fire a menu row on its own, this is the first
+  sighting.
+
+- Observation: the development client's floating button sits exactly where `35`
+  puts "Nowa", and on Android it covers part of the header. It is draggable —
+  hold and drag it somewhere else — and it does not exist in a release build.
+  Worth knowing before mistaking it for a layout collision.
+
 ## Decision Log
 
 The first five entries are the repo owner's answers to Q1–Q5. The rest were
@@ -540,6 +595,61 @@ taken while writing the plan, before any code was written.
   reducer, because `applyEvent` must never depend on what this device already
   knows.
   Date/Author: 2026-08-20, repo owner.
+
+- Decision (D-Q6): "PRZYPIĘTA" becomes a counted key, reading "PRZYPIĘTE" from
+  two lists up. Pinning stays unlimited.
+  Rationale: `35` draws one pinned list and its label agrees with one feminine
+  *lista*; nothing stops a second, and Milestone 5 made pinning easy enough that
+  it happens. Of the three ways out — a counted label, capping the section at one
+  list, or leaving the grammar wrong — the repo owner took the first. It is also
+  the smallest: the message files already hold four counted keys, and the label
+  never prints the number, so the count is there only to pick the form. English
+  has one word either way and needs `_one` and `_other` holding the same string,
+  which is what makes the key resolve at all.
+  Date/Author: 2026-08-22, repo owner.
+
+- Decision: `pull-down` is the icon for "Schowaj do archiwum", not the `basket`
+  the plan suggested.
+  Rationale: the plan left the choice open among the 24 existing icons. `basket`
+  is the Zakupy tab's own glyph, so using it for the archive would have one
+  drawing mean two things — and "put the list in the shopping basket" is
+  backwards for putting it away. `pull-down` is an arrow with a shaft pointing
+  down: move it down, out of the way.
+  Date/Author: 2026-08-21, Claude (implementing).
+
+- Decision: the two naming sheets share `src/components/TitleSheet.tsx` rather
+  than being two independent files.
+  Rationale: the plan calls them "the same shape" and they are — a heading, one
+  underlined field, a primary action and "Anuluj". Two copies would drift. It
+  sits in `src/components/` beside `TabBar`, not in `components/ui/` which is
+  the design system, and not in `src/app/` where every file is a route.
+  M5's "Notatka" naming step is the third caller.
+  Date/Author: 2026-08-21, Claude (implementing).
+
+- Decision: `ListRow` gained a `tone` prop, used for "Usuń listę".
+  Rationale: the destructive row of a menu has to read as destructive, and
+  `Text` already had the tone vocabulary. M9's "Usuń osobę" and "Opuść
+  Przestrzeń" want the same thing. It is the fourth primitive this plan has
+  extended rather than worked around, after `SectionLabel`, `CheckboxRow` and
+  `Screen`.
+  Date/Author: 2026-08-21, Claude (implementing).
+
+- Decision: deleting a list is confirmed with an `Alert`, which the plan does
+  not specify, and the list screen pops itself rather than the sheet popping it.
+  Rationale: the confirmation matches what deleting an item already does in
+  Milestone 4, and losing a whole list to a mis-tap is worse. The dismissal is
+  split because each screen then owns its own exit: the menu closes itself, and
+  the list screen leaves when its row gains a `deleted_at` — which also covers
+  the M8 case of somebody else deleting it while you are looking at it. That is
+  the same pattern `src/app/item/[id].tsx` uses.
+  Date/Author: 2026-08-21, Claude (implementing).
+
+- Decision: holding a card on `35` opens that list's "..." menu.
+  Rationale: asked for by the repo owner at the end of Milestone 5. It is the
+  gesture pair the item rows already use — a tap for the thing you do every
+  time, a hold for the sheet — and it saves opening a list only to reach for the
+  "..." in its header. No mockup draws it, like the menu itself (D-Q2).
+  Date/Author: 2026-08-21, repo owner.
 
 - Decision (D-Q2): The list detail header gets a "..." action in the slot `07`
   gives to "Udostępnij", opening a sheet with "Zmień nazwę", "Przypnij do góry"
@@ -1108,14 +1218,17 @@ React and no database — the same kind of boundary `src/theme/` has. Add the ro
 to the code-layout tables in `AGENTS.md` and `README.md` in this milestone, not
 at the end.
 
-`src/lib/plural.ts`:
+`src/lib/plural.ts` — **deleted by M4b**, and described here only because
+Milestone 3 built it and the text below still refers to what it did:
 
     export function plural(n: number, one: string, few: string, many: string): string
 
 Polish picks `one` for exactly 1, `few` when `n % 10` is 2, 3 or 4 **and**
-`n % 100` is not 12, 13 or 14, and `many` otherwise. Callers pass the case they
-need, because the app needs both nominative ("9 pozycji", "22 pozycje" on `41`)
+`n % 100` is not 12, 13 or 14, and `many` otherwise. Callers passed the case they
+needed, because the app needs both nominative ("9 pozycji", "22 pozycje" on `41`)
 and accusative ("Dodaj 5 pozycji do listy", "Dodaj 2 pozycje do listy" on `19`).
+That rule is now CLDR's, supplied by `intl-pluralrules`, and the two cases are
+two keys — `list.itemCount` and `activity.items`.
 
 `src/lib/time.ts`, every function taking an ISO-8601 UTC string and an optional
 `now` so the behaviour can be checked without waiting a day:
@@ -1587,14 +1700,15 @@ Each line of the pasted text that is not blank goes through `parseItem`; the
 result is a row with a checkbox, the name, and a quantity badge reading "×2" when
 the quantity is above 1. Everything starts selected. Exactly as `19` draws it,
 only the first **four** rows are listed, followed by "i N dalszych pozycji" in
-muted text — with the plural picked by `plural`.
+muted text — as a plural key in the message files, since `src/lib/plural.ts` was
+deleted by M4b.
 
 The hint under them is verbatim from `19`: "Jedna linia to jedna pozycja. Ilości
 typu „x2" albo „10" wpisujemy w osobne pole."
 
 At the bottom, a full-width primary `Button` labelled "Dodaj N pozycji do listy",
-with `plural(n, 'pozycję', 'pozycje', 'pozycji')`, disabled when nothing is
-selected. It calls `addItems` with the selected rows and pops back to the list.
+as a plural key with the counted noun in the accusative — the same case as
+`activity.items`, which M4b already holds — disabled when nothing is selected. It calls `addItems` with the selected rows and pops back to the list.
 The header's "Dodaj" does the same thing.
 
 Finally, add "Wklej listę" to the right of the quick-add bar built in Milestone
@@ -1694,7 +1808,7 @@ never depends on what this device already knows.
 **`src/app/archive.tsx`** — pushed from the "Pokaż ›" on `35`, with the back
 title "Listy" and "Wyczyść" in the header right. The content header is "Archiwum"
 as `titleLarge` with "N list" over the Przestrzeń's name right-aligned beside it,
-using `plural(n, 'lista', 'listy', 'list')`.
+as a plural key in the message files; `src/lib/plural.ts` no longer exists.
 
 Rows are grouped by the month of `archivedAt`, newest month first, under
 `monthHeading` — "SIERPIEŃ", "LIPIEC". Each row is a `ListRow` with: a `success`
@@ -1962,8 +2076,7 @@ The signatures that must exist when this milestone is finished:
     export function frequentNotesFor(spaceId: string, name: string,
                                      limit: number): string[]
 
-    // src/lib/plural.ts
-    export function plural(n: number, one: string, few: string, many: string): string
+    // src/lib/plural.ts — deleted by M4b; plural forms are message keys now
 
     // src/lib/time.ts
     export function clockTime(iso: string): string
